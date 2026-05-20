@@ -54,6 +54,7 @@ import {
 } from '../../utils/element/canvas-text.util';
 import { CanvasPersistenceService } from '../../services/canvas-persistence.service';
 import { CanvasGenerationService } from '../../services/canvas-generation.service';
+import { CanvasAiChatPersistenceService } from '../../services/editor/canvas-ai-chat-persistence.service';
 import {
   SupportedFramework,
   HandlePosition,
@@ -111,6 +112,7 @@ const CORNER_RADIUS_HANDLE_MIN_INSET = 4;
     CanvasEditorStateService,
     CanvasViewportService,
     CanvasHistoryService,
+    CanvasAiChatPersistenceService,
     CanvasClipboardService,
     CanvasElementService,
     CanvasKeyboardService,
@@ -1778,6 +1780,13 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.runWithHistory(() => {
       this.editorState.updateCurrentPageElements(() => remapped);
     });
+  }
+
+  onAiUndoRequested(): void {
+    this.history.undo(
+      () => this.createHistorySnapshot(),
+      (snapshot) => this.applyHistorySnapshot(snapshot),
+    );
   }
 
   zoomIn(): void {

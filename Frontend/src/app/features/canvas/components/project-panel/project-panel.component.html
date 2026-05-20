@@ -224,7 +224,17 @@
                 <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
               </svg>
               <p class="ai-chat__empty-title">What do you want to design?</p>
-              <span class="ai-chat__hint">e.g. "Hero section with a title, subtitle and CTA button"</span>
+              <div class="ai-chat__suggestions">
+                @for (suggestion of AI_PROMPT_SUGGESTIONS; track suggestion.label) {
+                  <button
+                    type="button"
+                    class="ai-chat__suggestion"
+                    [disabled]="aiIsLoading()"
+                    (click)="applyAiSuggestion(suggestion)">
+                    {{ suggestion.label }}
+                  </button>
+                }
+              </div>
             </div>
           }
 
@@ -247,11 +257,46 @@
         </div>
 
         <div class="ai-chat__footer">
+          <div class="ai-chat__actions">
+            @if (aiIsLoading()) {
+              <button type="button" class="ai-chat__action-btn" (click)="stopAiGeneration()">
+                Stop
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="ai-chat__action-btn"
+                [disabled]="!canRegenerateAiMessage()"
+                (click)="regenerateAiMessage()">
+                Regen
+              </button>
+              <button
+                type="button"
+                class="ai-chat__action-btn"
+                [disabled]="!aiCanUndo()"
+                (click)="undoLastAiApply()">
+                Undo
+              </button>
+              <button
+                type="button"
+                class="ai-chat__action-btn"
+                [disabled]="aiMessages().length === 0"
+                (click)="clearAiChat()">
+                Clear
+              </button>
+            }
+          </div>
+
+          <div class="ai-chat__context" [class.is-loading]="aiIsLoading()">
+            <span class="ai-chat__context-label">{{ getAiContextKindLabel() }}</span>
+            <span class="ai-chat__context-value">{{ getAiContextSummary() }}</span>
+          </div>
+
           <div class="ai-chat__input-wrap" [class.is-disabled]="aiIsLoading()">
             <textarea
               class="ai-chat__input"
               rows="2"
-              placeholder="Describe your design…"
+              placeholder="Describe the change..."
               [ngModel]="aiUserInput()"
               (ngModelChange)="aiUserInput.set($event)"
               (keydown)="onAiKeyDown($event)"

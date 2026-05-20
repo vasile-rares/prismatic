@@ -48,6 +48,7 @@
         [viewportWidth]="currentPage()?.viewportWidth ?? 1280"
         (panelWidthChanged)="onProjectPanelWidthChanged($event)"
         (designApplied)="onAiDesignApplied($event)"
+        (aiUndoRequested)="onAiUndoRequested()"
         (pageSelected)="page.selectPage($event)"
         (pageLayerSelected)="page.selectPageWithoutFocus($event)"
         (pageCreateRequested)="page.addPage()"

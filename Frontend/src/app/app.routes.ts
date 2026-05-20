@@ -1,5 +1,7 @@
+import { inject } from '@angular/core';
 import { CanDeactivateFn, Routes } from '@angular/router';
-import { authGuard } from '@app/core';
+import { firstValueFrom } from 'rxjs';
+import { authGuard, loginEntryGuard, UserService } from '@app/core';
 
 const canvasPageCanDeactivateGuard: CanDeactivateFn<{
   flushPendingPersistence?: () => Promise<boolean> | boolean;
@@ -12,11 +14,20 @@ const canvasPageCanDeactivateGuard: CanDeactivateFn<{
 };
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  {
+    path: '',
+    redirectTo: async () => {
+      const currentUser = inject(UserService);
+      const user = await firstValueFrom(currentUser.loadCurrentUser());
+      return user !== null ? `/${user.username}` : '/login';
+    },
+    pathMatch: 'full',
+  },
   {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/pages/auth-page/auth-page.component').then((m) => m.AuthPage),
+    canActivate: [loginEntryGuard],
   },
   {
     path: 'reset-password',

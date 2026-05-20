@@ -19,6 +19,7 @@ import { withRoundedPrecision } from '../utils/element/canvas-element-normalizat
 import { generateThumbnail, generateThumbnailHtml2Canvas } from '../utils/canvas-thumbnail.util';
 import { CanvasEditorStateService } from './canvas-editor-state.service';
 import { CanvasGestureService } from './editor/canvas-gesture.service';
+import { CanvasAiChatPersistenceService } from './editor/canvas-ai-chat-persistence.service';
 import { CanvasHistoryService } from './editor/canvas-history.service';
 import { CanvasPageManagerService } from './canvas-page-manager.service';
 
@@ -33,6 +34,7 @@ export class CanvasPersistenceService {
   private readonly editorState = inject(CanvasEditorStateService, { optional: true });
   private readonly gesture = inject(CanvasGestureService, { optional: true });
   private readonly history = inject(CanvasHistoryService, { optional: true });
+  private readonly aiChatPersistence = inject(CanvasAiChatPersistenceService, { optional: true });
   private readonly page = inject(CanvasPageManagerService, { optional: true });
 
   // ── Public signals ────────────────────────────────────────
@@ -266,7 +268,7 @@ export class CanvasPersistenceService {
         this.loadingPercent.set(55);
 
         this.loadProjectDesign(this.projectIdAsNumber).subscribe({
-          next: (response) => {
+          next: async (response) => {
             const pages = response.pages;
             const activePageId =
               response.activePageId && pages.some((page) => page.id === response.activePageId)
@@ -282,7 +284,11 @@ export class CanvasPersistenceService {
             this.lastSavedAt.set(response.updatedAt ?? null);
             this.history?.resetHistory();
             this.history?.setProjectId(this.projectIdAsNumber);
-            void this.history?.restoreFromDb(this.projectIdAsNumber);
+            this.aiChatPersistence?.setProjectId(this.projectIdAsNumber);
+            await Promise.all([
+              this.history?.restoreFromDb(this.projectIdAsNumber) ?? Promise.resolve(),
+              this.aiChatPersistence?.restore(this.projectIdAsNumber) ?? Promise.resolve(),
+            ]);
             this.loadingMessage.set('Finishing up...');
             this.loadingPercent.set(100);
             this.canPersistDesign = true;
