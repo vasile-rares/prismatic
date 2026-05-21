@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+using Favigon.API.Middlewares;
+using Favigon.Application.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Favigon.API.Middlewares;
 
 namespace Favigon.Tests.Middlewares;
 
@@ -35,10 +36,10 @@ public class ExceptionHandlerMiddlewareTests
   }
 
   [Fact]
-  public async Task Invoke_WhenInvalidOperationException_Returns422UnprocessableEntity()
+  public async Task Invoke_WhenAppException_ReturnsConfiguredStatusCode()
   {
     // Arrange
-    var (middleware, ctx) = Build(new InvalidOperationException("already exists"));
+    var (middleware, ctx) = Build(new BusinessRuleException("already exists"));
 
     // Act
     await middleware.InvokeAsync(ctx);
@@ -88,10 +89,10 @@ public class ExceptionHandlerMiddlewareTests
   }
 
   [Fact]
-  public async Task Invoke_WhenInvalidOperationException_IncludesMessageInTitle()
+  public async Task Invoke_WhenAppException_IncludesMessageInTitle()
   {
     // Arrange
-    var (middleware, ctx) = Build(new InvalidOperationException("Username already exists."));
+    var (middleware, ctx) = Build(new ConflictException("Username already exists."));
 
     // Act
     await middleware.InvokeAsync(ctx);
@@ -126,7 +127,7 @@ public class ExceptionHandlerMiddlewareTests
     await middleware.InvokeAsync(ctx);
     var body = await ReadResponseBodyAsync(ctx.Response);
 
-    // Assert — detail field is non-null in development
+    // Assert
     Assert.Contains("boom", body);
   }
 
@@ -140,7 +141,7 @@ public class ExceptionHandlerMiddlewareTests
     await middleware.InvokeAsync(ctx);
     var body = await ReadResponseBodyAsync(ctx.Response);
 
-    // Assert — detail should be null / absent in production
+    // Assert
     Assert.DoesNotContain("secretMessage", body);
   }
 
@@ -176,7 +177,7 @@ public class ExceptionHandlerMiddlewareTests
     // Act
     await middleware.InvokeAsync(ctx);
 
-    // Assert — default 200, no error
+    // Assert
     Assert.Equal(200, ctx.Response.StatusCode);
   }
 }

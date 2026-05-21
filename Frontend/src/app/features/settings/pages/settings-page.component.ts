@@ -17,8 +17,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import gsap from 'gsap';
-import { gsapFadeIn, gsapFadeOut } from '../../../shared/utils/gsap-animations.util';
 import { AuthService, UserService, extractApiErrorMessage, FALLBACK_AVATAR_URL } from '@app/core';
+import { gsapFadeIn, gsapFadeOut } from '@app/shared/utils/gsap-animations.util';
 import type { UserMe } from '@app/core';
 import { environment } from '../../../../environments/environment';
 

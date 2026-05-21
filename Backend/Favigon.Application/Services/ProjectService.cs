@@ -2,47 +2,26 @@
 using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Requests.Assets;
 using Favigon.Application.DTOs.Responses;
-using Favigon.Application.Validators;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
-using Favigon.Converter.Abstractions;
-using Favigon.Converter.Models;
-using Favigon.Converter.Validation;
+using Favigon.Application.Services.Internal;
 using Favigon.Domain.Entities;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Favigon.Application.Services;
 
 public class ProjectService : IProjectService
 {
-  private const int MaxThumbnailSizeBytes = 5 * 1024 * 1024;
-
-  private static readonly JsonSerializerOptions IrDeserializationOptions = new()
-  {
-    PropertyNameCaseInsensitive = true
-  };
-
-  private static readonly HashSet<string> AllowedThumbnailContentTypes = new(StringComparer.OrdinalIgnoreCase)
-  {
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-  };
-
   private readonly IProjectRepository _projectRepository;
   private readonly IMapper _mapper;
-  private readonly IConverterEngine _converterEngine;
   private readonly IProjectAssetStorage _projectAssetStorage;
 
   public ProjectService(
     IProjectRepository projectRepository,
     IMapper mapper,
-    IConverterEngine converterEngine,
     IProjectAssetStorage projectAssetStorage)
   {
     _projectRepository = projectRepository;
     _mapper = mapper;
-    _converterEngine = converterEngine;
     _projectAssetStorage = projectAssetStorage;
   }
 
@@ -86,6 +65,11 @@ public class ProjectService : IProjectService
     var project = await _projectRepository.GetBySlugAsync(slug, userId)
                   ?? await _projectRepository.GetPublicBySlugAsync(slug);
     return project == null ? null : MapProjectResponse(project);
+  }
+
+  public Task RecordViewAsync(int projectId)
+  {
+    return _projectRepository.IncrementViewCountAsync(projectId);
   }
 
   public async Task<ProjectResponse> CreateAsync(ProjectCreateRequest request, int userId)
@@ -147,9 +131,15 @@ public class ProjectService : IProjectService
     var project = await _projectRepository.GetByIdAsync(projectId, userId);
     if (project == null) return null;
 
-    var previousAssetPaths = CollectManagedProjectAssetPaths(project.DesignJson, project.UserId, project.Id);
-    var normalizedDesignJson = NormalizeAndValidateDesignJson(request.DesignJson);
-    var currentAssetPaths = CollectManagedProjectAssetPaths(normalizedDesignJson, project.UserId, project.Id);
+    var previousAssetPaths = ProjectDesignJsonHelper.CollectManagedProjectAssetPaths(
+      project.DesignJson,
+      project.UserId,
+      project.Id);
+    var normalizedDesignJson = ProjectDesignJsonHelper.NormalizeAndValidate(request.DesignJson);
+    var currentAssetPaths = ProjectDesignJsonHelper.CollectManagedProjectAssetPaths(
+      normalizedDesignJson,
+      project.UserId,
+      project.Id);
 
     project.DesignJson = normalizedDesignJson;
     await _projectRepository.UpdateAsync(project);
@@ -179,7 +169,7 @@ public class ProjectService : IProjectService
     var project = await _projectRepository.GetByIdAsync(projectId, userId);
     if (project == null) return false;
 
-    ValidateThumbnailUploadRequest(request);
+    ProjectAssetUploadValidation.ValidateThumbnail(request);
 
     await _projectAssetStorage.SaveThumbnailAsync(
       project.UserId,
@@ -254,265 +244,6 @@ public class ProjectService : IProjectService
     return slug.Length > 100 ? slug[..100] : slug;
   }
 
-  private static void ValidateThumbnailUploadRequest(ProjectImageUploadRequest request)
-  {
-    ImageUploadValidator.Validate(new ImageUploadRequest(
-      Content: request.Content,
-      FileName: request.FileName,
-      ContentType: request.ContentType,
-      Length: request.Length,
-      MaxBytes: MaxThumbnailSizeBytes,
-      AllowedTypes: AllowedThumbnailContentTypes,
-      AssetLabel: "Thumbnail file",
-      UnsupportedFormatMessage: "Only JPEG, PNG, and WebP thumbnails are supported."));
-  }
-
-  private string NormalizeAndValidateDesignJson(string? designJson)
-  {
-    if (string.IsNullOrWhiteSpace(designJson))
-    {
-      return "{}";
-    }
-
-    JsonNode? rootNode;
-    try
-    {
-      rootNode = JsonNode.Parse(designJson);
-    }
-    catch (JsonException ex)
-    {
-      throw new ArgumentException("Design JSON is not valid JSON.", ex);
-    }
-
-    if (rootNode is null)
-    {
-      return "{}";
-    }
-
-    if (rootNode is not JsonObject rootObject)
-    {
-      throw new ArgumentException("Design JSON root must be a JSON object.");
-    }
-
-    if (rootObject.Count == 0)
-    {
-      return "{}";
-    }
-
-    NormalizeNumbers(rootObject);
-
-    var normalizedDesignJson = rootObject.ToJsonString(new JsonSerializerOptions
-    {
-      WriteIndented = false
-    });
-
-    IRNode? irRoot;
-    try
-    {
-      irRoot = JsonSerializer.Deserialize<IRNode>(normalizedDesignJson, IrDeserializationOptions);
-    }
-    catch (JsonException ex)
-    {
-      throw new ArgumentException("Design JSON does not match the expected IR shape.", ex);
-    }
-
-    if (irRoot == null)
-    {
-      throw new ArgumentException("Design JSON does not contain a valid IR root node.");
-    }
-
-    var validationErrors = IrValidator.GetValidationErrors(irRoot, skipLayoutMath: true);
-    if (validationErrors.Count > 0)
-    {
-      var details = string.Join(" ", validationErrors.Take(3));
-      throw new ArgumentException($"Design JSON failed IR validation. {details}");
-    }
-
-    return normalizedDesignJson;
-  }
-
-  private static void NormalizeNumbers(JsonNode node)
-  {
-    switch (node)
-    {
-      case JsonObject jsonObject:
-        {
-          foreach (var propertyName in jsonObject.Select(property => property.Key).ToList())
-          {
-            var childNode = jsonObject[propertyName];
-            if (childNode is null)
-            {
-              continue;
-            }
-
-            if (childNode is JsonValue jsonValue
-              && TryNormalizeJsonValue(jsonValue, out var normalizedValue))
-            {
-              jsonObject[propertyName] = normalizedValue;
-            }
-
-            if (childNode is not JsonValue)
-            {
-              NormalizeNumbers(childNode);
-            }
-          }
-
-          break;
-        }
-      case JsonArray jsonArray:
-        {
-          for (var index = 0; index < jsonArray.Count; index++)
-          {
-            var childNode = jsonArray[index];
-            if (childNode is null)
-            {
-              continue;
-            }
-
-            if (childNode is JsonValue jsonValue
-              && TryNormalizeJsonValue(jsonValue, out var normalizedValue))
-            {
-              jsonArray[index] = normalizedValue;
-            }
-
-            if (childNode is not JsonValue)
-            {
-              NormalizeNumbers(childNode);
-            }
-          }
-
-          break;
-        }
-    }
-  }
-
-  private static bool TryNormalizeJsonValue(JsonValue value, out JsonNode normalizedValue)
-  {
-    normalizedValue = value;
-
-    if (value.TryGetValue<JsonElement>(out var jsonElement)
-      && jsonElement.ValueKind == JsonValueKind.Number
-      && jsonElement.TryGetDecimal(out var number))
-    {
-      var rounded = Math.Round(number, 2, MidpointRounding.AwayFromZero);
-      normalizedValue = JsonValue.Create(rounded)!;
-      return true;
-    }
-
-    return false;
-  }
-
-  private static HashSet<string> CollectManagedProjectAssetPaths(
-    string? designJson,
-    int userId,
-    int projectId)
-  {
-    var assetPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    if (string.IsNullOrWhiteSpace(designJson))
-    {
-      return assetPaths;
-    }
-
-    JsonNode? rootNode;
-    try
-    {
-      rootNode = JsonNode.Parse(designJson);
-    }
-    catch (JsonException)
-    {
-      return assetPaths;
-    }
-
-    if (rootNode == null)
-    {
-      return assetPaths;
-    }
-
-    var assetPrefix = $"/project-assets/{userId}/{projectId}/";
-    CollectManagedProjectAssetPaths(rootNode, assetPrefix, assetPaths);
-    return assetPaths;
-  }
-
-  private static void CollectManagedProjectAssetPaths(
-    JsonNode node,
-    string assetPrefix,
-    HashSet<string> assetPaths)
-  {
-    switch (node)
-    {
-      case JsonObject jsonObject:
-        foreach (var property in jsonObject)
-        {
-          if (property.Value != null)
-          {
-            CollectManagedProjectAssetPaths(property.Value, assetPrefix, assetPaths);
-          }
-        }
-        break;
-      case JsonArray jsonArray:
-        foreach (var item in jsonArray)
-        {
-          if (item != null)
-          {
-            CollectManagedProjectAssetPaths(item, assetPrefix, assetPaths);
-          }
-        }
-        break;
-      case JsonValue jsonValue when jsonValue.TryGetValue<string>(out var value):
-        {
-          var normalizedAssetPath = TryNormalizeManagedProjectAssetPath(value, assetPrefix);
-          if (normalizedAssetPath != null)
-          {
-            assetPaths.Add(normalizedAssetPath);
-          }
-          break;
-        }
-    }
-  }
-
-  private static string? TryNormalizeManagedProjectAssetPath(string rawValue, string assetPrefix)
-  {
-    var candidate = UnwrapCssUrl(rawValue);
-    if (string.IsNullOrWhiteSpace(candidate))
-    {
-      return null;
-    }
-
-    string path = candidate;
-    if (Uri.TryCreate(candidate, UriKind.Absolute, out var absoluteUri))
-    {
-      path = absoluteUri.AbsolutePath;
-    }
-
-    var pathWithoutQuery = path.Split(['?', '#'], 2)[0];
-    if (!pathWithoutQuery.StartsWith(assetPrefix, StringComparison.OrdinalIgnoreCase))
-    {
-      return null;
-    }
-
-    return pathWithoutQuery;
-  }
-
-  private static string UnwrapCssUrl(string value)
-  {
-    var trimmed = value.Trim();
-    if (!trimmed.StartsWith("url(", StringComparison.OrdinalIgnoreCase) || !trimmed.EndsWith(')'))
-    {
-      return trimmed;
-    }
-
-    trimmed = trimmed[4..^1].Trim();
-    if (
-      (trimmed.StartsWith('\"') && trimmed.EndsWith('\"')) ||
-      (trimmed.StartsWith('\'') && trimmed.EndsWith('\''))
-    )
-    {
-      trimmed = trimmed[1..^1];
-    }
-
-    return trimmed;
-  }
-
   // ── Likes ──────────────────────────────────────────────────────────────────
 
   public async Task LikeAsync(int userId, int projectId)
@@ -524,11 +255,11 @@ public class ProjectService : IProjectService
     }
 
     if (project == null)
-      throw new InvalidOperationException("Project not found or not accessible.");
+      throw new NotFoundException("Project not found or not accessible.");
 
     var existing = await _projectRepository.GetLikeAsync(userId, projectId);
     if (existing != null)
-      throw new InvalidOperationException("Project is already liked.");
+      throw new ConflictException("Project is already liked.");
 
     await _projectRepository.AddLikeAsync(new ProjectLike
     {
@@ -541,7 +272,7 @@ public class ProjectService : IProjectService
   public async Task UnlikeAsync(int userId, int projectId)
   {
     var like = await _projectRepository.GetLikeAsync(userId, projectId)
-        ?? throw new InvalidOperationException("Project is not liked.");
+        ?? throw new BusinessRuleException("Project is not liked.");
 
     await _projectRepository.DeleteLikeAsync(like);
   }
@@ -557,11 +288,11 @@ public class ProjectService : IProjectService
     }
 
     if (project == null)
-      throw new InvalidOperationException("Project not found or not accessible.");
+      throw new NotFoundException("Project not found or not accessible.");
 
     var existing = await _projectRepository.GetBookmarkAsync(userId, projectId);
     if (existing != null)
-      throw new InvalidOperationException("Project is already starred.");
+      throw new ConflictException("Project is already starred.");
 
     await _projectRepository.AddBookmarkAsync(new ProjectBookmark
     {
@@ -574,7 +305,7 @@ public class ProjectService : IProjectService
   public async Task UnbookmarkAsync(int userId, int projectId)
   {
     var bookmark = await _projectRepository.GetBookmarkAsync(userId, projectId)
-      ?? throw new InvalidOperationException("Project is not starred.");
+      ?? throw new BusinessRuleException("Project is not starred.");
 
     await _projectRepository.DeleteBookmarkAsync(bookmark);
   }
@@ -613,17 +344,6 @@ public class ProjectService : IProjectService
 
   // ── Assets ─────────────────────────────────────────────────────────────────
 
-  private const long MaxImageSizeBytes = 10 * 1024 * 1024;
-
-  private static readonly HashSet<string> AllowedImageContentTypes = new(StringComparer.OrdinalIgnoreCase)
-  {
-    "image/png",
-    "image/jpeg",
-    "image/webp",
-    "image/gif",
-    "image/avif"
-  };
-
   public async Task<string?> UploadImageAsync(
     int projectId,
     int userId,
@@ -636,15 +356,7 @@ public class ProjectService : IProjectService
       return null;
     }
 
-    ImageUploadValidator.Validate(new ImageUploadRequest(
-      Content: request.Content,
-      FileName: request.FileName,
-      ContentType: request.ContentType,
-      Length: request.Length,
-      MaxBytes: MaxImageSizeBytes,
-      AllowedTypes: AllowedImageContentTypes,
-      AssetLabel: "Image file",
-      UnsupportedFormatMessage: "Only PNG, JPEG, WebP, GIF, and AVIF images are supported."));
+    ProjectAssetUploadValidation.ValidateImage(request);
 
     return await _projectAssetStorage.SaveImageAsync(
       userId,

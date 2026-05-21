@@ -1,5 +1,6 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
+using Favigon.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Favigon.API.Middlewares;
@@ -37,7 +38,7 @@ public class ExceptionHandlerMiddleware
   {
     var statusCode = exception switch
     {
-      InvalidOperationException => 422, // Unprocessable Entity (validation / business rule failure)
+      AppException appException => appException.StatusCode,
       ArgumentException => (int)HttpStatusCode.BadRequest,
       _ => (int)HttpStatusCode.InternalServerError
     };
@@ -59,4 +60,3 @@ public class ExceptionHandlerMiddleware
     await context.Response.WriteAsync(json);
   }
 }
-

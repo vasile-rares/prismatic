@@ -5,7 +5,6 @@ using Favigon.Application.DTOs.Requests;
 using Favigon.Application.Interfaces;
 using Favigon.Application.Mappings;
 using Favigon.Application.Services;
-using Favigon.Converter.Abstractions;
 using Favigon.Domain.Entities;
 using System.Text.Json;
 
@@ -14,7 +13,6 @@ namespace Favigon.Tests.Services;
 public class ProjectServiceTests
 {
   private readonly Mock<IProjectRepository> _projectRepo = new();
-  private readonly Mock<IConverterEngine> _converterEngine = new();
   private readonly Mock<IProjectAssetStorage> _projectAssetStorage = new();
   private readonly IMapper _mapper;
   private readonly ProjectService _sut;
@@ -27,7 +25,6 @@ public class ProjectServiceTests
     _sut = new ProjectService(
       _projectRepo.Object,
       _mapper,
-      _converterEngine.Object,
       _projectAssetStorage.Object);
   }
 
@@ -83,6 +80,14 @@ public class ProjectServiceTests
 
     // Assert
     Assert.Null(result);
+  }
+
+  [Fact]
+  public async Task RecordView_DelegatesToRepository()
+  {
+    await _sut.RecordViewAsync(15);
+
+    _projectRepo.Verify(repository => repository.IncrementViewCountAsync(15), Times.Once);
   }
 
   // --- Create ---

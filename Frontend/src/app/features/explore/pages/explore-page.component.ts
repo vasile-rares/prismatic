@@ -29,7 +29,7 @@ import type { ExploreProjectItem, ExploreUserItem } from '@app/core';
   templateUrl: './explore-page.component.html',
   styleUrl: './explore-page.component.css',
 })
-export class ExplorePageComponent implements OnInit {
+export class ExplorePage implements OnInit {
   private readonly exploreService = inject(ExploreService);
   private readonly projectService = inject(ProjectService);
   private readonly userService = inject(UserService);

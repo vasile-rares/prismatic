@@ -19,8 +19,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { gsapFadeIn, gsapFadeOut } from '../../../../shared/utils/gsap-animations.util';
 import { AuthService, UserService, extractApiErrorMessage } from '@app/core';
+import { gsapFadeIn, gsapFadeOut } from '@app/shared/utils/gsap-animations.util';
 import { environment } from '../../../../../environments/environment';
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;

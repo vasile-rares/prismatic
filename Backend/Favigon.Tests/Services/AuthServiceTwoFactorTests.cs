@@ -34,7 +34,10 @@ public class AuthServiceTwoFactorTests
       _google.Object,
       _email.Object,
       mapper,
-      TestConfiguration.Build(),
+      TestConfiguration.BuildJwtOptions(),
+      TestConfiguration.BuildPasswordResetOptions(),
+      TestConfiguration.BuildClientOptions(),
+      TestConfiguration.BuildTwoFactorOptions(),
       _audit.Object);
   }
 

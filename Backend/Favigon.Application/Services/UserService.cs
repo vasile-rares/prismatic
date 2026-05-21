@@ -2,8 +2,9 @@
 using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Requests.Assets;
 using Favigon.Application.DTOs.Responses;
-using Favigon.Application.Validators;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
+using Favigon.Application.Validators;
 using Favigon.Domain.Entities;
 
 namespace Favigon.Application.Services;
@@ -74,13 +75,13 @@ public class UserService : IUserService
     var existingByUsername = await _userRepository.GetByUsernameAsync(request.Username);
     if (existingByUsername != null)
     {
-      throw new InvalidOperationException("Username already exists.");
+      throw new ConflictException("Username already exists.");
     }
 
     var existingByEmail = await _userRepository.GetByEmailAsync(request.Email);
     if (existingByEmail != null)
     {
-      throw new InvalidOperationException("Email already exists.");
+      throw new ConflictException("Email already exists.");
     }
 
     var user = new User
@@ -115,7 +116,7 @@ public class UserService : IUserService
       var byUsername = await _userRepository.GetByUsernameAsync(normalizedUsername);
       if (byUsername != null && byUsername.Id != id)
       {
-        throw new InvalidOperationException("Username already exists.");
+        throw new ConflictException("Username already exists.");
       }
     }
 
@@ -124,7 +125,7 @@ public class UserService : IUserService
       var byEmail = await _userRepository.GetByEmailAsync(request.Email);
       if (byEmail != null && byEmail.Id != id)
       {
-        throw new InvalidOperationException("Email already exists.");
+        throw new ConflictException("Email already exists.");
       }
     }
 
@@ -175,7 +176,7 @@ public class UserService : IUserService
     {
       var byUsername = await _userRepository.GetByUsernameAsync(request.Username);
       if (byUsername != null && byUsername.Id != userId)
-        throw new InvalidOperationException("Username already exists.");
+        throw new ConflictException("Username already exists.");
     }
 
     user.DisplayName = request.DisplayName;
@@ -300,14 +301,14 @@ public class UserService : IUserService
   public async Task FollowAsync(int followerId, string followeeUsername)
   {
     var followee = await _userRepository.GetByUsernameAsync(followeeUsername)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (followee.Id == followerId)
-      throw new InvalidOperationException("You cannot follow yourself.");
+      throw new BusinessRuleException("You cannot follow yourself.");
 
     var existing = await _userRepository.GetFollowAsync(followerId, followee.Id);
     if (existing != null)
-      throw new InvalidOperationException("Already following this user.");
+      throw new ConflictException("Already following this user.");
 
     await _userRepository.AddFollowAsync(new UserFollow
     {
@@ -320,10 +321,10 @@ public class UserService : IUserService
   public async Task UnfollowAsync(int followerId, string followeeUsername)
   {
     var followee = await _userRepository.GetByUsernameAsync(followeeUsername)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     var follow = await _userRepository.GetFollowAsync(followerId, followee.Id)
-      ?? throw new InvalidOperationException("Not following this user.");
+      ?? throw new BusinessRuleException("Not following this user.");
 
     await _userRepository.DeleteFollowAsync(follow);
   }

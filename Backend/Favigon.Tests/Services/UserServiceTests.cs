@@ -1,10 +1,11 @@
-﻿using AutoMapper;
-using Favigon.Application.DTOs.Responses;
-using Moq;
+using AutoMapper;
 using Favigon.Application.DTOs.Requests;
+using Favigon.Application.DTOs.Responses;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
 using Favigon.Application.Services;
 using Favigon.Domain.Entities;
+using Moq;
 
 namespace Favigon.Tests.Services;
 
@@ -56,7 +57,7 @@ public class UserServiceTests
   }
 
   [Fact]
-  public async Task Create_WhenUsernameExists_ThrowsInvalidOperationException()
+  public async Task Create_WhenUsernameExists_ThrowsConflictException()
   {
     // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync("existing"))
@@ -71,7 +72,7 @@ public class UserServiceTests
     };
 
     // Act & Assert
-    var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.CreateAsync(request));
+    var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.CreateAsync(request));
     Assert.Equal("Username already exists.", ex.Message);
   }
 

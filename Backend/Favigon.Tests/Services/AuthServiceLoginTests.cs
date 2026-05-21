@@ -30,7 +30,11 @@ public class AuthServiceLoginTests
         _userRepo.Object,
         _github.Object, _google.Object,
         _email.Object, _mapper,
-        TestConfiguration.Build(), _audit.Object);
+        TestConfiguration.BuildJwtOptions(),
+        TestConfiguration.BuildPasswordResetOptions(),
+        TestConfiguration.BuildClientOptions(),
+        TestConfiguration.BuildTwoFactorOptions(),
+        _audit.Object);
   }
 
   private User MakeUser(string password = "Password123!") => new()

@@ -4,11 +4,13 @@ using System.Text;
 using Favigon.Application.DTOs.Requests;
 using Favigon.Application.Helpers;
 using Favigon.Application.DTOs.Responses;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
+using Favigon.Application.Options;
 using Favigon.Domain.Entities;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 
 namespace Favigon.Application.Services;
 
@@ -24,7 +26,10 @@ public class AuthService : IAuthService
   private readonly IGoogleOAuthClient _googleOAuthClient;
   private readonly IEmailSender _emailSender;
   private readonly IMapper _mapper;
-  private readonly IConfiguration _configuration;
+  private readonly JwtOptions _jwtOptions;
+  private readonly PasswordResetOptions _passwordResetOptions;
+  private readonly ClientOptions _clientOptions;
+  private readonly TwoFactorOptions _twoFactorOptions;
   private readonly IAuditLogger _audit;
 
   public AuthService(
@@ -33,7 +38,10 @@ public class AuthService : IAuthService
       IGoogleOAuthClient googleOAuthClient,
       IEmailSender emailSender,
       IMapper mapper,
-      IConfiguration configuration,
+      IOptions<JwtOptions> jwtOptions,
+      IOptions<PasswordResetOptions> passwordResetOptions,
+      IOptions<ClientOptions> clientOptions,
+      IOptions<TwoFactorOptions> twoFactorOptions,
       IAuditLogger audit)
   {
     _userRepository = userRepository;
@@ -41,7 +49,10 @@ public class AuthService : IAuthService
     _googleOAuthClient = googleOAuthClient;
     _emailSender = emailSender;
     _mapper = mapper;
-    _configuration = configuration;
+    _jwtOptions = jwtOptions.Value;
+    _passwordResetOptions = passwordResetOptions.Value;
+    _clientOptions = clientOptions.Value;
+    _twoFactorOptions = twoFactorOptions.Value;
     _audit = audit;
   }
 
@@ -54,13 +65,13 @@ public class AuthService : IAuthService
     var existingByUsername = await _userRepository.GetByUsernameAsync(request.Username);
     if (existingByUsername != null)
     {
-      throw new InvalidOperationException("Username already exists.");
+      throw new ConflictException("Username already exists.");
     }
 
     var existingByEmail = await _userRepository.GetByEmailAsync(request.Email);
     if (existingByEmail != null)
     {
-      throw new InvalidOperationException("Email already exists.");
+      throw new ConflictException("Email already exists.");
     }
 
     var user = new User
@@ -154,15 +165,15 @@ public class AuthService : IAuthService
     var (userId, purpose) = ValidateTwoFactorPendingToken(request.Token);
     if (!string.Equals(purpose, TwoFactorLoginPurpose, StringComparison.Ordinal))
     {
-      throw new InvalidOperationException("Verification session is invalid or has expired. Please sign in again.");
+      throw new BusinessRuleException("Verification session is invalid or has expired. Please sign in again.");
     }
 
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("Verification session is invalid or has expired. Please sign in again.");
+      ?? throw new BusinessRuleException("Verification session is invalid or has expired. Please sign in again.");
 
     if (!user.IsTwoFactorEnabled)
     {
-      throw new InvalidOperationException("Two-factor authentication is not enabled for this account.");
+      throw new BusinessRuleException("Two-factor authentication is not enabled for this account.");
     }
 
     ValidateTwoFactorCodeOrThrow(user, request.Code, TwoFactorLoginPurpose);
@@ -182,7 +193,7 @@ public class AuthService : IAuthService
       return;
     }
 
-    var tokenLifetimeMinutes = _configuration.GetValue<int?>("PasswordReset:TokenMinutes") ?? 30;
+    var tokenLifetimeMinutes = _passwordResetOptions.TokenMinutes > 0 ? _passwordResetOptions.TokenMinutes : 30;
     var rawToken = PasswordResetTokenHelper.GenerateRawToken();
     var tokenHash = PasswordResetTokenHelper.HashToken(rawToken);
     var expiresAt = DateTime.UtcNow.AddMinutes(tokenLifetimeMinutes);
@@ -191,7 +202,7 @@ public class AuthService : IAuthService
     user.PasswordResetExpiresAt = expiresAt;
     await _userRepository.UpdateAsync(user);
 
-    var resetUrl = PasswordResetTokenHelper.BuildResetUrl(_configuration, rawToken);
+    var resetUrl = PasswordResetTokenHelper.BuildResetUrl(_clientOptions.BaseUrl, rawToken);
 
     await _emailSender.SendPasswordResetEmailAsync(user.Email, resetUrl, tokenLifetimeMinutes);
   }
@@ -201,14 +212,14 @@ public class AuthService : IAuthService
     var token = request.Token?.Trim() ?? string.Empty;
     if (string.IsNullOrWhiteSpace(token))
     {
-      throw new InvalidOperationException("Password reset link is invalid or has expired.");
+      throw new BusinessRuleException("Password reset link is invalid or has expired.");
     }
 
     var tokenHash = PasswordResetTokenHelper.HashToken(token);
     var user = await _userRepository.GetByPasswordResetTokenHashAsync(tokenHash);
     if (user is null || user.PasswordResetExpiresAt <= DateTime.UtcNow)
     {
-      throw new InvalidOperationException("Password reset link is invalid or has expired.");
+      throw new BusinessRuleException("Password reset link is invalid or has expired.");
     }
 
     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -223,11 +234,11 @@ public class AuthService : IAuthService
   public async Task SetPasswordAsync(int userId, SetPasswordRequest request)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (user.HasPassword)
     {
-      throw new InvalidOperationException("Password is already set for this account.");
+      throw new BusinessRuleException("Password is already set for this account.");
     }
 
     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -243,21 +254,21 @@ public class AuthService : IAuthService
   public async Task ChangePasswordAsync(int userId, ChangePasswordRequest request)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (!user.HasPassword || string.IsNullOrWhiteSpace(user.PasswordHash))
     {
-      throw new InvalidOperationException("You need to set a password before you can change it.");
+      throw new BusinessRuleException("You need to set a password before you can change it.");
     }
 
     if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
     {
-      throw new InvalidOperationException("Current password is incorrect.");
+      throw new BusinessRuleException("Current password is incorrect.");
     }
 
     if (BCrypt.Net.BCrypt.Verify(request.NewPassword, user.PasswordHash))
     {
-      throw new InvalidOperationException("New password must be different from your current password.");
+      throw new BusinessRuleException("New password must be different from your current password.");
     }
 
     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
@@ -272,11 +283,11 @@ public class AuthService : IAuthService
   public async Task SendEnableTwoFactorCodeAsync(int userId)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (user.IsTwoFactorEnabled)
     {
-      throw new InvalidOperationException("Two-factor authentication is already enabled.");
+      throw new BusinessRuleException("Two-factor authentication is already enabled.");
     }
 
     await IssueTwoFactorCodeAsync(user, TwoFactorEnablePurpose);
@@ -285,11 +296,11 @@ public class AuthService : IAuthService
   public async Task EnableTwoFactorAsync(int userId, TwoFactorCodeRequest request)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (user.IsTwoFactorEnabled)
     {
-      throw new InvalidOperationException("Two-factor authentication is already enabled.");
+      throw new BusinessRuleException("Two-factor authentication is already enabled.");
     }
 
     ValidateTwoFactorCodeOrThrow(user, request.Code, TwoFactorEnablePurpose);
@@ -303,11 +314,11 @@ public class AuthService : IAuthService
   public async Task SendDisableTwoFactorCodeAsync(int userId)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (!user.IsTwoFactorEnabled)
     {
-      throw new InvalidOperationException("Two-factor authentication is not enabled.");
+      throw new BusinessRuleException("Two-factor authentication is not enabled.");
     }
 
     await IssueTwoFactorCodeAsync(user, TwoFactorDisablePurpose);
@@ -316,11 +327,11 @@ public class AuthService : IAuthService
   public async Task DisableTwoFactorAsync(int userId, TwoFactorCodeRequest request)
   {
     var user = await _userRepository.GetByIdAsync(userId)
-      ?? throw new InvalidOperationException("User not found.");
+      ?? throw new NotFoundException("User not found.");
 
     if (!user.IsTwoFactorEnabled)
     {
-      throw new InvalidOperationException("Two-factor authentication is not enabled.");
+      throw new BusinessRuleException("Two-factor authentication is not enabled.");
     }
 
     ValidateTwoFactorCodeOrThrow(user, request.Code, TwoFactorDisablePurpose);
@@ -357,7 +368,7 @@ public class AuthService : IAuthService
   {
     var existingLink = await _userRepository.GetLinkedAccountByProviderAsync(provider, providerUserId);
     if (existingLink != null && existingLink.UserId != userId)
-      throw new InvalidOperationException($"This {provider} account is already linked to a different Favigon account.");
+      throw new ConflictException($"This {provider} account is already linked to a different Favigon account.");
 
     if (existingLink != null)
     {
@@ -371,7 +382,7 @@ public class AuthService : IAuthService
 
     var existingUserLink = await _userRepository.GetLinkedAccountByUserIdAndProviderAsync(userId, provider);
     if (existingUserLink != null)
-      throw new InvalidOperationException($"You already have a {provider} account connected.");
+      throw new ConflictException($"You already have a {provider} account connected.");
 
     await _userRepository.AddLinkedAccountAsync(new LinkedAccount
     {
@@ -587,7 +598,7 @@ public class AuthService : IAuthService
         !string.Equals(user.TwoFactorCodePurpose, expectedPurpose, StringComparison.Ordinal) ||
         !string.Equals(user.TwoFactorCodeHash, hashedCode, StringComparison.Ordinal))
     {
-      throw new InvalidOperationException("Verification code is invalid or has expired.");
+      throw new BusinessRuleException("Verification code is invalid or has expired.");
     }
   }
 
@@ -620,20 +631,20 @@ public class AuthService : IAuthService
     }
     catch
     {
-      throw new InvalidOperationException("Verification session is invalid or has expired. Please sign in again.");
+      throw new BusinessRuleException("Verification session is invalid or has expired. Please sign in again.");
     }
 
     var tokenType = principal.FindFirstValue("token_type");
     if (tokenType != TwoFactorPendingTokenType)
     {
-      throw new InvalidOperationException("Verification session is invalid or has expired. Please sign in again.");
+      throw new BusinessRuleException("Verification session is invalid or has expired. Please sign in again.");
     }
 
     var purpose = principal.FindFirstValue("two_factor_purpose")?.Trim() ?? string.Empty;
     var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
     if (!int.TryParse(userIdStr, out var userId) || string.IsNullOrWhiteSpace(purpose))
     {
-      throw new InvalidOperationException("Verification session is invalid or has expired. Please sign in again.");
+      throw new BusinessRuleException("Verification session is invalid or has expired. Please sign in again.");
     }
 
     return (userId, purpose);
@@ -667,7 +678,7 @@ public class AuthService : IAuthService
 
   private int GetTwoFactorCodeLifetimeMinutes()
   {
-    return _configuration.GetValue<int?>("TwoFactor:CodeMinutes") ?? 10;
+    return _twoFactorOptions.CodeMinutes > 0 ? _twoFactorOptions.CodeMinutes : 10;
   }
 
   private static string MaskEmail(string email)
@@ -694,7 +705,7 @@ public class AuthService : IAuthService
   private (string Token, DateTime ExpiresAt) GenerateJwtToken(User user)
   {
     var (key, issuer, audience) = GetJwtSettings();
-    var expirationMinutes = _configuration.GetValue<int>("JwtSettings:AccessTokenMinutes");
+    var expirationMinutes = _jwtOptions.AccessTokenMinutes > 0 ? _jwtOptions.AccessTokenMinutes : 15;
     var expiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
     var claims = new[]
@@ -723,7 +734,7 @@ public class AuthService : IAuthService
   private (string Token, DateTime ExpiresAt) GenerateRefreshToken(User user)
   {
     var (key, issuer, audience) = GetJwtSettings();
-    var expirationDays = _configuration.GetValue<int>("JwtSettings:RefreshTokenDays", 30);
+    var expirationDays = _jwtOptions.RefreshTokenDays > 0 ? _jwtOptions.RefreshTokenDays : 30;
     var expiresAt = DateTime.UtcNow.AddDays(expirationDays);
 
     var claims = new[]
@@ -748,8 +759,8 @@ public class AuthService : IAuthService
 
   private (string Key, string? Issuer, string? Audience) GetJwtSettings()
   {
-    var key = _configuration["JwtSettings:Key"]
+    var key = _jwtOptions.Key
       ?? throw new InvalidOperationException("JwtSettings:Key is not configured.");
-    return (key, _configuration["JwtSettings:Issuer"], _configuration["JwtSettings:Audience"]);
+    return (key, _jwtOptions.Issuer, _jwtOptions.Audience);
   }
 }

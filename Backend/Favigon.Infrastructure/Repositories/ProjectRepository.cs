@@ -18,6 +18,7 @@ public class ProjectRepository : IProjectRepository
   {
     return await _context.Projects
         .AsNoTracking()
+        .AsSplitQuery()
         .Where(p => p.UserId == userId && (isPublic == null || p.IsPublic == isPublic))
         .Include(p => p.Bookmarks)
         .Include(p => p.Likes)
@@ -171,6 +172,7 @@ public class ProjectRepository : IProjectRepository
   {
     return await _context.ProjectBookmarks
       .AsNoTracking()
+      .AsSplitQuery()
       .Where(b => b.UserId == userId)
       .OrderByDescending(b => b.CreatedAt)
       .Include(b => b.Project).ThenInclude(p => p.Bookmarks)

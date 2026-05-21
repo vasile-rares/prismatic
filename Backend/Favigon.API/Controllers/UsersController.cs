@@ -208,15 +208,8 @@ public class UsersController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _userService.FollowAsync(userId, username);
-      return Ok();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _userService.FollowAsync(userId, username);
+    return Ok();
   }
 
   [HttpDelete("{username}/follow")]
@@ -224,15 +217,8 @@ public class UsersController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _userService.UnfollowAsync(userId, username);
-      return NoContent();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _userService.UnfollowAsync(userId, username);
+    return NoContent();
   }
 
   [HttpGet("{username}/followers")]

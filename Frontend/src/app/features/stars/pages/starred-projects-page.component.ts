@@ -18,7 +18,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 import { ProjectService, extractApiErrorMessage } from '@app/core';
 import type { ProjectResponse } from '@app/core';
-import type { ProjectCardViewModel } from '../../profile/components/project-card/project-card.component';
+import type { ProjectCardViewModel } from '@app/features/profile/components/project-card/project-card.component';
 
 @Component({
   selector: 'app-starred-projects-page',

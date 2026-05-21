@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+using Favigon.Application.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Favigon.Tests.Helpers;
 
@@ -28,5 +30,29 @@ public static class TestConfiguration
     return new ConfigurationBuilder()
         .AddInMemoryCollection(settings)
         .Build();
+  }
+
+  public static IOptions<JwtOptions> BuildJwtOptions(Dictionary<string, string?>? overrides = null)
+  {
+    var configuration = Build(overrides);
+    return Options.Create(configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions());
+  }
+
+  public static IOptions<PasswordResetOptions> BuildPasswordResetOptions(Dictionary<string, string?>? overrides = null)
+  {
+    var configuration = Build(overrides);
+    return Options.Create(configuration.GetSection(PasswordResetOptions.SectionName).Get<PasswordResetOptions>() ?? new PasswordResetOptions());
+  }
+
+  public static IOptions<ClientOptions> BuildClientOptions(Dictionary<string, string?>? overrides = null)
+  {
+    var configuration = Build(overrides);
+    return Options.Create(configuration.GetSection(ClientOptions.SectionName).Get<ClientOptions>() ?? new ClientOptions());
+  }
+
+  public static IOptions<TwoFactorOptions> BuildTwoFactorOptions(Dictionary<string, string?>? overrides = null)
+  {
+    var configuration = Build(overrides);
+    return Options.Create(configuration.GetSection(TwoFactorOptions.SectionName).Get<TwoFactorOptions>() ?? new TwoFactorOptions());
   }
 }

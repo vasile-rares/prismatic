@@ -68,7 +68,7 @@ export const routes: Routes = [
   {
     path: 'explore',
     loadComponent: () =>
-      import('./features/explore/pages/explore-page.component').then((m) => m.ExplorePageComponent),
+      import('./features/explore/pages/explore-page.component').then((m) => m.ExplorePage),
   },
   {
     path: ':username',

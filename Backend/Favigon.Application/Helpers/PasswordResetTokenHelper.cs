@@ -1,15 +1,13 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Favigon.Application.Helpers;
 
 public static class PasswordResetTokenHelper
 {
-  public static string BuildResetUrl(IConfiguration configuration, string rawToken)
+  public static string BuildResetUrl(string? baseUrl, string rawToken)
   {
-    var baseUrl = configuration["Client:BaseUrl"];
     if (string.IsNullOrWhiteSpace(baseUrl))
     {
       throw new InvalidOperationException("Client base URL is not configured on the server.");

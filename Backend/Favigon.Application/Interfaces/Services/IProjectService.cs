@@ -8,6 +8,7 @@ public interface IProjectService
   Task<IReadOnlyList<ProjectResponse>> GetByUserIdAsync(int userId, bool? isPublic = null, int? viewerUserId = null);
   Task<ProjectResponse?> GetByIdAsync(int id, int userId);
   Task<ProjectResponse?> GetBySlugAsync(string slug, int userId);
+  Task RecordViewAsync(int projectId);
   Task<ProjectResponse> CreateAsync(ProjectCreateRequest request, int userId);
   Task<ProjectResponse?> UpdateAsync(int id, ProjectUpdateRequest request, int userId);
   Task<bool> DeleteAsync(int id, int userId, CancellationToken cancellationToken = default);

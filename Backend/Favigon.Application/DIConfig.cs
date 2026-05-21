@@ -1,7 +1,6 @@
 ﻿using Favigon.Application.Interfaces;
 using Favigon.Application.Mappings;
 using Favigon.Application.Services;
-using Favigon.Converter;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +19,6 @@ public static class ServiceCollectionExtensions
     services.AddScoped<IConverterService, ConverterService>();
     services.AddScoped<IAiDesignService, AiDesignService>();
     services.AddScoped<IAiPipelineService, AiPipelineService>();
-    services.AddFavigonConverter();
 
     return services;
   }

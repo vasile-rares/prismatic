@@ -14,14 +14,10 @@ namespace Favigon.API.Controllers;
 public class ProjectsController : ControllerBase
 {
   private readonly IProjectService _projectService;
-  private readonly IProjectRepository _projectRepository;
 
-  public ProjectsController(
-    IProjectService projectService,
-    IProjectRepository projectRepository)
+  public ProjectsController(IProjectService projectService)
   {
     _projectService = projectService;
-    _projectRepository = projectRepository;
   }
 
   [HttpGet]
@@ -292,15 +288,8 @@ public class ProjectsController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _projectService.BookmarkAsync(userId, id);
-      return Ok();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _projectService.BookmarkAsync(userId, id);
+    return Ok();
   }
 
   [HttpDelete("{id:int}/star")]
@@ -308,22 +297,15 @@ public class ProjectsController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _projectService.UnbookmarkAsync(userId, id);
-      return NoContent();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _projectService.UnbookmarkAsync(userId, id);
+    return NoContent();
   }
 
   [AllowAnonymous]
   [HttpPost("{id:int}/view")]
   public async Task<IActionResult> RecordView(int id)
   {
-    await _projectRepository.IncrementViewCountAsync(id);
+    await _projectService.RecordViewAsync(id);
     return NoContent();
   }
 
@@ -332,15 +314,8 @@ public class ProjectsController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _projectService.LikeAsync(userId, id);
-      return Ok();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _projectService.LikeAsync(userId, id);
+    return Ok();
   }
 
   [HttpDelete("{id:int}/like")]
@@ -348,15 +323,8 @@ public class ProjectsController : ControllerBase
   {
     if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
-    try
-    {
-      await _projectService.UnlikeAsync(userId, id);
-      return NoContent();
-    }
-    catch (InvalidOperationException ex)
-    {
-      return BadRequest(new { message = ex.Message });
-    }
+    await _projectService.UnlikeAsync(userId, id);
+    return NoContent();
   }
 
   [HttpPost("{id:int}/fork")]

@@ -1,6 +1,7 @@
-﻿using Favigon.Application.DTOs.Requests;
-using Favigon.Application.Interfaces;
+using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Responses;
+using Favigon.Application.Exceptions;
+using Favigon.Application.Interfaces;
 using Favigon.Converter.Abstractions;
 using Favigon.Converter.Models;
 
@@ -10,10 +11,10 @@ public class ConverterService(IConverterEngine converterEngine) : IConverterServ
 {
   public ConverterResponse Generate(IRNode root, string framework)
   {
-    // Skip flex-row math check for user-initiated exports — it is only a gate for AI generation.
+    // Skip flex-row math check for user-initiated exports; it is only a gate for AI generation.
     var errors = converterEngine.GetValidationErrors(root, skipLayoutMath: true);
     if (errors.Count > 0)
-      throw new InvalidOperationException($"IR validation failed:\n{string.Join("\n", errors)}");
+      throw new BusinessRuleException($"IR validation failed:\n{string.Join("\n", errors)}");
 
     var output = converterEngine.GenerateSinglePage(root, framework);
     return new ConverterResponse
@@ -36,7 +37,7 @@ public class ConverterService(IConverterEngine converterEngine) : IConverterServ
     {
       var pageErrors = converterEngine.GetValidationErrors(page.Ir, skipLayoutMath: true);
       if (pageErrors.Count > 0)
-        throw new InvalidOperationException($"IR validation failed for page '{page.PageName}':\n{string.Join("\n", pageErrors)}");
+        throw new BusinessRuleException($"IR validation failed for page '{page.PageName}':\n{string.Join("\n", pageErrors)}");
     }
 
     var sortedInput = sorted
@@ -59,7 +60,7 @@ public class ConverterService(IConverterEngine converterEngine) : IConverterServ
     {
       var pageErrors = converterEngine.GetValidationErrors(page.Ir, skipLayoutMath: true);
       if (pageErrors.Count > 0)
-        throw new InvalidOperationException($"IR validation failed for page '{page.PageName}':\n{string.Join("\n", pageErrors)}");
+        throw new BusinessRuleException($"IR validation failed for page '{page.PageName}':\n{string.Join("\n", pageErrors)}");
     }
 
     var entries = pages.Select(p => (p.PageName, p.ViewportWidth, p.Ir));

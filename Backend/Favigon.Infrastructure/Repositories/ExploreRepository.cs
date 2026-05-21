@@ -17,6 +17,7 @@ public class ExploreRepository : IExploreRepository
   public async Task<IReadOnlyList<Project>> GetTrendingProjectsAsync(int limit)
   {
     return await _context.Projects
+      .AsSplitQuery()
       .Where(p => p.IsPublic && p.ForkedFromProjectId == null)
       .Include(p => p.User)
       .Include(p => p.Bookmarks)
@@ -34,6 +35,7 @@ public class ExploreRepository : IExploreRepository
       var followedProjects = await _context.UserFollows
         .Where(f => f.FollowerId == viewerUserId)
         .SelectMany(f => f.Followee.Projects.Where(p => p.IsPublic && p.ForkedFromProjectId == null))
+        .AsSplitQuery()
         .Include(p => p.User)
         .Include(p => p.Bookmarks)
         .Include(p => p.Likes)
@@ -48,6 +50,7 @@ public class ExploreRepository : IExploreRepository
 
     // Fallback: recently updated public projects
     return await _context.Projects
+      .AsSplitQuery()
       .Where(p => p.IsPublic && p.ForkedFromProjectId == null && (viewerUserId == 0 || p.UserId != viewerUserId))
       .Include(p => p.User)
       .Include(p => p.Bookmarks)
@@ -60,6 +63,7 @@ public class ExploreRepository : IExploreRepository
   public async Task<IReadOnlyList<User>> GetSuggestedUsersAsync(int viewerUserId, int limit)
   {
     return await _context.Users
+      .AsSplitQuery()
       .Where(u => viewerUserId == 0
         ? true
         : u.Id != viewerUserId && !u.Followers.Any(f => f.FollowerId == viewerUserId))

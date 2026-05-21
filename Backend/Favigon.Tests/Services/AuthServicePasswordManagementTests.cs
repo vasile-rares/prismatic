@@ -1,5 +1,6 @@
 using AutoMapper;
 using Favigon.Application.DTOs.Requests;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
 using Favigon.Application.Mappings;
 using Favigon.Application.Services;
@@ -32,7 +33,10 @@ public class AuthServicePasswordManagementTests
       _google.Object,
       _email.Object,
       mapper,
-      TestConfiguration.Build(),
+      TestConfiguration.BuildJwtOptions(),
+      TestConfiguration.BuildPasswordResetOptions(),
+      TestConfiguration.BuildClientOptions(),
+      TestConfiguration.BuildTwoFactorOptions(),
       _audit.Object);
   }
 
@@ -64,7 +68,7 @@ public class AuthServicePasswordManagementTests
   }
 
   [Fact]
-  public async Task SetPassword_WhenPasswordAlreadyExists_ThrowsInvalidOperationException()
+  public async Task SetPassword_WhenPasswordAlreadyExists_ThrowsBusinessRuleException()
   {
     // Arrange
     var user = new User
@@ -81,7 +85,7 @@ public class AuthServicePasswordManagementTests
     _userRepo.Setup(r => r.GetByIdAsync(7)).ReturnsAsync(user);
 
     // Act
-    var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+    var exception = await Assert.ThrowsAsync<BusinessRuleException>(() =>
       _sut.SetPasswordAsync(7, new SetPasswordRequest { Password = "NewPassword123" }));
 
     // Assert
@@ -121,7 +125,7 @@ public class AuthServicePasswordManagementTests
   }
 
   [Fact]
-  public async Task ChangePassword_WithWrongCurrentPassword_ThrowsInvalidOperationException()
+  public async Task ChangePassword_WithWrongCurrentPassword_ThrowsBusinessRuleException()
   {
     // Arrange
     var user = new User
@@ -138,7 +142,7 @@ public class AuthServicePasswordManagementTests
     _userRepo.Setup(r => r.GetByIdAsync(9)).ReturnsAsync(user);
 
     // Act
-    var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+    var exception = await Assert.ThrowsAsync<BusinessRuleException>(() =>
       _sut.ChangePasswordAsync(9, new ChangePasswordRequest
       {
         CurrentPassword = "WrongPassword123",

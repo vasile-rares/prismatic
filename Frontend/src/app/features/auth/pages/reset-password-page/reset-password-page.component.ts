@@ -19,8 +19,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { gsapFadeIn } from '../../../../shared/utils/gsap-animations.util';
 import { AuthService, extractApiErrorMessage } from '@app/core';
+import { gsapFadeIn } from '@app/shared/utils/gsap-animations.util';
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 const CREDENTIAL_MAX_LENGTH = 100;

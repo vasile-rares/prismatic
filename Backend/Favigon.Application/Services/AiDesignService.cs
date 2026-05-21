@@ -7,18 +7,23 @@ using System.Text.RegularExpressions;
 using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Responses;
 using Favigon.Application.Interfaces;
+using Favigon.Application.Options;
 using Favigon.Converter.Models;
 using Favigon.Converter.Schema;
 using Favigon.Converter.Validation;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Favigon.Application.Services;
 
-public partial class AiDesignService(IAiClient aiClient, IConfiguration configuration, IMemoryCache cache, ILogger<AiDesignService> logger) : IAiDesignService
+public partial class AiDesignService(
+  IAiClient aiClient,
+  IOptions<AiSchemaOptions> schemaOptions,
+  IMemoryCache cache,
+  ILogger<AiDesignService> logger) : IAiDesignService
 {
-  private readonly string? _aiSchema = IrSchemaLoader.GetAiSchema(configuration["IrAiSchema:FilePath"]);
+  private readonly string? _aiSchema = IrSchemaLoader.GetAiSchema(schemaOptions.Value.FilePath);
 
   private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(10);
 

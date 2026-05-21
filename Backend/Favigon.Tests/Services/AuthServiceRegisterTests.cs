@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Favigon.Application.DTOs.Requests;
+using Favigon.Application.Exceptions;
 using Favigon.Application.Interfaces;
 using Favigon.Application.Mappings;
 using Favigon.Application.Services;
@@ -30,7 +31,11 @@ public class AuthServiceRegisterTests
         _userRepo.Object,
         _github.Object, _google.Object,
         _email.Object, _mapper,
-        TestConfiguration.Build(), _audit.Object);
+        TestConfiguration.BuildJwtOptions(),
+        TestConfiguration.BuildPasswordResetOptions(),
+        TestConfiguration.BuildClientOptions(),
+        TestConfiguration.BuildTwoFactorOptions(),
+        _audit.Object);
   }
 
   [Fact]
@@ -89,7 +94,7 @@ public class AuthServiceRegisterTests
   }
 
   [Fact]
-  public async Task Register_WhenUsernameExists_ThrowsInvalidOperationException()
+  public async Task Register_WhenUsernameExists_ThrowsConflictException()
   {
     // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync("testuser"))
@@ -104,12 +109,12 @@ public class AuthServiceRegisterTests
     };
 
     // Act & Assert
-    var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.RegisterAsync(request));
+    var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.RegisterAsync(request));
     Assert.Equal("Username already exists.", ex.Message);
   }
 
   [Fact]
-  public async Task Register_WhenEmailExists_ThrowsInvalidOperationException()
+  public async Task Register_WhenEmailExists_ThrowsConflictException()
   {
     // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
@@ -125,7 +130,7 @@ public class AuthServiceRegisterTests
     };
 
     // Act & Assert
-    var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.RegisterAsync(request));
+    var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.RegisterAsync(request));
     Assert.Equal("Email already exists.", ex.Message);
   }
 

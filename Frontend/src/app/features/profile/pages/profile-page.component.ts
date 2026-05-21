@@ -16,9 +16,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { gsap } from 'gsap';
-import { gsapFadeIn, gsapFadeOut } from '../../../shared/utils/gsap-animations.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 gsap.registerPlugin(ScrollTrigger);
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,18 +27,22 @@ import {
   extractApiErrorMessage,
   FALLBACK_AVATAR_URL,
 } from '@app/core';
+import { FollowListModalComponent, FollowListType } from '@app/features/profile/components/follow-list-modal/follow-list-modal.component';
+import type { ProjectCardViewModel } from '@app/features/profile/components/project-card/project-card.component';
+import { CreateProjectDialogComponent } from '@app/shared';
+import { gsapFadeIn, gsapFadeOut } from '@app/shared/utils/gsap-animations.util';
 import type { UserProfile } from '@app/core';
 import type { DropdownSelectOption } from '@app/shared';
-import { CreateProjectDialogComponent } from '../../../shared/components/create-project-dialog/create-project-dialog.component';
 import { EMPTY, forkJoin, switchMap } from 'rxjs';
-import type { ProjectCardViewModel } from '../components/project-card/project-card.component';
+import { ProfilePageAnimationsService } from './profile-page-animations.service';
 import {
-  FollowListModalComponent,
-  FollowListType,
-} from '../components/follow-list-modal/follow-list-modal.component';
-
-type ProjectTypeFilter = 'all' | 'public' | 'private' | 'forked';
-type ProjectSortOption = 'updated' | 'created';
+  buildVisiblePageItems,
+  filterProfileProjects,
+  getProfilePageSize,
+  ProjectSortOption,
+  ProjectTypeFilter,
+  sortProfileProjects,
+} from './profile-projects.util';
 
 @Component({
   selector: 'app-profile-page',
@@ -52,6 +54,7 @@ type ProjectSortOption = 'updated' | 'created';
     FollowListModalComponent,
     CreateProjectDialogComponent,
   ],
+  providers: [ProfilePageAnimationsService],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.css',
 })
@@ -65,6 +68,7 @@ export class ProfilePage implements OnInit {
   private readonly injector = inject(Injector);
   private readonly zone = inject(NgZone);
   private readonly el = inject(ElementRef);
+  private readonly animations = inject(ProfilePageAnimationsService);
 
   private readonly projectsGridRef = viewChild<ElementRef<HTMLElement>>('projectsGrid');
   private readonly renameCardRef = viewChild<ElementRef<HTMLElement>>('renameCard');
@@ -97,15 +101,11 @@ export class ProfilePage implements OnInit {
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly pageSize = signal(this.getPageSize());
+  readonly pageSize = signal(getProfilePageSize(window.innerWidth));
 
   @HostListener('window:resize')
   onResize(): void {
-    this.pageSize.set(this.getPageSize());
-  }
-
-  private getPageSize(): number {
-    return window.innerWidth <= 600 ? 3 : 8;
+    this.pageSize.set(getProfilePageSize(window.innerWidth));
   }
 
   readonly isCreateDialogOpen = signal(false);
@@ -164,25 +164,12 @@ export class ProfilePage implements OnInit {
     () => this.projects().filter((project) => !project.isPublic).length,
   );
   readonly filteredProjects = computed(() => {
-    const query = this.projectSearchQuery().trim().toLowerCase();
-    const typeFilter = this.projectTypeFilter();
-    const filteredProjects = this.projects().filter((project) => {
-      const matchesSearch = !query || project.name.toLowerCase().includes(query);
-      const matchesType =
-        typeFilter === 'all'
-          ? true
-          : typeFilter === 'public'
-            ? project.isPublic
-            : typeFilter === 'private'
-              ? !project.isPublic
-              : typeFilter === 'forked'
-                ? !!project.forkedFromProjectId
-                : false;
-
-      return matchesSearch && matchesType;
-    });
-
-    return this.sortProjects(filteredProjects, this.projectSortOption());
+    const filteredProjects = filterProfileProjects(
+      this.projects(),
+      this.projectSearchQuery(),
+      this.projectTypeFilter(),
+    );
+    return sortProfileProjects(filteredProjects, this.projectSortOption());
   });
   readonly visibleProjectCount = computed(() => this.filteredProjects().length);
   readonly hasActiveProjectFilters = computed(
@@ -207,16 +194,7 @@ export class ProfilePage implements OnInit {
     return this.filteredProjects().slice(start, start + this.pageSize());
   });
   readonly visiblePageItems = computed<Array<number | '...'>>((): Array<number | '...'> => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    if (total <= 3) return Array.from({ length: total }, (_, i) => i + 1);
-    const start = Math.max(1, Math.min(current - 1, total - 2));
-    const end = Math.min(total, start + 2);
-    const items: Array<number | '...'> = [];
-    if (start > 1) items.push('...');
-    for (let i = start; i <= end; i++) items.push(i);
-    if (end < total) items.push('...');
-    return items;
+    return buildVisiblePageItems(this.totalPages(), this.currentPage());
   });
 
   get fallbackAvatarUrl(): string {
@@ -265,8 +243,9 @@ export class ProfilePage implements OnInit {
           this.loadProjects(profileUser, ownProfile);
           afterNextRender(
             () => {
-              this.animateHero();
-              this.initScrollAnimations();
+              const host = this.el.nativeElement as HTMLElement;
+              this.animations.animateHero(this.zone, host);
+              this.animations.initScrollAnimations(this.zone, host);
             },
             { injector: this.injector },
           );
@@ -700,23 +679,6 @@ export class ProfilePage implements OnInit {
     }
   }
 
-  private sortProjects(
-    projects: ProjectCardViewModel[],
-    sortOption: ProjectSortOption,
-  ): ProjectCardViewModel[] {
-    const sortedProjects = [...projects];
-
-    if (sortOption === 'created') {
-      return sortedProjects.sort(
-        (left, right) => right.createdAt.getTime() - left.createdAt.getTime(),
-      );
-    }
-
-    return sortedProjects.sort(
-      (left, right) => right.lastEdited.getTime() - left.lastEdited.getTime(),
-    );
-  }
-
   private isProjectTypeFilter(
     value: DropdownSelectOption['value'] | null,
   ): value is ProjectTypeFilter {
@@ -768,149 +730,26 @@ export class ProfilePage implements OnInit {
   }
 
   private animateMenuOpen(): void {
-    const host = this.el.nativeElement as HTMLElement;
-    const menu = host.querySelector<HTMLElement>('.prj-card-menu');
-    if (!menu) return;
-    this.zone.runOutsideAngular(() => {
-      gsap.fromTo(
-        menu,
-        { opacity: 0, scale: 0.88, y: 8, transformOrigin: 'bottom right' },
-        { opacity: 1, scale: 1, y: 0, duration: 0.22, ease: 'back.out(1.7)' },
-      );
-    });
+    this.animations.animateMenuOpen(this.zone, this.el.nativeElement as HTMLElement);
   }
 
   private animateMenuClose(): void {
     const id = this.openMenuProjectId();
     if (id === null || this.closingMenuProjectId() !== null) return;
-    const host = this.el.nativeElement as HTMLElement;
-    const menu = host.querySelector<HTMLElement>('.prj-card-menu');
     this.closingMenuProjectId.set(id);
     this.openMenuProjectId.set(null);
-    if (!menu) {
-      this.closingMenuProjectId.set(null);
-      return;
-    }
-    this.zone.runOutsideAngular(() => {
-      gsap.to(menu, {
-        opacity: 0,
-        scale: 0.88,
-        y: 8,
-        duration: 0.15,
-        ease: 'power2.in',
-        transformOrigin: 'bottom right',
-        onComplete: () => {
-          this.zone.run(() => this.closingMenuProjectId.set(null));
-        },
-      });
-    });
-  }
-
-  private animateHero(): void {
-    this.zone.runOutsideAngular(() => {
-      const host = this.el.nativeElement as HTMLElement;
-      const ava = host.querySelector<HTMLElement>('.prf-ava');
-      const name = host.querySelector<HTMLElement>('.prf-name');
-      const handle = host.querySelector<HTMLElement>('.prf-handle');
-      const stats = host.querySelectorAll<HTMLElement>('.prf-stat');
-      const foot = host.querySelector<HTMLElement>('.prf-cover-foot');
-      const bio = host.querySelector<HTMLElement>('.prf-bio');
-
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      if (ava) {
-        gsap.set(ava, { opacity: 0, scale: 0.82, filter: 'blur(12px)' });
-        tl.to(ava, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.8 }, 0);
-      }
-
-      if (name) {
-        gsap.set(name, { opacity: 0, y: 18, filter: 'blur(8px)' });
-        tl.to(name, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7 }, 0.18);
-      }
-
-      if (handle) {
-        gsap.set(handle, { opacity: 0, y: 12, filter: 'blur(6px)' });
-        tl.to(handle, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6 }, 0.28);
-      }
-
-      if (stats.length) {
-        gsap.set(stats, { opacity: 0, y: 10 });
-        tl.to(stats, { opacity: 1, y: 0, duration: 0.55, stagger: 0.07 }, 0.38);
-      }
-
-      if (foot) {
-        gsap.set(foot, { opacity: 0, y: 10 });
-        tl.to(foot, { opacity: 1, y: 0, duration: 0.5 }, 0.52);
-      }
-
-      if (bio) {
-        gsap.set(bio, { opacity: 0, y: 8 });
-        tl.to(bio, { opacity: 1, y: 0, duration: 0.5 }, 0.6);
-      }
-    });
+    this.animations.animateMenuClose(this.zone, this.el.nativeElement as HTMLElement, () =>
+      this.closingMenuProjectId.set(null),
+    );
   }
 
   private animateProjectCards(): void {
-    this.zone.runOutsideAngular(() => {
-      const grid = this.projectsGridRef()?.nativeElement;
-      if (!grid) return;
-      const cards = grid.querySelectorAll<HTMLElement>('.prj-card');
-      if (!cards.length) return;
-
-      gsap.set(cards, { opacity: 0, y: 22, filter: 'blur(8px)' });
-      gsap.to(cards, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 0.6,
-        stagger: 0.07,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 92%',
-          toggleActions: 'play none none none',
-        },
-      });
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-    });
+    const grid = this.projectsGridRef()?.nativeElement;
+    if (!grid) return;
+    this.animations.animateProjectCards(this.zone, grid);
   }
 
   private initScrollAnimations(): void {
-    this.zone.runOutsideAngular(() => {
-      const host = this.el.nativeElement as HTMLElement;
-      const toolbarHead = host.querySelector<HTMLElement>('.prf-toolbar-head');
-      const toolbarControls = host.querySelector<HTMLElement>('.prf-toolbar-controls');
-
-      const stConfig = {
-        start: 'top 92%',
-        toggleActions: 'play none none none' as const,
-      };
-
-      if (toolbarHead) {
-        gsap.set(toolbarHead, { opacity: 0, y: 18, filter: 'blur(10px)' });
-        gsap.to(toolbarHead, {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 0.7,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: toolbarHead, ...stConfig },
-        });
-      }
-
-      if (toolbarControls) {
-        gsap.set(toolbarControls, { opacity: 0, y: 12, filter: 'blur(8px)' });
-        gsap.to(toolbarControls, {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 0.6,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: toolbarControls, ...stConfig },
-        });
-      }
-
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-    });
+    this.animations.initScrollAnimations(this.zone, this.el.nativeElement as HTMLElement);
   }
 }

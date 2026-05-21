@@ -7,21 +7,22 @@ using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Responses;
 using Favigon.Application.Helpers;
 using Favigon.Application.Interfaces;
+using Favigon.Application.Options;
 using Favigon.Converter.Models;
 using Favigon.Converter.Schema;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Favigon.Application.Services;
 
 public sealed class AiPipelineService(
     IAiClient aiClient,
-    IConfiguration configuration,
+    IOptions<AiSchemaOptions> schemaOptions,
     IMemoryCache cache,
     ILogger<AiPipelineService> logger) : IAiPipelineService
 {
-  private readonly string? _irSchema = IrSchemaLoader.GetAiSchema(configuration["IrAiSchema:FilePath"]);
+  private readonly string? _irSchema = IrSchemaLoader.GetAiSchema(schemaOptions.Value.FilePath);
   private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(10);
 
   private static string BuildCacheKey(AiPipelineRequest r)

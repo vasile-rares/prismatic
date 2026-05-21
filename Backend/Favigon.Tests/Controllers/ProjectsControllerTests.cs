@@ -12,12 +12,11 @@ namespace Favigon.Tests.Controllers;
 public class ProjectsControllerTests
 {
   private readonly Mock<IProjectService> _projectService = new();
-  private readonly Mock<IProjectRepository> _projectRepository = new();
   private readonly ProjectsController _controller;
 
   public ProjectsControllerTests()
   {
-    _controller = new ProjectsController(_projectService.Object, _projectRepository.Object)
+    _controller = new ProjectsController(_projectService.Object)
     {
       ControllerContext = CreateControllerContext(userId: 1)
     };
@@ -168,5 +167,14 @@ public class ProjectsControllerTests
     var result = await _controller.SaveDesign(99, request);
 
     Assert.IsType<NotFoundResult>(result);
+  }
+
+  [Fact]
+  public async Task RecordView_DelegatesToProjectService()
+  {
+    var result = await _controller.RecordView(12);
+
+    Assert.IsType<NoContentResult>(result);
+    _projectService.Verify(service => service.RecordViewAsync(12), Times.Once);
   }
 }

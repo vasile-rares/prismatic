@@ -1,7 +1,9 @@
-﻿using System.Text;
+using System.Text;
 using System.Threading.RateLimiting;
 using Favigon.API.Middlewares;
 using Favigon.Application;
+using Favigon.Application.Options;
+using Favigon.Converter;
 using Favigon.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,8 +37,14 @@ try
     });
 
     builder.Services.AddApplication();
+    builder.Services.AddFavigonConverter();
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddMemoryCache();
+    builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+    builder.Services.Configure<ClientOptions>(builder.Configuration.GetSection(ClientOptions.SectionName));
+    builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection(PasswordResetOptions.SectionName));
+    builder.Services.Configure<TwoFactorOptions>(builder.Configuration.GetSection(TwoFactorOptions.SectionName));
+    builder.Services.Configure<AiSchemaOptions>(builder.Configuration.GetSection(AiSchemaOptions.SectionName));
 
     builder.Services.AddCors(options =>
     {

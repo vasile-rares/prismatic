@@ -9,13 +9,11 @@ import {
   inject,
   input,
   output,
-  signal,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   AiChatMessage,
-  AiDesignService,
   CanvasElement,
   CanvasElementType,
   CanvasPageModel,
@@ -30,32 +28,22 @@ import {
 } from '../../services/editor/canvas-ai-chat-persistence.service';
 import { DeviceFramePreset, VIEWPORT_PRESET_OPTIONS } from '../../canvas.types';
 import { formatCanvasElementTypeLabel } from '../../utils/element/canvas-element-normalization.util';
+import type { LayerDropPosition, LayerEntry } from './project-panel-layer-tree.util';
+import {
+  buildLayerEntriesByPage,
+  canDropInside,
+  findLayerEntryById,
+  getPageViewportLabel,
+  isInvalidLayerDrop,
+} from './project-panel-layer-tree.util';
+import {
+  PageRenameSource,
+  ProjectPanelPageActionsService,
+} from './project-panel-page-actions.service';
+import { ProjectPanelAiChatService } from './project-panel-ai-chat.service';
 
-interface LayerEntry {
-  pageId: string;
-  id: string;
-  depth: number;
-  type: CanvasElementType;
-  typeLabel: string;
-  parentId: string | null;
-  name: string;
-  visible: boolean;
-  isEffectivelyHidden: boolean;
-  hasChildren: boolean;
-  hasLayout: boolean;
-  hasImageFill: boolean;
-  devicePreset: Exclude<DeviceFramePreset, 'custom'> | null;
-}
-
-type LayerDropPosition = 'before' | 'after' | 'inside';
-type PageRenameSource = 'pages' | 'layers';
-type PageMenuContext = 'pages' | 'layers';
 type ProjectPanelTab = 'navigator' | 'ai-chat';
-
-interface AiPromptSuggestion {
-  label: string;
-  prompt: string;
-}
+type PageMenuContext = 'pages' | 'layers';
 
 const DEFAULT_PANEL_WIDTH = 280;
 const MIN_PANEL_WIDTH = 280;
@@ -78,6 +66,7 @@ const DEVICE_FRAME_PRESET_OPTIONS = VIEWPORT_PRESET_OPTIONS.filter(
   selector: 'app-project-panel',
   standalone: true,
   imports: [ContextMenuComponent, ToggleGroupComponent, FormsModule],
+  providers: [ProjectPanelAiChatService, ProjectPanelPageActionsService],
   templateUrl: './project-panel.component.html',
   styleUrl: './project-panel.component.css',
 })
@@ -130,44 +119,19 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
 
   // ── AI Chat State ─────────────────────────────────────────
 
-  private readonly aiDesignService = inject(AiDesignService);
+  private readonly aiChat = inject(ProjectPanelAiChatService);
+  private readonly pageActions = inject(ProjectPanelPageActionsService);
   private readonly aiChatPersistence = inject(CanvasAiChatPersistenceService);
   private readonly aiMessagesContainer = viewChild<ElementRef<HTMLElement>>('aiMessagesContainer');
 
-  readonly aiMessages = signal<AiChatMessage[]>([]);
-  readonly aiUserInput = signal('');
-  readonly aiIsLoading = signal(false);
-  readonly aiSelectedModel = signal(DEFAULT_AI_MODEL_ID);
-  readonly aiModelDropdownOpen = signal(false);
-  readonly aiCanUndo = signal(false);
-
-  readonly AI_MODELS: readonly { id: string; label: string }[] = [
-    { id: 'gpt-5.4-mini', label: 'GPT-5.4 mini' },
-    { id: 'gpt-5.4', label: 'GPT-5.4' },
-  ];
-
-  readonly AI_PROMPT_SUGGESTIONS: readonly AiPromptSuggestion[] = [
-    {
-      label: 'SaaS landing',
-      prompt:
-        'Create a polished SaaS landing page for a design-to-code platform with hero, feature proof, pricing, testimonials and a strong CTA.',
-    },
-    {
-      label: 'Restyle page',
-      prompt:
-        'Restyle the current page to feel more premium, with stronger hierarchy, cleaner spacing and a more confident visual system.',
-    },
-    {
-      label: 'Add pricing',
-      prompt:
-        'Add a pricing section with three clear plans, concise benefits and a primary conversion CTA.',
-    },
-    {
-      label: 'Rewrite hero',
-      prompt:
-        'Improve the hero section copy so the value proposition is sharper, more specific and easier to scan.',
-    },
-  ];
+  readonly aiMessages = this.aiChat.aiMessages;
+  readonly aiUserInput = this.aiChat.aiUserInput;
+  readonly aiIsLoading = this.aiChat.aiIsLoading;
+  readonly aiSelectedModel = this.aiChat.aiSelectedModel;
+  readonly aiModelDropdownOpen = this.aiChat.aiModelDropdownOpen;
+  readonly aiCanUndo = this.aiChat.aiCanUndo;
+  readonly AI_MODELS = this.aiChat.AI_MODELS;
+  readonly AI_PROMPT_SUGGESTIONS = this.aiChat.AI_PROMPT_SUGGESTIONS;
 
   // ── Private State ─────────────────────────────────────────
 
@@ -240,9 +204,52 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     return this.pages().slice(0, 1);
   }
 
+
   // ── Lifecycle ─────────────────────────────────────────────
 
   constructor() {
+    this.aiChat.connect({
+      getCurrentIr: () => this.currentIr(),
+      getViewportWidth: () => this.viewportWidth(),
+      getPages: () => this.pages(),
+      getCurrentPageId: () => this.currentPageId(),
+      getFocusedPageId: () => this.focusedPageId(),
+      getSelectedPageLayerId: () => this.selectedPageLayerId(),
+      getSelectedElementId: () => this.selectedElementId(),
+      getSelectedElementIds: () => this.selectedElementIds(),
+      findLayerEntryById: (id) => this.findLayerEntryById(id),
+      getLayerEntriesForPage: (pageId) => this.getLayerEntriesForPage(pageId),
+      getPageViewportLabel: (page) => getPageViewportLabel(page),
+      getActiveTab: () => this.activeTab,
+      setActiveTab: (tab) => {
+        this.activeTab = tab;
+      },
+      emitDesignApplied: (ir) => this.designApplied.emit(ir),
+      emitUndoRequested: () => this.aiUndoRequested.emit(),
+    });
+
+    this.pageActions.connect({
+      getPages: () => this.pages(),
+      canPastePage: () => this.canPastePage(),
+      canDeletePage: () => this.canDeletePage(),
+      emitPageSelected: (pageId) => this.pageSelected.emit(pageId),
+      emitPageLayerSelected: (pageId) => this.pageLayerSelected.emit(pageId),
+      emitPageCreateRequested: () => this.pageCreateRequested.emit(),
+      emitPageCopyRequested: (pageId) => this.pageCopyRequested.emit(pageId),
+      emitPagePasteRequested: (pageId) => this.pagePasteRequested.emit(pageId),
+      emitPageDuplicateRequested: (pageId) => this.pageDuplicateRequested.emit(pageId),
+      emitPageDeleteRequested: (pageId) => this.pageDeleteRequested.emit(pageId),
+      emitPageNameChanged: (change) => this.pageNameChanged.emit(change),
+    });
+
+    effect(() => {
+      this.editingPageId = this.pageActions.editingPageId();
+      this.pageMenuPageId = this.pageActions.pageMenuPageId();
+      this.pageMenuItems = this.pageActions.pageMenuItems();
+      this.pageMenuX = this.pageActions.pageMenuX();
+      this.pageMenuY = this.pageActions.pageMenuY();
+    });
+
     effect(() => {
       this.elements(); // track elements changes
       this.rebuildLayerEntriesByPage();
@@ -279,43 +286,6 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
         if (el) el.scrollTop = el.scrollHeight;
       });
     });
-
-    effect(() => {
-      const currentProjectId = this.aiChatPersistence.currentProjectId();
-      const restoredProjectId = this.aiChatPersistence.restoredProjectId();
-      if (!currentProjectId || restoredProjectId !== currentProjectId) {
-        return;
-      }
-
-      if (this.appliedRestoredAiChatProjectId === currentProjectId) {
-        return;
-      }
-
-      this.applyPersistedAiChatState(this.aiChatPersistence.restoredState());
-      this.appliedRestoredAiChatProjectId = currentProjectId;
-    });
-
-    effect(() => {
-      const currentProjectId = this.aiChatPersistence.currentProjectId();
-      const restoredProjectId = this.aiChatPersistence.restoredProjectId();
-      const messages = this.aiMessages();
-      const draftInput = this.aiUserInput();
-      const selectedModel = this.aiSelectedModel();
-
-      if (
-        this.isApplyingPersistedAiChatState ||
-        !currentProjectId ||
-        restoredProjectId !== currentProjectId ||
-        this.appliedRestoredAiChatProjectId !== currentProjectId
-      ) {
-        return;
-      }
-
-      this.aiChatPersistence.persist(
-        currentProjectId,
-        this.buildPersistedAiChatState(currentProjectId, messages, draftInput, selectedModel),
-      );
-    });
   }
 
   ngOnInit(): void {
@@ -334,7 +304,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     if (value === 'navigator' || value === 'ai-chat') {
       this.activeTab = value;
       this.closePageMenu();
-      this.scheduleAiChatPersistence();
+      this.aiChat.scheduleAiChatPersistence();
     }
   }
 
@@ -343,179 +313,39 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   private aiStreamAbort: AbortController | null = null;
 
   sendAiMessage(promptOverride?: string): void {
-    const prompt = (promptOverride ?? this.aiUserInput()).trim();
-    if (!prompt || this.aiIsLoading()) return;
-
-    if (!promptOverride && this.shouldAskForAiClarification(prompt)) {
-      this.aiMessages.update((msgs) => [
-        ...msgs,
-        { role: 'user', content: prompt, timestamp: Date.now() },
-        {
-          role: 'assistant',
-          content:
-            'What should this be for? Add page type, audience and style direction, then send again.',
-          timestamp: Date.now() + 1,
-        },
-      ]);
-      this.aiUserInput.set('');
-      return;
-    }
-
-    const existingIr = this.currentIr() ?? undefined;
-    const requestPrompt = this.buildAiRequestPrompt(prompt);
-    this.lastAiPrompt = prompt;
-    this.lastAiIntent = null;
-
-    this.aiMessages.update((msgs) => [
-      ...msgs,
-      { role: 'user', content: prompt, timestamp: Date.now() },
-    ]);
-    this.aiUserInput.set('');
-    this.aiIsLoading.set(true);
-
-    // Add a streaming assistant message
-    const streamingMsg: AiChatMessage = {
-      role: 'assistant',
-      content: 'Analyzing your request...',
-      isStreaming: true,
-      timestamp: Date.now(),
-    };
-    this.aiMessages.update((msgs) => [...msgs, streamingMsg]);
-
-    this.aiStreamAbort = new AbortController();
-    const request = {
-      prompt: requestPrompt,
-      existingIr,
-      viewportWidth: this.viewportWidth(),
-      model: this.aiSelectedModel(),
-    };
-
-    this.aiDesignService.generatePipelineStream(
-      request,
-      {
-        onPhaseStart: (_phase, label) => {
-          this.aiMessages.update((msgs) => {
-            const updated = [...msgs];
-            const last = updated[updated.length - 1];
-            if (last?.isStreaming) {
-              updated[updated.length - 1] = { ...last, content: label };
-            }
-            return updated;
-          });
-        },
-        onIntentReady: (blueprint) => {
-          this.lastAiIntent = blueprint;
-        },
-        onResult: (response) => {
-          if (response.success && response.ir) {
-            this.designApplied.emit(response.ir);
-            this.aiCanUndo.set(true);
-            this.aiMessages.update((msgs) => {
-              const updated = [...msgs];
-              const last = updated[updated.length - 1];
-              if (last?.isStreaming) {
-                updated[updated.length - 1] = {
-                  ...last,
-                  content: this.buildAiAppliedSummary(response.intent ?? this.lastAiIntent),
-                  isStreaming: false,
-                };
-              }
-              return updated;
-            });
-          }
-        },
-        onError: (message) => {
-          this.aiMessages.update((msgs) => {
-            const updated = [...msgs];
-            const last = updated[updated.length - 1];
-            if (last?.isStreaming) {
-              updated[updated.length - 1] = {
-                ...last,
-                content: message,
-                error: true,
-                isStreaming: false,
-              };
-            }
-            return updated;
-          });
-        },
-        onDone: () => {
-          this.aiIsLoading.set(false);
-          this.aiStreamAbort = null;
-        },
-      },
-      this.aiStreamAbort.signal,
-    );
+    this.aiChat.sendAiMessage(promptOverride);
   }
 
   onAiKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      this.sendAiMessage();
-    }
+    this.aiChat.onAiKeyDown(event);
   }
 
   clearAiChat(): void {
-    this.aiMessages.set([]);
-    this.aiUserInput.set('');
-    this.lastAiPrompt = null;
-    this.aiCanUndo.set(false);
-    const projectId = this.aiChatPersistence.currentProjectId();
-    if (projectId) {
-      this.aiChatPersistence.clear(projectId);
-      this.scheduleAiChatPersistence();
-    }
+    this.aiChat.clearAiChat();
   }
 
   stopAiGeneration(): void {
-    if (!this.aiStreamAbort) return;
-    this.aiStreamAbort.abort();
-    this.aiStreamAbort = null;
-    this.aiIsLoading.set(false);
-    this.aiMessages.update((msgs) => {
-      const updated = [...msgs];
-      const last = updated[updated.length - 1];
-      if (last?.isStreaming) {
-        updated[updated.length - 1] = {
-          ...last,
-          content: 'Generation stopped.',
-          isStreaming: false,
-        };
-      }
-      return updated;
-    });
-    this.scheduleAiChatPersistence();
+    this.aiChat.stopAiGeneration();
   }
 
   regenerateAiMessage(): void {
-    if (!this.lastAiPrompt || this.aiIsLoading()) return;
-    this.sendAiMessage(this.lastAiPrompt);
+    this.aiChat.regenerateAiMessage();
   }
 
   undoLastAiApply(): void {
-    if (this.aiIsLoading() || !this.aiCanUndo()) return;
-    this.aiUndoRequested.emit();
-    this.aiCanUndo.set(false);
-    this.aiMessages.update((msgs) => [
-      ...msgs,
-      {
-        role: 'assistant',
-        content: 'Reverted the last canvas change.',
-        timestamp: Date.now(),
-      },
-    ]);
+    this.aiChat.undoLastAiApply();
   }
 
-  applyAiSuggestion(suggestion: AiPromptSuggestion): void {
-    this.aiUserInput.set(suggestion.prompt);
+  applyAiSuggestion(suggestion: { label: string; prompt: string }): void {
+    this.aiChat.applyAiSuggestion(suggestion);
   }
 
   canRegenerateAiMessage(): boolean {
-    return !!this.lastAiPrompt && !this.aiIsLoading();
+    return this.aiChat.canRegenerateAiMessage();
   }
 
   getModelLabel(modelId: string): string {
-    return this.AI_MODELS.find((m) => m.id === modelId)?.label ?? modelId;
+    return this.aiChat.getModelLabel(modelId);
   }
 
   getAiContextSummary(): string {
@@ -798,6 +628,8 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     if (this.aiModelDropdownOpen()) {
       this.aiModelDropdownOpen.set(false);
     }
+
+    this.closePageMenu();
   }
 
   @HostListener('window:pointermove', ['$event'])
@@ -823,13 +655,11 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   }
 
   onPageSelect(pageId: string): void {
-    this.closePageMenu();
-    this.pageSelected.emit(pageId);
+    this.pageActions.onPageSelect(pageId);
   }
 
   onLayerPageSelect(pageId: string): void {
-    this.closePageMenu();
-    this.pageLayerSelected.emit(pageId);
+    this.pageActions.onLayerPageSelect(pageId);
   }
 
   onResizeHandlePointerDown(event: PointerEvent): void {
@@ -846,170 +676,59 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   // ── Page Operations ──────────────────────────────────────
 
   startPageRename(pageId: string, event?: MouseEvent, source: PageRenameSource = 'pages'): void {
-    event?.stopPropagation();
-    this.closePageMenu();
-    const page = this.pages().find((p) => p.id === pageId);
-    this.editingPageName = page?.name ?? '';
-    this.editingPageId = pageId;
-    this.editingPageSource = source;
-    setTimeout(() => {
-      const input = document.querySelector<HTMLInputElement>(
-        `[data-page-name-id="${source}-${pageId}"]`,
-      );
-      input?.select();
-    });
+    this.pageActions.startPageRename(pageId, event, source);
   }
 
   isPageRenameActive(pageId: string, source: PageRenameSource): boolean {
-    return this.editingPageId === pageId && this.editingPageSource === source;
+    return this.pageActions.isPageRenameActive(pageId, source);
   }
 
   stopPageRename(pageId: string): void {
-    if (this.editingPageId === pageId) {
-      const trimmed = this.editingPageName.trim();
-      if (trimmed) {
-        this.pageNameChanged.emit({ id: pageId, name: trimmed });
-      }
-      this.editingPageId = null;
-      this.editingPageName = '';
-      this.editingPageSource = null;
-    }
+    this.pageActions.stopPageRename(pageId);
   }
 
-  onPageNameInput(pageId: string, event: Event): void {
-    this.editingPageName = (event.target as HTMLInputElement).value;
+  onPageNameInput(_pageId: string, event: Event): void {
+    this.pageActions.onPageNameInput(event);
   }
 
-  onPageNameKeyDown(pageId: string, event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      (event.target as HTMLInputElement).blur();
-    } else if (event.key === 'Escape') {
-      this.editingPageId = null;
-      this.editingPageName = '';
-      this.editingPageSource = null;
-    }
+  onPageNameKeyDown(_pageId: string, event: KeyboardEvent): void {
+    this.pageActions.onPageNameKeyDown(event);
   }
 
   onPageCreate(): void {
-    this.closePageMenu();
-    this.pageCreateRequested.emit();
+    this.pageActions.onPageCreate();
   }
 
   togglePageMenu(pageId: string, event: MouseEvent): void {
-    event.stopPropagation();
-
-    if (this.pageMenuPageId === pageId && this.pageMenuContext === 'pages') {
-      this.closePageMenu();
-      return;
-    }
-
-    const trigger = event.currentTarget as HTMLElement;
-    const rect = trigger.getBoundingClientRect();
-
-    this.openPageMenu(pageId, rect.right, rect.bottom + 6, 'pages');
+    this.pageActions.togglePageMenu(pageId, event);
   }
 
   onLayerPageContextMenu(pageId: string, event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.onLayerPageSelect(pageId);
-    this.openPageMenu(pageId, event.clientX, event.clientY, 'layers');
-  }
-
-  private openPageMenu(pageId: string, x: number, y: number, context: PageMenuContext): void {
-    const renameSource: PageRenameSource = context === 'layers' ? 'layers' : 'pages';
-
-    this.pageMenuPageId = pageId;
-    this.pageMenuContext = context;
-    this.pageMenuX = x;
-    this.pageMenuY = y;
-    this.pageMenuItems =
-      context === 'layers'
-        ? [
-            {
-              id: 'copy',
-              label: 'Copy',
-              shortcut: 'Ctrl+C',
-              action: () => this.onPageCopy(pageId),
-            },
-            {
-              id: 'paste',
-              label: 'Paste',
-              shortcut: 'Ctrl+V',
-              disabled: !this.canPastePage(),
-              action: () => this.onPagePaste(pageId),
-            },
-            {
-              id: 'rename',
-              label: 'Rename',
-              separator: true,
-              action: () => this.startPageRename(pageId, undefined, renameSource),
-            },
-            {
-              id: 'delete',
-              label: 'Delete',
-              variant: 'danger',
-              disabled: !this.canDeletePage(),
-              action: () => this.onPageDelete(pageId),
-            },
-          ]
-        : [
-            {
-              id: 'rename',
-              label: 'Rename',
-              action: () => this.startPageRename(pageId, undefined, renameSource),
-            },
-            {
-              id: 'duplicate',
-              label: 'Duplicate',
-              action: () => this.onPageDuplicate(pageId),
-            },
-            {
-              id: 'delete',
-              label: 'Delete',
-              variant: 'danger',
-              separator: true,
-              disabled: !this.canDeletePage(),
-              action: () => this.onPageDelete(pageId),
-            },
-          ];
+    this.pageActions.onLayerPageContextMenu(pageId, event);
   }
 
   closePageMenu(): void {
-    this.pageMenuPageId = null;
-    this.pageMenuContext = null;
-    this.pageMenuItems = [];
+    this.pageActions.closePageMenu();
   }
 
   isPageMenuOpenFor(pageId: string): boolean {
-    return this.pageMenuContext === 'pages' && this.pageMenuPageId === pageId;
+    return this.pageActions.isPageMenuOpenFor(pageId);
   }
 
   onPageCopy(pageId: string): void {
-    this.closePageMenu();
-    this.pageCopyRequested.emit(pageId);
+    this.pageActions.onPageCopy(pageId);
   }
 
   onPagePaste(pageId: string): void {
-    this.closePageMenu();
-    this.pagePasteRequested.emit(pageId);
+    this.pageActions.onPagePaste(pageId);
   }
 
   onPageDuplicate(pageId: string): void {
-    this.closePageMenu();
-    this.pageDuplicateRequested.emit(pageId);
+    this.pageActions.onPageDuplicate(pageId);
   }
 
   onPageDelete(pageId: string, event?: MouseEvent): void {
-    event?.stopPropagation();
-    this.closePageMenu();
-
-    if (this.pages().length <= 1) {
-      return;
-    }
-
-    this.pageDeleteRequested.emit(pageId);
+    this.pageActions.onPageDelete(pageId, event);
   }
 
   // ── Layer Operations ─────────────────────────────────────

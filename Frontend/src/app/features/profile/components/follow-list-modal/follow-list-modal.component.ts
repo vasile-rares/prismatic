@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
 import { UserService, FALLBACK_AVATAR_URL } from '@app/core';
 import type { UserFollowItem } from '@app/core';
 import gsap from 'gsap';
-import { gsapFadeIn } from '../../../../shared/utils/gsap-animations.util';
+import { gsapFadeIn } from '@app/shared/utils/gsap-animations.util';
 
 export type FollowListType = 'followers' | 'following';
 

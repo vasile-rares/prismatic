@@ -69,6 +69,7 @@ import { CANVAS_DEFAULT_ZOOM, CanvasViewportService } from '../../services/canva
 import { CanvasHistoryService } from '../../services/editor/canvas-history.service';
 import { CanvasClipboardService } from '../../services/editor/canvas-clipboard.service';
 import { CanvasElementService } from '../../services/canvas-element.service';
+import { CanvasPageLifecycleService } from '../../services/editor/canvas-page-lifecycle.service';
 import {
   CanvasKeyboardService,
   KeyboardActionCallbacks,
@@ -85,9 +86,9 @@ import {
 } from '../../services/canvas-page-render-context.service';
 import { CanvasGestureService } from '../../services/editor/canvas-gesture.service';
 import { CanvasDomStyleService } from '../../services/canvas-dom-style.service';
+import { gsapFadeIn, gsapFadeOut } from '@app/shared/utils/gsap-animations.util';
 import { firstValueFrom } from 'rxjs';
 import gsap from 'gsap';
-import { gsapFadeIn, gsapFadeOut } from '../../../../shared/utils/gsap-animations.util';
 
 const DEFAULT_PROJECT_PANEL_WIDTH = 280;
 const PAGE_SHELL_HEADER_HEIGHT = 44;
@@ -116,6 +117,7 @@ const CORNER_RADIUS_HANDLE_MIN_INSET = 4;
     CanvasClipboardService,
     CanvasElementService,
     CanvasKeyboardService,
+    CanvasPageLifecycleService,
     CanvasContextMenuService,
     CanvasPersistenceService,
     CanvasGenerationService,
@@ -141,6 +143,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
   private readonly ngZone = inject(NgZone);
   private readonly injector = inject(Injector);
   private readonly clipboard = inject(CanvasClipboardService);
+  private readonly lifecycle = inject(CanvasPageLifecycleService);
   readonly element = inject(CanvasElementService);
   private readonly keyboard = inject(CanvasKeyboardService);
   readonly contextMenu = inject(CanvasContextMenuService);
@@ -2161,25 +2164,17 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
   @HostListener('window:blur')
   handleWindowBlur(): void {
-    this.viewport.isSpacePressed.set(false);
-    this.viewport.endPan();
-    this.gesture.cancelDragState();
-    this.history.commitGestureHistory(() => this.createHistorySnapshot());
-    this.gesture.finalizeTextEditing(this.editingTextElementId());
+    this.lifecycle.handleWindowBlur(() => this.createHistorySnapshot());
   }
 
   @HostListener('window:beforeunload')
   handleBeforeUnload(): void {
-    this.canvasPersistenceService.dispatchBrowserExitFlush();
+    this.lifecycle.handleBeforeUnload();
   }
 
   @HostListener('window:pagehide', ['$event'])
   handlePageHide(event: PageTransitionEvent): void {
-    if (event.persisted) {
-      return;
-    }
-
-    this.canvasPersistenceService.dispatchBrowserExitFlush();
+    this.lifecycle.handlePageHide(event);
   }
 
   // ── Code Generation ───────────────────────────────────────
