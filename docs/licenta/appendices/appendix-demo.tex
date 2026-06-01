@@ -1,0 +1,136 @@
+\chapter{Scenarii de demo și validare funcțională}
+
+\section{Scopul anexei}
+
+Această anexă sintetizează scenariile considerate cele mai relevante pentru demonstrarea aplicației în fața comisiei și pentru validarea funcțională a fluxurilor principale. Ele sunt prezentate separat deoarece nu reprezintă doar o listă de pași de test, ci și un mod practic de a demonstra coerența produsului.
+
+În toate scenariile urmăresc aceeași idee: nu este suficient ca un ecran să arate bine sau ca un endpoint să răspundă corect. Important este ca fluxul cap-coadă să fie stabil și ușor de explicat.
+
+\section{Scenariul 1: creare cont și autentificare}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul de bază pentru cont și autentificare}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & utilizatorul nu are cont sau nu este autentificat & pagina de login este accesibilă \\
+    Pași & creare cont, autentificare, logout, autentificare din nou & fluxul este complet și fără pierdere de sesiune \\
+    Verificări & cookie de autentificare, redirecționare, încărcarea utilizatorului curent & utilizatorul este trimis corect către profil / proiecte \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Acest scenariu este util în demo deoarece confirmă funcționarea infrastructurii de bază: API, cookies, load current user, redirect din rută și sincronizarea dintre frontend și backend. Chiar dacă pare un scenariu simplu, el validează o parte importantă din fundația produsului.
+
+\section{Scenariul 2: activare și folosire 2FA}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul pentru autentificare în doi pași}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & utilizator autentificat, adresă de email funcțională & poate solicita activarea 2FA \\
+    Pași & cerere cod, confirmare cod, logout, login nou, verificare cod la login & autentificarea se finalizează doar după validarea codului \\
+    Verificări & afișarea stării intermediare și emiterea cookie-urilor finale & sesiunea finală apare doar după a doua etapă \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+În prezentarea live, acest scenariu este bun deoarece arată clar că proiectul include o măsură de securitate reală, nu doar autentificare simplă. În plus, evidențiază și un mic flux de stare intermediară în interfață, ceea ce este util de explicat în fața comisiei.
+
+\section{Scenariul 3: creare proiect și editare în canvas}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul principal de lucru în editor}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & utilizator autentificat & poate crea un proiect nou \\
+    Pași & deschidere proiect, adăugare elemente, mutare, resize, editare text, pagină nouă & editorul rămâne fluid și starea se actualizează corect \\
+    Verificări & selecție, zoom, istoric, persistare automată, thumbnail & la reîncărcare proiectul este recuperat corect \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Acesta este scenariul central al demo-ului. Într-o prezentare foarte scurtă, el merită păstrat în mod obligatoriu. Demonstrează simultan editorul, persistarea, proiectele și calitatea interacțiunilor de bază.
+
+\section{Scenariul 4: generare AI}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul de generare asistată de AI}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & proiect deschis în editor & utilizatorul poate introduce un prompt \\
+    Pași & lansare generare, urmărire progres, import rezultat în canvas & sistemul produce o structură coerentă și editabilă \\
+    Verificări & răspuns normal sau streaming, mapare în elemente de canvas & rezultatul poate fi modificat manual ulterior \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+La demo, nu este obligatoriu să arăt toate fazele interne ale pipeline-ului, însă este foarte util să pot explica faptul că sistemul nu generează direct cod final, ci trece prin etape intermediare. Acest lucru diferențiază produsul de o simplă integrare superficială cu un model AI.
+
+\section{Scenariul 5: export în cod}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul de export al proiectului}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & proiect cu structură validă & utilizatorul alege framework-ul țintă \\
+    Pași & validare, generare fișiere, inspectare rezultat & sunt produse fișierele specifice HTML / React / Angular \\
+    Verificări & coerența codului generat, existența CSS-ului și a paginilor & exportul este reutilizabil ca punct de pornire \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+În prezentare, acest scenariu ar trebui arătat imediat după o editare sau după o generare AI, pentru a sublinia că platforma nu se oprește în editor. O secvență bună de demo este: modific proiectul, salvez, export și deschid rapid unul dintre fișierele generate.
+
+\section{Scenariul 6: explorare, social și fork}
+
+\begin{table}[!htbp]
+  \centering
+  \caption{Scenariul de reutilizare socială}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+    \toprule
+    \textbf{Element} & \textbf{Descriere} & \textbf{Rezultat așteptat} \\
+    \midrule
+    Precondiții & există proiecte publice în sistem & explore și profilurile publice sunt accesibile \\
+    Pași & vizualizare proiect public, like, star, fork & proiectul este copiat în spațiul utilizatorului curent \\
+    Verificări & relația de fork și indicatorii sociali sunt actualizați & utilizatorul poate continua editarea fork-ului propriu \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Acest scenariu este valoros deoarece arată că proiectul nu este doar o unealtă personală. El oferă și o logică de circulație a conținutului între utilizatori, ceea ce îl apropie mai mult de o platformă.
+
+\noindent\textbf{Recomandare pentru ordinea demo-ului.}
+
+Într-o prezentare scurtă, o ordine eficientă este:
+
+\begin{enumerate}[leftmargin=1.5cm,topsep=2pt,itemsep=1pt]
+  \item login rapid;
+  \item deschidere proiect existent;
+  \item editare scurtă în canvas;
+  \item generare AI pe o pagină sau secțiune;
+  \item export în cod;
+  \item prezentare scurtă a zonei explore și a unui fork.
+\end{enumerate}
+
+Această succesiune este eficientă deoarece pornește de la ceva vizibil și interactiv, arată funcția diferențiatoare de AI, apoi închide bucla prin export și reutilizare.

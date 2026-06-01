@@ -1,0 +1,130 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="secventa-ai-clean" name="Secventa AI - clean">
+    <mxGraphModel dx="2571" dy="1351" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=10;shadow=0;" value="Utilizator" vertex="1">
+          <mxGeometry height="62" width="160" x="95" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="user_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="175" y="197" as="sourcePoint" />
+            <mxPoint x="175" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="canvas" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=10;shadow=0;" value="CanvasPage" vertex="1">
+          <mxGeometry height="62" width="160" x="325" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="canvas_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="405" y="197" as="sourcePoint" />
+            <mxPoint x="405" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="controller" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=10;shadow=0;" value="AiDesign&lt;br/&gt;Controller" vertex="1">
+          <mxGeometry height="62" width="160" x="555" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="controller_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="635" y="197" as="sourcePoint" />
+            <mxPoint x="635" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pipeline" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=10;shadow=0;" value="AiPipeline&lt;br/&gt;Service" vertex="1">
+          <mxGeometry height="62" width="160" x="785" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="pipeline_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="865" y="197" as="sourcePoint" />
+            <mxPoint x="865" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#008A7A;strokeWidth=2.2;fillColor=#E6FFFA;spacing=10;shadow=0;" value="OpenAi&lt;br/&gt;Client" vertex="1">
+          <mxGeometry height="62" width="160" x="1015" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="client_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1095" y="197" as="sourcePoint" />
+            <mxPoint x="1095" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=20;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;spacing=10;shadow=0;" value="OpenAI&lt;br/&gt;API" vertex="1">
+          <mxGeometry height="62" width="160" x="1245" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="api_life" edge="1" parent="1" style="html=1;strokeColor=#94A3B8;strokeWidth=1.6;rounded=0;endArrow=none;startArrow=none;dashed=1;dashPattern=6 6;edgeStyle=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1325" y="197" as="sourcePoint" />
+            <mxPoint x="1325" y="945" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#172033;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;" value="introduce promptul">
+          <mxGeometry relative="1" x="-0.0087" y="13" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="175" y="245" as="sourcePoint" />
+            <mxPoint x="405" y="245" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#172033;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;" value="POST /pipeline/stream">
+          <mxGeometry relative="1" x="-0.0087" y="14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="405" y="325" as="sourcePoint" />
+            <mxPoint x="635" y="325" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#172033;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;" value="autorizare + validare cerere">
+          <mxGeometry relative="1" y="13" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="635" y="405" as="sourcePoint" />
+            <mxPoint x="865" y="405" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#172033;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;" value="construiește requestul pentru faza curentă">
+          <mxGeometry relative="1" x="-0.0087" y="14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="865" y="485" as="sourcePoint" />
+            <mxPoint x="1095" y="485" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#172033;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;" value="chat completion / structured output">
+          <mxGeometry relative="1" y="15" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1095" y="565" as="sourcePoint" />
+            <mxPoint x="1325" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 5;" value="JSON structurat">
+          <mxGeometry relative="1" y="14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1325" y="635" as="sourcePoint" />
+            <mxPoint x="1095" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 5;" value="rezultat de fază validat">
+          <mxGeometry relative="1" x="0.0087" y="12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1095" y="715" as="sourcePoint" />
+            <mxPoint x="865" y="715" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 5;" value="phase_complete / result">
+          <mxGeometry relative="1" x="0.0087" y="12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="865" y="805" as="sourcePoint" />
+            <mxPoint x="635" y="805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;startArrow=none;fontSize=15;fontColor=#172033;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 5;" value="SSE progress / result">
+          <mxGeometry relative="1" y="12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="635" y="885" as="sourcePoint" />
+            <mxPoint x="405" y="885" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;strokeColor=#CBD5E1;strokeWidth=1.4;fillColor=#FFFFFF;fontSize=15;fontColor=#5F6B7A;spacing=10;dashed=1;dashPattern=8 8;" value="Fazele 2 și 3 repetă același tipar de apel către model, urmat de validare și eventuală reparare." vertex="1">
+          <mxGeometry height="86" width="430" x="885" y="779" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

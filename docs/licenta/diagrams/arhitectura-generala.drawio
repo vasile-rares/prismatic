@@ -1,0 +1,45 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="architecture-general-styled" name="Arhitectura generala - styled">
+    <mxGraphModel dx="2020" dy="1061" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="840" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frontend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=12;shadow=0;" value="Frontend&lt;br/&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Angular 20&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="440" x="198" y="68" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#5B5B5B;strokeWidth=2.2;fillColor=#F3F4F6;spacing=12;shadow=0;" value="Backend API&lt;br/&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;ASP.NET Core 9&lt;/font&gt;" vertex="1">
+          <mxGeometry height="96" width="440" x="198" y="218" as="geometry" />
+        </mxCell>
+        <mxCell id="application" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="Application Services&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;business logic / orchestration&lt;/font&gt;" vertex="1">
+          <mxGeometry height="96" width="440" x="198" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="infra" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;spacing=12;shadow=0;" value="Infrastructure + Repositories&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;EF Core / external integrations&lt;/font&gt;" vertex="1">
+          <mxGeometry height="96" width="440" x="198" y="538" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#2F855A;strokeWidth=2.2;fillColor=#E8F7EE;spacing=12;shadow=0;" value="PostgreSQL&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;database&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="330" x="253" y="693" as="geometry" />
+        </mxCell>
+        <mxCell id="openai" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#008A7A;strokeWidth=2.2;fillColor=#E6FFFA;spacing=12;shadow=0;" value="OpenAI API&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AI design generation&lt;/font&gt;" vertex="1">
+          <mxGeometry height="96" width="245" x="738" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend_api" edge="1" parent="1" source="frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="api" value="HTTP / JSON">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="api_application" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="application" value="commands / queries">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="application_infra" edge="1" parent="1" source="application" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="infra" value="interfaces">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="infra_db" edge="1" parent="1" source="infra" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="db" value="EF Core">
+          <mxGeometry relative="1" x="-0.0169" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="application_openai" edge="1" parent="1" source="application" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#008A7A;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#00695F;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="openai" value="AI calls">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

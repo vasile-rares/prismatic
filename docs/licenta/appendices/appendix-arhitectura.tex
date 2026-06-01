@@ -1,0 +1,163 @@
+\chapter{Exemple tehnice și note de arhitectură}
+
+\section{Maparea dintre modulele proiectului}
+
+\begin{table}[H]
+  \centering
+  \caption{Maparea dintre proiectele din soluție și responsabilitățile lor}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.5cm}Y}
+    \toprule
+    \textbf{Proiect / zonă} & \textbf{Responsabilitate principală} \\
+    \midrule
+    Frontend & interfață, rutare, editor canvas, preview, apeluri API \\
+    Favigon.API & endpoint-uri HTTP, middleware, configurare infrastructură web \\
+    Favigon.Application & servicii de business, DTO-uri, validări și orchestrare logică \\
+    Favigon.Infrastructure & repository-uri, EF Core, integrare OpenAI, email, storage \\
+    Favigon.Domain & entități persistente și relațiile lor \\
+    Favigon.Converter & reprezentare intermediară, validare și export în cod \\
+    Favigon.Tests & teste automate pentru backend și convertor \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Exemplu simplificat de reprezentare intermediară}
+
+În listarea următoare prezint un exemplu simplificat de arbore IR folosit pentru descrierea unei secțiuni de tip hero. În implementarea reală, structura poate include mai multe câmpuri și mai multe variante responsive, însă ideea de bază rămâne aceeași: fiecare nod descrie tipul, dimensiunea, layout-ul și conținutul relevant.
+
+\begin{lstlisting}[style=favigon,caption={Exemplu simplificat de IR pentru o secțiune hero}]
+{
+  "id": "frame-home",
+  "type": "Frame",
+  "meta": { "name": "Home Page" },
+  "style": {
+    "width": { "value": 1280, "unit": "px" },
+    "height": { "value": 0, "unit": "fit-content" }
+  },
+  "children": [
+    {
+      "id": "hero-section",
+      "type": "Container",
+      "meta": { "name": "Hero Section" },
+      "layout": {
+        "mode": "Flex",
+        "direction": "Row",
+        "gap": { "value": 48, "unit": "px" }
+      },
+      "style": {
+        "padding": {
+          "top": { "value": 96, "unit": "px" },
+          "right": { "value": 80, "unit": "px" },
+          "bottom": { "value": 96, "unit": "px" },
+          "left": { "value": 80, "unit": "px" }
+        }
+      },
+      "children": [
+        {
+          "id": "hero-title",
+          "type": "Text",
+          "props": { "text": "Construiește interfețe și exportă-le în cod" }
+        }
+      ]
+    }
+  ]
+}
+\end{lstlisting}
+
+Acest exemplu arată de ce IR-ul este util. El nu conține numai text sau numai stil, ci și relațiile de ierarhie și layout. Astfel, același document poate fi randat într-un canvas, validat și apoi convertit într-o implementare concretă.
+
+\section{Exemple simplificate de cereri către API}
+
+În această anexă este utilă și o vedere foarte concretă asupra formei cererilor transmise către backend pentru funcțiile cele mai relevante tehnic. Exemplele de mai jos nu reproduc toate câmpurile posibile din implementarea reală, dar păstrează structura esențială a payload-urilor.
+
+\begin{lstlisting}[style=favigon,caption={Exemplu simplificat de request pentru pipeline-ul AI}]
+{
+  "prompt": "Landing page pentru o aplicatie SaaS de task management",
+  "viewportWidth": 1280,
+  "model": "gpt-5.4-mini",
+  "stopAfterPhase": 3,
+  "existingIr": null
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=favigon,caption={Exemplu simplificat de request pentru generarea de cod}]
+{
+  "framework": "html",
+  "ir": {
+    "id": "frame-home",
+    "type": "Frame",
+    "children": []
+  }
+}
+\end{lstlisting}
+
+În practică, aceste două exemple ilustrează două tipuri foarte diferite de cereri. Prima cere procesare probabilistică, etapizată și validată semantic. A doua cere transformare deterministă dintr-o structură deja formalizată. Tocmai această separare este una dintre ideile arhitecturale importante ale proiectului.
+
+\section{Exemplu simplificat de cod generat}
+
+\begin{lstlisting}[style=favigon,caption={Exemplu scurt de HTML generat de convertor}]
+<section class="hero-section">
+  <div class="hero-copy">
+    <h1 class="hero-title">Construiește interfețe și exportă-le în cod</h1>
+    <p class="hero-body">Pornește de la un prompt, rafinează în editor și exportă rezultatul.</p>
+  </div>
+</section>
+\end{lstlisting}
+
+\begin{lstlisting}[style=favigon,caption={Exemplu scurt de CSS generat de convertor}]
+.hero-section {
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  padding: 96px 80px;
+}
+
+.hero-title {
+  font-size: 64px;
+  font-weight: 800;
+}
+\end{lstlisting}
+
+\section{Note practice despre organizarea editorului}
+
+În implementare, componenta `CanvasPage` acționează ca punct de orchestrare. Totuși, comportamentul editorului este împărțit între servicii focalizate. Această decizie poate părea mai complicată la prima vedere, dar a adus trei avantaje clare:
+
+\begin{enumerate}[leftmargin=1.5cm]
+  \item comportamentele precum zoom, gesturi sau istoric au putut fi dezvoltate independent;
+  \item persistarea și exportul au rămas conectate la starea editorului fără să încarce excesiv componenta;
+  \item logica a devenit mai ușor de urmărit atunci când apăreau bug-uri pe zone specifice.
+\end{enumerate}
+
+Pentru proiecte viitoare, această organizare face mai ușoară introducerea unor funcții precum comentarii pe canvas, componente reutilizabile, colaborare în timp real sau reguli de aliniere mai avansate.
+
+\section{Exemplu simplificat de evenimente de streaming}
+
+În scenariile de generare incrementală, frontend-ul nu primește doar un răspuns final, ci o secvență de evenimente SSE. Varianta simplificată de mai jos redă forma protocolului folosit pentru notificarea progresului și pentru transmiterea rezultatului final.
+
+\begin{lstlisting}[style=favigon,caption={Exemplu simplificat de flux SSE pentru pipeline-ul AI}]
+event: phase_start
+data: {"phase":1,"name":"intent"}
+
+event: phase_complete
+data: {"phase":1,"name":"intent"}
+
+event: phase_start
+data: {"phase":2,"name":"structure"}
+
+event: result
+data: {"success":true,"stopAfterPhase":3}
+\end{lstlisting}
+
+Din punct de vedere al interfeței, acest format face posibilă afișarea unui progres real, nu doar a unei stări generice de așteptare. Din punct de vedere al depanării, el ajută la observarea etapei în care apare o eventuală eroare sau oprire prematură.
+
+\noindent\textbf{Compilarea documentației.}
+
+Lucrarea este gândită să poată fi compilată local prin scriptul PowerShell din `docs/licenta`. Pașii executați sunt:
+
+\begin{enumerate}[leftmargin=1.5cm,topsep=2pt,itemsep=1pt]
+  \item prima trecere `xelatex`, pentru fișiere auxiliare și structură;
+  \item `biber`, pentru procesarea bibliografiei;
+  \item încă două treceri `xelatex`, pentru rezolvarea referințelor, figurilor și citărilor.
+\end{enumerate}
+
+Scriptul folosește această succesiune explicită deoarece în mediul local `latexmk` nu poate fi folosit direct fără Perl. Din acest motiv, varianta manuală controlată este mai robustă pentru repository-ul actual.

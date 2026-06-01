@@ -1,0 +1,37 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="straturi-validare-clean" name="Straturi validare - clean">
+    <mxGraphModel dx="2175" dy="1143" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="980" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="unit_v" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=25;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=12;shadow=0;" value="Teste unitare / servicii&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;verifică logica internă și comportamentul serviciilor&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="500" x="240" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="controller_v" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="Teste controllere / middleware&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;validează endpoint-uri, request-uri și procesarea HTTP&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="500" x="240" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="functional_v" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;spacing=12;shadow=0;" value="Scenarii funcționale&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;testează fluxuri complete și interacțiuni dintre module&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="500" x="240" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="demo_v" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#2F855A;strokeWidth=2.2;fillColor=#E8F7EE;spacing=12;shadow=0;" value="Demo operațional&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;confirmă funcționarea aplicației într-un scenariu real de utilizare&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="580" x="200" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="sv1" edge="1" parent="1" source="unit_v" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="controller_v" value="verificare logică">
+          <mxGeometry relative="1" x="-0.0357" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sv2" edge="1" parent="1" source="controller_v" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="functional_v" value="integrare HTTP">
+          <mxGeometry relative="1" x="-0.0417" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sv3" edge="1" parent="1" source="functional_v" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="demo_v" value="validare end-to-end">
+          <mxGeometry relative="1" x="-0.0417" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

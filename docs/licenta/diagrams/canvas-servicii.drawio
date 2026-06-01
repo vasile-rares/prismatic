@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="canvas-services-clean" name="Canvas servicii - clean">
+    <mxGraphModel dx="2357" dy="1238" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="row1_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontStyle=1;fontColor=#5F6B7A;" value="Page" vertex="1">
+          <mxGeometry height="28" width="110" x="90" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="row2_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontStyle=1;fontColor=#5F6B7A;" value="Core services" vertex="1">
+          <mxGeometry height="28" width="155" x="45" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="row3_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontStyle=1;fontColor=#5F6B7A;" value="Supporting services" vertex="1">
+          <mxGeometry height="28" width="190" x="10" y="512" as="geometry" />
+        </mxCell>
+        <mxCell id="row1_bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;strokeColor=#D9E2EC;strokeWidth=1.4;fillColor=#FAFBFC;dashed=1;dashPattern=5 5;" value="" vertex="1">
+          <mxGeometry height="118" width="870" x="225" y="86" as="geometry" />
+        </mxCell>
+        <mxCell id="row2_bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;strokeColor=#D9E2EC;strokeWidth=1.4;fillColor=#FAFBFC;dashed=1;dashPattern=5 5;" value="" vertex="1">
+          <mxGeometry height="138" width="870" x="225" y="258" as="geometry" />
+        </mxCell>
+        <mxCell id="row3_bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;strokeColor=#D9E2EC;strokeWidth=1.4;fillColor=#FAFBFC;dashed=1;dashPattern=5 5;" value="" vertex="1">
+          <mxGeometry height="138" width="870" x="225" y="468" as="geometry" />
+        </mxCell>
+        <mxCell id="page_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=12;shadow=0;" value="CanvasPage&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;componenta principală a editorului&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="360" x="480" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="state_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="CanvasEditorState&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;stare, selecție, elemente&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="245" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="gesture_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="CanvasGesture&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;drag, resize, interacțiuni&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="535" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="viewport_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="CanvasViewport&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;zoom, pan, viewport&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="825" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="persist_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;spacing=12;shadow=0;" value="CanvasPersistence&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;save / load canvas&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="245" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="history_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#2F855A;strokeWidth=2.2;fillColor=#E8F7EE;spacing=12;shadow=0;" value="CanvasHistory&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;undo / redo&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="535" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="gen_cs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=22;fontStyle=1;fontColor=#172033;strokeColor=#008A7A;strokeWidth=2.2;fillColor=#E6FFFA;spacing=12;shadow=0;" value="CanvasGeneration&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;preview / generare&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="250" x="825" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="cs1" edge="1" parent="1" source="page_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.22;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="state_cs" value="state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs2" edge="1" parent="1" source="page_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="gesture_cs" value="gestures">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs3" edge="1" parent="1" source="page_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.78;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="viewport_cs" value="viewport">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs4" edge="1" parent="1" source="state_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="persist_cs" value="persistă">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs5" edge="1" parent="1" source="gesture_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="history_cs" value="istoric acțiuni">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs6" edge="1" parent="1" source="viewport_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="gen_cs" value="redare / output">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cs7" edge="1" parent="1" source="state_cs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;exitX=0.682;exitY=1.011;exitDx=0;exitDy=0;exitPerimeter=0;" value="snapshot undo/redo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="416" y="438" />
+              <mxPoint x="600" y="438" />
+            </Array>
+            <mxPoint x="600" y="492" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

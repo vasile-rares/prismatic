@@ -1,0 +1,34 @@
+\babel@toc {romanian}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Comparație între Favigon și aplicații relevante}}{7}{table.caption.5}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Servicii și volume definite în orchestrarea locală a proiectului}}{12}{table.caption.6}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Trasabilitatea dintre obiectivele proiectului, module și validare}}{15}{table.caption.8}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Rute frontend principale și rolul lor în aplicație}}{23}{table.caption.14}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Controllere API și responsabilitățile lor dominante}}{26}{table.caption.15}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Câmpuri relevante din cererile AI folosite de backend}}{34}{table.caption.19}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Măsuri de securitate implementate în Favigon}}{41}{table.caption.22}%
+\contentsline {table}{\numberline {7.2}{\ignorespaces Distribuția testelor automate backend}}{42}{table.caption.23}%
+\contentsline {table}{\numberline {7.3}{\ignorespaces Scenarii reprezentative verificate prin teste automate}}{43}{table.caption.24}%
+\contentsline {table}{\numberline {7.4}{\ignorespaces Indicatori cantitativi observați în validarea curentă}}{43}{table.caption.25}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Scenariul de bază pentru cont și autentificare}}{48}{table.caption.27}%
+\contentsline {table}{\numberline {A.2}{\ignorespaces Scenariul pentru autentificare în doi pași}}{48}{table.caption.28}%
+\contentsline {table}{\numberline {A.3}{\ignorespaces Scenariul principal de lucru în editor}}{49}{table.caption.29}%
+\contentsline {table}{\numberline {A.4}{\ignorespaces Scenariul de generare asistată de AI}}{49}{table.caption.30}%
+\contentsline {table}{\numberline {A.5}{\ignorespaces Scenariul de export al proiectului}}{50}{table.caption.31}%
+\contentsline {table}{\numberline {A.6}{\ignorespaces Scenariul de reutilizare socială}}{50}{table.caption.32}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {B.1}{\ignorespaces Maparea dintre proiectele din soluție și responsabilitățile lor}}{51}{table.caption.33}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {C.1}{\ignorespaces Endpoint-uri principale din zona de autentificare}}{55}{table.C.1}%
+\contentsline {table}{\numberline {C.2}{\ignorespaces Endpoint-uri principale pentru proiecte}}{56}{table.C.2}%
+\contentsline {table}{\numberline {C.3}{\ignorespaces Endpoint-uri principale pentru utilizatori}}{56}{table.C.3}%
+\contentsline {table}{\numberline {C.4}{\ignorespaces Endpoint-uri din zona explore}}{57}{table.C.4}%
+\contentsline {table}{\numberline {C.5}{\ignorespaces Endpoint-uri pentru AI și converter}}{57}{table.C.5}%

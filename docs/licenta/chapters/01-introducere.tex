@@ -1,0 +1,84 @@
+\chapter{Introducere}
+
+\section{Contextul actual al temei}
+
+În ultimii ani, dezvoltarea produselor digitale a devenit tot mai dependentă de colaborarea dintre roluri diferite: designeri, frontend developeri, backend developeri, product manageri și, din ce în ce mai des, sisteme automate bazate pe inteligență artificială. Dincolo de faptul că aceste roluri folosesc instrumente diferite, ele gândesc produsul și la niveluri de abstractizare diferite. Designerul lucrează cu layout, ierarhie vizuală și consistență. Dezvoltatorul web lucrează cu componente, stare, apeluri HTTP, validări și performanță. În practică, diferența dintre aceste două perspective produce aproape mereu un cost suplimentar în procesul de implementare.
+
+Într-o aplicație web clasică de tip SPA, interfața nu mai este doar o succesiune de pagini statice. Ea este rezultatul unor stări multiple, a rutării client-side și a interacțiunilor asincrone cu serverul, ceea ce face ca proiectarea și implementarea să fie strâns legate \cite{fielding2000rest,angularRouting2026}. În același timp, ecosistemul modern a produs o gamă largă de instrumente specializate: unele pun accent pe design și handoff, altele pe no-code, altele pe generare de cod sau pe conținut. Deși fiecare rezolvă o parte a problemei, fluxul complet rămâne adesea fragmentat.
+
+Aplicații precum Figma, Webflow, Framer sau Builder.io ilustrează foarte bine această tendință. Figma oferă un mediu matur pentru design și inspecție tehnică, cu suport pentru Dev Mode și conectare la cod \cite{figmaDevMode2026}. Webflow mută accentul spre construcția vizuală a site-urilor și publicarea rapidă \cite{webflow2026}. Framer împinge zona de prototipare și generare de layout cu ajutorul AI \cite{framerWireframer2026}. Builder.io propune un model de dezvoltare vizuală cu integrare în cod și AI orientat spre reutilizarea componentelor existente \cite{builderPlatform2026,builderAi2026}. Tocmai această diversitate arată că problema nu este încă închisă și că există loc pentru experimente și soluții integrate.
+
+\section{Problema pe care o urmărește lucrarea}
+
+Problema de la care pornește lucrarea este una concretă: cum poate fi redusă distanța dintre ideea de interfață, reprezentarea ei vizuală și codul care ajunge efectiv să ruleze într-un browser? În fluxul obișnuit, utilizatorul descrie o nevoie, designerul desenează o soluție, dezvoltatorul o reconstruiește în cod, iar echipa verifică manual dacă rezultatul este apropiat de intenția inițială. Fiecare transfer dintre etape introduce timp de așteptare, ambiguitate și posibile erori.
+
+Din această observație rezultă trei subprobleme. Prima este problema editării vizuale: utilizatorul are nevoie de un spațiu în care să poată construi o pagină, să repoziționeze elemente, să lucreze cu mai multe pagini și să își poată salva progresul fără operații tehnice inutile. A doua este problema structurării interfeței: dacă se dorește folosirea AI sau exportul de cod, nu este suficientă existența unei imagini convingătoare, ci este necesară o reprezentare internă coerentă, stabilă și validabilă. A treia este problema reutilizării: odată ce un design există, el ar trebui să poată fi publicat, apreciat, partajat și eventual preluat de alți utilizatori.
+
+În multe produse existente aceste trei subprobleme sunt tratate separat. Există editoare vizuale foarte bune, dar fără export tehnic serios. Există generatoare AI interesante, dar greu de controlat. Există convertoare către cod, dar care pornesc de la intrări rigide și nu oferă un spațiu de lucru propriu-zis. În cadrul acestui proiect, ele sunt tratate împreună, într-o platformă unitară.
+
+Formulat direct, ideea proiectului este următoarea: Favigon este o platformă web pentru designeri, frontend developeri, studenți și echipe mici care doresc să reducă distanța dintre concept, prototip editabil și cod executabil. Accentul nu cade pe publicarea imediată a unui site, ci pe construirea unui flux coerent în care interfața poate fi desenată, structurată, validată, exportată și apoi reutilizată.
+
+\section{Motivația alegerii temei}
+
+Tema a fost aleasă deoarece reunește mai multe direcții relevante pentru un proiect de licență. În primul rând, are o componentă clară de arhitectură software. Un produs de tipul Favigon nu poate fi realizat doar ca interfață sau doar ca API, deoarece valoarea lui apare tocmai din cooperarea mai multor subsisteme. Din acest motiv, tema a impus decizii reale de separare a responsabilităților, persistare, modelare a datelor și organizare a codului.
+
+În al doilea rând, tema are o componentă puternică de experiență a utilizatorului. Editorul canvas nu este util dacă doar ``funcționează'' tehnic. El trebuie să fie suficient de fluid încât utilizatorul să simtă că poate experimenta fără fricțiune mare. Asta înseamnă zoom, selecție, pan, istoric, clipboard, editare text, previzualizare și salvare automată. Practic, multe decizii de implementare au fost influențate direct de comportamentul așteptat în interfață.
+
+În al treilea rând, integrarea AI într-un produs real reprezintă un subiect actual și util, dar numai dacă este tratată pragmatic. Interesul nu este folosirea inteligenței artificiale ca element decorativ, ci ca mecanism care poate accelera generarea unei structuri inițiale și poate reduce timpul dintre idee și rezultat. De aceea este evitată o soluție bazată doar pe prompt și este introdus un pipeline etapizat, cu validare și constrângeri explicite prin JSON Schema \cite{jsonSchemaCore2022,jsonSchemaValidation2022,openaiStructuredOutputs2026}.
+
+\section{Obiectivele proiectului}
+
+Obiectivul general al proiectului este proiectarea și implementarea unei platforme web care să permită:
+
+\begin{itemize}[leftmargin=1.5cm]
+  \item crearea și editarea vizuală a interfețelor web într-un canvas;
+  \item generarea asistată de AI a unei structuri inițiale pentru pagini;
+  \item conversia interfețelor construite într-o reprezentare intermediară coerentă;
+  \item exportul automat al rezultatului în HTML, React și Angular;
+  \item publicarea și reutilizarea proiectelor într-un spațiu cu funcții sociale.
+\end{itemize}
+
+Pentru a atinge acest obiectiv general, au fost urmărite și o serie de obiective specifice:
+
+\begin{enumerate}[leftmargin=1.5cm]
+  \item proiectarea unei arhitecturi full-stack suficient de clare încât logica de business, persistența și integrarea externă să nu fie amestecate;
+  \item definirea unui model de date care să acopere utilizatorii, proiectele, relațiile sociale și legăturile externe de autentificare;
+  \item dezvoltarea unui editor canvas care să poată gestiona mai multe pagini și mai multe tipuri de operații de editare;
+  \item introducerea unei reprezentări intermediare reutilizabile atât de editor, cât și de motorul de conversie;
+  \item dezvoltarea unui pipeline AI în mai multe faze, pentru a crește controlul asupra ieșirii;
+  \item validarea soluției atât prin testare automată, cât și prin scenarii funcționale.
+\end{enumerate}
+
+Pe parcursul implementării, a fost păstrată o regulă simplă: fiecare funcționalitate nouă trebuie să aducă valoare clară în produs și să poată fi justificată tehnic. Din acest motiv, anumite idei care ar fi mărit spectaculos aplicația, dar fără un câștig real de coerență, au fost lăsate pentru dezvoltări viitoare.
+
+\section{Contribuțiile proprii}
+
+Aportul personal din această lucrare se vede în principal în șase direcții.
+
+Prima direcție este integrarea într-un produs unitar a unor funcții care, de regulă, apar în produse diferite: editor vizual, generare AI, conversie în cod și distribuire socială. Miza nu a fost doar adăugarea mai multor module, ci și funcționarea lor pe aceeași bază de date, pe aceeași logică de autentificare și pe același model intern.
+
+A doua direcție este organizarea editorului canvas. În locul unei implementări monolitice, logica este separată pe servicii focalizate pentru viewport, istoric, clipboard, persistare, gesturi și randare. Această decizie nu este vizibilă imediat la nivel de interfață, dar a contat mult pentru stabilitatea dezvoltării ulterioare.
+
+A treia direcție este reprezentarea intermediară a interfeței. Editorul nu lucrează doar cu elemente vizuale izolate, iar exportul nu pornește direct de la DOM. Între aceste niveluri există un model intern bazat pe noduri, layout, stil și poziționare, care face posibilă atât validarea, cât și exportul în mai multe tehnologii.
+
+A patra direcție este pipeline-ul AI în trei faze: intenție, structură și stil. Această separare este utilă deoarece generarea directă a codului sau a designului final este mai greu de controlat. În schimb, dacă problema este spartă în pași mai mici, fiecare pas poate fi verificat mai ușor și, la nevoie, reparat.
+
+A cincea direcție este motorul de conversie. Acesta nu generează doar un singur rezultat static, ci suportă export single-page, multi-page și responsive. În plus, aceeași bază este folosită pentru HTML, React și Angular, ceea ce obligă la o abstracție mai curată decât în cazul unui export dedicat unei singure ținte.
+
+A șasea direcție este componenta de produs: autentificare cu 2FA, OAuth, proiecte publice și private, explore, like, star, follow și fork. Aceste funcții schimbă proiectul dintr-un simplu editor tehnic într-o platformă care poate susține colaborare și reutilizare.
+
+\section{Metoda de lucru}
+
+Din punct de vedere practic, dezvoltarea aplicației a fost iterativă. Procesul a început cu funcționalitățile de bază necesare pentru existența produsului: autentificare, proiecte și editor minimal. După aceea, au fost adăugate treptat comportamente mai complexe în editor, persistare automată și suport pentru export. Abia după ce această bază a devenit suficient de stabilă a fost integrat pipeline-ul AI, deoarece fără un model intern coerent rezultatele generate ar fi fost greu de controlat.
+
+Pe partea de backend a fost urmărită o structură apropiată de principiile prezentate în literatura de arhitectură software \cite{bass2021softwarearchitecture,martin2017cleanarchitecture}. Asta a însemnat separarea API-ului de logica de aplicație, a logicii de aplicație de infrastructură și folosirea interfețelor între straturi. Nu a fost urmărită o implementare dogmatică, ci una practică: suficient de clară ca să poată susține extinderea proiectului, dar fără un volum de abstracții inutile.
+
+Pe partea de frontend, strategia a fost păstrarea logicii specifice editorului în interiorul feature-ului canvas, nu într-o zonă generică de utilitare sau componente partajate. Din moment ce editorul concentrează cea mai mare parte din complexitatea aplicației, această decizie a ajutat la evitarea dispersării comportamentelor și la păstrarea contextului tehnic aproape de ecranele care îl folosesc.
+
+\section{Structura lucrării}
+
+Lucrarea este organizată în opt capitole principale și trei anexe.
+
+Capitolul al doilea analizează domeniul și compară Favigon cu aplicații existente. Capitolul al treilea prezintă fundamentele teoretice și tehnologiile folosite. Capitolul al patrulea tratează analiza cerințelor și proiectarea sistemului. Capitolul al cincilea descrie implementarea platformei la nivel de module și fluxuri principale. Capitolul al șaselea este dedicat generării asistate de AI și conversiei din design în cod, acesta fiind și nucleul tehnic al lucrării. Capitolul al șaptelea abordează securitatea, testarea și validarea. Ultimul capitol sintetizează concluziile și direcțiile de dezvoltare.
+
+Anexele completează partea principală cu scenarii demo, note de arhitectură și o vedere de ansamblu asupra API-ului. Această structură separă mai clar fundamentarea teoretică de implementarea efectivă și păstrează contribuțiile personale vizibile în partea centrală a lucrării, nu ascunse între noțiuni generale.

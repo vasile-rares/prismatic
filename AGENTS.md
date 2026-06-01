@@ -125,3 +125,8 @@ Containers:
 - Preserve existing layering: API -> Application -> Infrastructure
 - Add or update tests in `Backend/Favigon.Tests` when backend behavior changes
 - Keep this file concise; update it only when architecture or conventions materially change
+
+## Collaboration Preferences
+
+- After every change that affects the generated PDF in `docs/licenta`, report each concrete change individually.
+- For each PDF-affecting change, include what changed, the file path, the approximate location, whether the PDF was rebuilt, whether the build passed, and any relevant visual effect observed in the PDF.

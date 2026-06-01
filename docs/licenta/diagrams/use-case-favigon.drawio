@@ -1,0 +1,103 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="use-case-favigon-clean" name="Use case Favigon - clean">
+    <mxGraphModel dx="2175" dy="1143" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1360" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="system" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;strokeColor=#D9E2EC;strokeWidth=1.8;fillColor=#FAFBFC;shadow=0;" value="" vertex="1">
+          <mxGeometry height="720" width="940" x="330" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="guest" parent="1" style="shape=umlActor;html=1;outlineConnect=0;verticalLabelPosition=bottom;verticalAlign=top;fontSize=20;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=none;" value="Utilizator&lt;br/&gt;neautentificat" vertex="1">
+          <mxGeometry height="220" width="110" x="90" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="auth" parent="1" style="shape=umlActor;html=1;outlineConnect=0;verticalLabelPosition=bottom;verticalAlign=top;fontSize=20;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=none;" value="Utilizator&lt;br/&gt;autentificat" vertex="1">
+          <mxGeometry height="220" width="110" x="90" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="explore" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;shadow=0;" value="Explorare proiecte publice" vertex="1">
+          <mxGeometry height="70" width="600" x="495" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="account" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;shadow=0;" value="Autentificare și administrare cont" vertex="1">
+          <mxGeometry height="70" width="650" x="470" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="projects" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;shadow=0;" value="Creare și administrare proiecte" vertex="1">
+          <mxGeometry height="70" width="650" x="470" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="canvas" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;shadow=0;" value="Editare vizuală în canvas" vertex="1">
+          <mxGeometry height="70" width="600" x="495" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="ai_uc" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#008A7A;strokeWidth=2.2;fillColor=#E6FFFA;shadow=0;" value="Generare asistată de AI" vertex="1">
+          <mxGeometry height="70" width="580" x="505" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="export" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#2F855A;strokeWidth=2.2;fillColor=#E8F7EE;shadow=0;" value="Validare și export în cod" vertex="1">
+          <mxGeometry height="70" width="590" x="500" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="social" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=23;fontStyle=1;fontColor=#172033;strokeColor=#5B5B5B;strokeWidth=2.2;fillColor=#F3F4F6;shadow=0;" value="Like, star, follow și fork" vertex="1">
+          <mxGeometry height="70" width="580" x="505" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="ue1" edge="1" parent="1" source="guest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F5597;strokeWidth=2.0;endArrow=none;startArrow=none;" target="explore">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="260" />
+              <mxPoint x="270" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue2" edge="1" parent="1" source="guest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F5597;strokeWidth=2.0;endArrow=none;startArrow=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="account">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue3" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6C5CE7;strokeWidth=2.0;endArrow=none;startArrow=none;" target="account">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="560" />
+              <mxPoint x="270" y="295" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue4" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6C5CE7;strokeWidth=2.0;endArrow=none;startArrow=none;" target="projects">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="570" />
+              <mxPoint x="280" y="385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue5" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B7791F;strokeWidth=2.0;endArrow=none;startArrow=none;" target="canvas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="580" />
+              <mxPoint x="290" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue6" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#008A7A;strokeWidth=2.0;endArrow=none;startArrow=none;" target="ai_uc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="590" />
+              <mxPoint x="300" y="565" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue7" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F855A;strokeWidth=2.0;endArrow=none;startArrow=none;" target="export">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="600" />
+              <mxPoint x="300" y="655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ue8" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B5B5B;strokeWidth=2.0;endArrow=none;startArrow=none;" target="social">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="610" />
+              <mxPoint x="290" y="745" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

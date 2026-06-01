@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="stack-favigon-clean" name="Stack Favigon - clean">
+    <mxGraphModel dx="1885" dy="991" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frontend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#2F5597;strokeWidth=2.2;fillColor=#EAF2FF;spacing=12;shadow=0;" value="Frontend&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Angular 20&lt;/font&gt;" vertex="1">
+          <mxGeometry height="86" width="260" x="170" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#6C5CE7;strokeWidth=2.2;fillColor=#F0EDFF;spacing=12;shadow=0;" value="Backend API&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;ASP.NET Core 9&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="290" x="565" y="148" as="geometry" />
+        </mxCell>
+        <mxCell id="openai" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#008A7A;strokeWidth=2.2;fillColor=#E6FFFA;spacing=12;shadow=0;" value="Servicii externe&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;OpenAI API&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="960" y="148" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#B7791F;strokeWidth=2.2;fillColor=#FFF4DA;spacing=12;shadow=0;" value="Persistență&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;PostgreSQL + EF Core&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="300" x="510" y="374" as="geometry" />
+        </mxCell>
+        <mxCell id="cf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=24;fontStyle=1;fontColor=#172033;strokeColor=#2F855A;strokeWidth=2.2;fillColor=#E8F7EE;spacing=12;shadow=0;" value="Cloudflare Tunnel&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;rutare publică și acces extern&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="290" x="190" y="374" as="geometry" />
+        </mxCell>
+        <mxCell id="compose" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=26;fontStyle=1;fontColor=#172033;strokeColor=#5B5B5B;strokeWidth=2.2;fillColor=#F3F4F6;spacing=12;shadow=0;" value="Orchestrare locală&lt;br/&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Docker Compose&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="360" x="370" y="612" as="geometry" />
+        </mxCell>
+        <mxCell id="compose_note" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fontSize=16;fontColor=#5F6B7A;strokeColor=#CBD5E1;strokeWidth=1.6;fillColor=#FFFFFF;spacing=10;shadow=0;dashed=1;dashPattern=8 8;" value="Pornește și coordonează serviciile locale:&lt;br/&gt;frontend, backend, bază de date și tunnel." vertex="1">
+          <mxGeometry height="90" width="340" x="760" y="612" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#172033;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="api" value="HTTP / JSON">
+          <mxGeometry relative="1" x="-0.0519" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#008A7A;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#00695F;labelBackgroundColor=#FFFFFF;" target="openai" value="cereri AI">
+          <mxGeometry relative="1" x="-0.1048" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B7791F;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#8A6116;labelBackgroundColor=#FFFFFF;" target="db" value="EF Core">
+          <mxGeometry relative="1" x="0.1429" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="720" y="320" />
+              <mxPoint x="650" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="cf" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F855A;strokeWidth=2.2;endArrow=block;endFill=1;fontSize=16;fontColor=#2F855A;labelBackgroundColor=#FFFFFF;" target="api" value="rutare publică">
+          <mxGeometry relative="1" x="0.0453" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="340" y="290" />
+              <mxPoint x="690" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="compose" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B5B5B;strokeWidth=2.0;endArrow=block;endFill=1;dashed=1;dashPattern=8 5;fontSize=15;fontColor=#5B5B5B;labelBackgroundColor=#FFFFFF;" target="frontend" value="compose up">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="544" y="540" />
+              <mxPoint x="490" y="540" />
+              <mxPoint x="490" y="310" />
+              <mxPoint x="300" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="compose" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B5B5B;strokeWidth=2.0;endArrow=block;endFill=1;dashed=1;dashPattern=8 5;fontSize=15;fontColor=#5B5B5B;labelBackgroundColor=#FFFFFF;" target="db" value="compose up">
+          <mxGeometry relative="1" y="2" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="560" y="538" />
+              <mxPoint x="660" y="538" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="compose" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B5B5B;strokeWidth=2.0;endArrow=block;endFill=1;dashed=1;dashPattern=8 5;fontSize=15;fontColor=#5B5B5B;labelBackgroundColor=#FFFFFF;" target="cf" value="compose up">
+          <mxGeometry relative="1" x="-0.3495" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="530" y="595" />
+              <mxPoint x="340" y="595" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B5B5B;strokeWidth=2.0;endArrow=block;endFill=1;dashed=1;dashPattern=8 5;fontSize=15;fontColor=#5B5B5B;labelBackgroundColor=#FFFFFF;" target="api" value="compose up">
+          <mxGeometry relative="1" x="-0.0991" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="579" y="594" />
+              <mxPoint x="825" y="594" />
+              <mxPoint x="825" y="310" />
+              <mxPoint x="730" y="310" />
+            </Array>
+            <mxPoint x="579" y="610" as="sourcePoint" />
+            <mxPoint x="730" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

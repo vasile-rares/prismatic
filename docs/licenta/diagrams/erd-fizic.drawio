@@ -1,0 +1,121 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="erd-formal-container" name="ERD fizic - formal container">
+    <mxGraphModel dx="3142" dy="1651" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="users" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#2F5597;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#EAF2FF;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="users" vertex="1">
+          <mxGeometry height="320" width="390" x="60" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="users_body" parent="users" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK  Id&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid&lt;br&gt;UQ  Email&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    Username&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    Role&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    HasPassword&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; boolean&lt;br&gt;    IsTwoFactorEnabled&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;boolean&lt;br&gt;    PasswordResetTokenHash&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;text NULL&lt;br&gt;    PasswordResetExpiresAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp NULL&lt;br&gt;    TwoFactorCodeHash&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; text NULL&lt;br&gt;    TwoFactorExpiresAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp NULL&lt;br&gt;    CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;br&gt;    UpdatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;/div&gt;" vertex="1">
+          <mxGeometry height="286" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="projects" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#2F5597;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#EAF2FF;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="projects" vertex="1">
+          <mxGeometry height="295" width="390" x="1020" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="projects_body" parent="projects" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK  Id&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid&lt;br&gt;FK  UserId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid NOT NULL&lt;br&gt;FK  ForkedFromProjectId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid NULL&lt;br&gt;    Slug&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    IsPublic&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;boolean&lt;br&gt;    DesignJson&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;jsonb&lt;br&gt;    ThumbnailDataUrl&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;text NULL&lt;br&gt;    ViewCount&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; integer&lt;br&gt;    CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;br&gt;    UpdatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;/div&gt;" vertex="1">
+          <mxGeometry height="261" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="linked_accounts" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#6C5CE7;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#F0EDFF;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="linked_accounts" vertex="1">
+          <mxGeometry height="205" width="390" x="60" y="598" as="geometry" />
+        </mxCell>
+        <mxCell id="linked_accounts_body" parent="linked_accounts" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK  Id&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid&lt;br&gt;FK  UserId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid NOT NULL&lt;br&gt;    Provider&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    ProviderUserId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; varchar NOT NULL&lt;br&gt;    CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;br&gt;&lt;br&gt;UQ  (Provider, ProviderUserId)&lt;br&gt;UQ  (UserId, Provider)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="171" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="project_bookmarks" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#B7791F;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#FFF4DA;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="project_bookmarks" vertex="1">
+          <mxGeometry height="125" width="390" x="545" y="218" as="geometry" />
+        </mxCell>
+        <mxCell id="project_bookmarks_body" parent="project_bookmarks" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK/FK  UserId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid&lt;br&gt;PK/FK  ProjectId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid&lt;br&gt;       CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;/div&gt;" vertex="1">
+          <mxGeometry height="91" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="project_likes" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#2F855A;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#E8F7EE;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="project_likes" vertex="1">
+          <mxGeometry height="125" width="390" x="545" y="398" as="geometry" />
+        </mxCell>
+        <mxCell id="project_likes_body" parent="project_likes" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK/FK  UserId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid&lt;br&gt;PK/FK  ProjectId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;uuid&lt;br&gt;       CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;/div&gt;" vertex="1">
+          <mxGeometry height="91" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="user_follows" parent="1" style="swimlane;html=1;rounded=0;startSize=34;horizontal=1;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#6C5CE7;fontColor=#172033;fontStyle=1;fontSize=18;startFillColor=#F0EDFF;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;dropTarget=0;whiteSpace=wrap;" value="user_follows" vertex="1">
+          <mxGeometry height="125" width="390" x="545" y="618" as="geometry" />
+        </mxCell>
+        <mxCell id="user_follows_body" parent="user_follows" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;whiteSpace=wrap;fontSize=13;fontColor=#111827;fontFamily=Courier New;" value="&lt;div style=&quot;font-family:Courier New, monospace; line-height:1.5;&quot;&gt;PK/FK  FollowerId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid&lt;br&gt;PK/FK  FolloweeId&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; uuid&lt;br&gt;       CreatedAt&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; timestamp&lt;/div&gt;" vertex="1">
+          <mxGeometry height="91" width="390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="projects" value="1 — 0..N owns">
+          <mxGeometry relative="1" x="-0.3956" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1000" y="198" />
+              <mxPoint x="1000" y="326" />
+              <mxPoint x="1200" y="326" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="linked_accounts" value="1 — 0..N OAuth accounts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="project_bookmarks" value="1 — 0..N">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="278" />
+              <mxPoint x="520" y="278" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="project_bookmarks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="projects" value="1 — 0..N">
+          <mxGeometry relative="1" x="-0.2" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="980" y="278" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="project_likes" value="1 — 0..N">
+          <mxGeometry relative="1" x="-0.2842" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="520" y="458" />
+              <mxPoint x="520" y="458" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="project_likes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="projects" value="1 — 0..N">
+          <mxGeometry relative="1" x="0.2" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="970" y="458" />
+              <mxPoint x="970" y="548" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="user_follows" value="1 — 0..N follower">
+          <mxGeometry relative="1" x="0.4831" y="60" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="530" y="318" />
+              <mxPoint x="530" y="668" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="user_follows" value="1 — 0..N followee">
+          <mxGeometry relative="1" x="0.1527" y="-64" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="520" y="328" />
+              <mxPoint x="520" y="708" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="projects" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=1.8;endArrow=none;startArrow=none;fontSize=14;fontColor=#172033;labelBackgroundColor=#FFFFFF;" target="projects" value="0..1 — 0..N forked_from">
+          <mxGeometry relative="1" x="-0.3824" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1240" y="318" />
+              <mxPoint x="1440" y="318" />
+              <mxPoint x="1440" y="506" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
