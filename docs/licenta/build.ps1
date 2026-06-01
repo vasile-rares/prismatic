@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$FinalPdfName = "Licenta_Favigon_VasileRaresMihail.pdf"
 
 function Get-ToolPath {
     param(
@@ -139,6 +140,26 @@ sau exportă manual fișierele '.drawio' în '.drawio.pdf' în același director
     }
 }
 
+function Publish-FinalPdf {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$BaseDirectory,
+        [Parameter(Mandatory = $true)]
+        [string]$SourcePdfName,
+        [Parameter(Mandatory = $true)]
+        [string]$TargetPdfName
+    )
+
+    $sourcePath = Join-Path $BaseDirectory $SourcePdfName
+    $targetPath = Join-Path $BaseDirectory $TargetPdfName
+
+    if (-not (Test-Path $sourcePath)) {
+        throw "Fișierul PDF sursă lipsește: '$SourcePdfName'."
+    }
+
+    Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+}
+
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Push-Location $root
 
@@ -161,6 +182,7 @@ try {
     Invoke-Step "Biber" { biber main | Out-Host }
     Invoke-Step "XeLaTeX (2)" { xelatex -shell-escape -interaction=nonstopmode -halt-on-error main.tex | Out-Host }
     Invoke-Step "XeLaTeX (3)" { xelatex -shell-escape -interaction=nonstopmode -halt-on-error main.tex | Out-Host }
+    Invoke-Step "Publicare PDF final" { Publish-FinalPdf -BaseDirectory $root -SourcePdfName "main.pdf" -TargetPdfName $FinalPdfName }
 }
 finally {
     Pop-Location

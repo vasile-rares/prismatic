@@ -101,6 +101,13 @@ Deși această zonă nu este nucleul tehnic al lucrării, ea schimbă semnificat
 
 Operația de fork este deosebit de interesantă deoarece leagă partea socială de partea de producție. Când un utilizator face fork la un proiect public, sistemul creează un nou proiect privat pentru el, cu design-ul copiat și cu legătura către proiectul-sursă. Astfel, reutilizarea nu este doar conceptuală, ci concretă și trasabilă.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{images/explore_page.png}
+  \caption{Interfața paginii Explore, cu proiecte publice și utilizatori sugerați}
+  \label{fig:explore-page}
+\end{figure}
+
 \section{Suprafața API și distribuția responsabilităților}
 
 Din perspectiva backend-ului, aplicația expune o suprafață REST suficient de largă încât să merite descrisă separat. În forma actuală, API-ul este împărțit în șase controllere principale. Unele acoperă autentificarea și profilul, altele gestionează proiectele și componenta socială, iar cele rămase tratează generarea asistată de AI și exportul în cod.
@@ -145,6 +152,13 @@ Editorul canvas este zona cea mai complexă din frontend și, în mod realist, c
 
 Practic, componenta injectează o suită întreagă de servicii: stare editor, viewport, istoric, clipboard, gesturi, context menu, persistare, generare, manager de pagini, stilizare DOM și altele. Separarea urmărește principiile interacțiunii de tip \textit{direct manipulation}, unde utilizatorul operează pe obiecte vizibile, primește feedback imediat și poate reveni rapid asupra acțiunilor \cite{shneiderman1983direct}. În același timp, păstrarea unui model intern separat de suprafața vizuală apropie editorul de direcțiile discutate în literatura despre combinarea editării directe cu reprezentări programabile \cite{chugh2016programmatic}. Principalele servicii implicate sunt sintetizate în Figura~\ref{fig:canvas-servicii}.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{images/canvas_editor.png}
+  \caption{Interfața editorului canvas în timpul editării unui proiect}
+  \label{fig:canvas-editor}
+\end{figure}
+
 \subsection{Starea editorului}
 
 `CanvasEditorStateService` păstrează semnalele principale ale editorului: paginile, pagina curentă, elementele selectate, unealta curentă și alte stări derivate. Faptul că starea este separată într-un serviciu dedicat face posibilă partajarea ei între mai multe comportamente fără a transmite manual date prin multe nivele de componente.
@@ -174,6 +188,13 @@ Din perspectiva lucrării, suportul multi-page este important deoarece mută Fav
 Pe lângă editorul propriu-zis, aplicația include și o pagină de preview separată (`CanvasPreviewPage`), folosită atât de autorul proiectului, cât și de vizitatorii care accesează un proiect public. În loc să redea direct structura internă a canvas-ului, această pagină reconstruiește reprezentarea intermediară pentru pagina selectată și cere backend-ului generarea HTML/CSS. Rezultatul este injectat într-un `iframe` prin `srcdoc`, ceea ce permite observarea produsului într-un mediu mai apropiat de randarea finală decât suprafața de editare.
 
 Preview-ul nu este doar o captură statică. El permite schimbarea paginii curente, selectarea unui cadru de vizualizare, redimensionarea viewport-ului și navigarea între pagini prin link-uri interne, interceptate prin `postMessage` între `iframe` și aplicație. În plus, pentru proiectele publice, aceeași pagină expune acțiuni de tip like, star și fork. Din acest motiv, preview-ul funcționează și ca punte între editor, conversie și partea socială a produsului.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{images/project_preview.png}
+  \caption{Pagina de preview folosită pentru vizualizarea rezultatului generat}
+  \label{fig:project-preview}
+\end{figure}
 
 \subsection{Persistare și integrare cu restul aplicației}
 

@@ -10,15 +10,19 @@
 \contentsline {figure}{\numberline {4.4}{\ignorespaces Model conceptual simplificat al datelor principale}}{18}{figure.caption.12}%
 \contentsline {figure}{\numberline {4.5}{\ignorespaces ERD simplificat pentru schema fizică a bazei de date}}{18}{figure.caption.13}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Vedere structurală simplificată a principalelor clase și servicii backend}}{26}{figure.caption.16}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Servicii principale implicate în funcționarea editorului canvas}}{28}{figure.caption.17}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Interfața paginii Explore, cu proiecte publice și utilizatori sugerați}}{25}{figure.caption.15}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Vedere structurală simplificată a principalelor clase și servicii backend}}{26}{figure.caption.17}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Interfața editorului canvas în timpul editării unui proiect}}{27}{figure.caption.18}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Pagina de preview folosită pentru vizualizarea rezultatului generat}}{28}{figure.caption.19}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Servicii principale implicate în funcționarea editorului canvas}}{29}{figure.caption.20}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Pipeline-ul AI în trei faze folosit în Favigon}}{31}{figure.caption.18}%
-\contentsline {figure}{\numberline {6.2}{\ignorespaces Diagrama de secvență simplificată pentru fluxul AI cu streaming}}{34}{figure.caption.20}%
-\contentsline {figure}{\numberline {6.3}{\ignorespaces Fluxul design-to-code bazat pe reprezentarea intermediară}}{37}{figure.caption.21}%
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Pipeline-ul AI în trei faze folosit în Favigon}}{32}{figure.caption.21}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Diagrama de secvență simplificată pentru fluxul AI cu streaming}}{35}{figure.caption.23}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Exemplu de artefacte generate și inspectate în interfața de export}}{37}{figure.caption.24}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Fluxul design-to-code bazat pe reprezentarea intermediară}}{38}{figure.caption.25}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Straturi complementare de validare folosite în proiect}}{44}{figure.caption.26}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Straturi complementare de validare folosite în proiect}}{50}{figure.caption.30}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

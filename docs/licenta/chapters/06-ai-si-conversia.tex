@@ -159,6 +159,13 @@ Motorul de conversie este implementat în proiectul `Favigon.Converter`. El este
 
 Această capabilitate este importantă deoarece proiectul nu se reduce la o singură artboard. Odată ce editorul suportă mai multe pagini, exportul trebuie să poată păstra această structură.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.94\textwidth]{images/generated_code.png}
+  \caption{Exemplu de artefacte generate și inspectate în interfața de export}
+  \label{fig:generated-code}
+\end{figure}
+
 \subsection{Responsive output}
 
 O componentă mai tehnică și mai interesantă este exportul responsive. În loc să dublez pur și simplu tot arborele pentru fiecare breakpoint, motorul produce artefactele principale și apoi diferențe CSS pentru breakpoints suplimentare. În testele existente se vede că sunt tratate cazuri precum noduri prezente doar pe anumite breakpoint-uri, schimbări de ordine pentru copii flex și diferențe de pseudo-clase sau keyframes.
@@ -192,8 +199,6 @@ Deși soluția funcționează și este coerentă, există și limite.
 
 Capitolul de față descrie partea cea mai originală din proiect. Generarea asistată de AI nu este tratată ca un artificiu separat, ci ca parte a unei arhitecturi care include reprezentare intermediară, validare, reparare și conversie în cod. Tocmai această integrare controlată face diferența între o demonstrație izolată și un produs software coerent.
 
-În capitolul următor sunt discutate măsurile de securitate, testarea și modul în care a fost validat practic faptul că aceste module lucrează împreună într-o manieră suficient de stabilă.
-
-
+În capitolul următor sunt urmărite scenarii concrete de utilizare, pentru a observa cum colaborează în practică editorul, AI-ul, preview-ul, exportul și componenta socială. Abia după această etapă este discutată explicit validarea sistemului prin măsuri de securitate și testare.
 
 

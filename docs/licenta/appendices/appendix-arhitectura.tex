@@ -1,25 +1,4 @@
-\chapter{Exemple tehnice și note de arhitectură}
-
-\section{Maparea dintre modulele proiectului}
-
-\begin{table}[H]
-  \centering
-  \caption{Maparea dintre proiectele din soluție și responsabilitățile lor}
-  \renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.5cm}Y}
-    \toprule
-    \textbf{Proiect / zonă} & \textbf{Responsabilitate principală} \\
-    \midrule
-    Frontend & interfață, rutare, editor canvas, preview, apeluri API \\
-    Favigon.API & endpoint-uri HTTP, middleware, configurare infrastructură web \\
-    Favigon.Application & servicii de business, DTO-uri, validări și orchestrare logică \\
-    Favigon.Infrastructure & repository-uri, EF Core, integrare OpenAI, email, storage \\
-    Favigon.Domain & entități persistente și relațiile lor \\
-    Favigon.Converter & reprezentare intermediară, validare și export în cod \\
-    Favigon.Tests & teste automate pentru backend și convertor \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+\chapter{Exemple tehnice suplimentare}
 
 \section{Exemplu simplificat de reprezentare intermediară}
 
@@ -118,18 +97,6 @@ Acest exemplu arată de ce IR-ul este util. El nu conține numai text sau numai 
 }
 \end{lstlisting}
 
-\section{Note practice despre organizarea editorului}
-
-În implementare, componenta `CanvasPage` acționează ca punct de orchestrare. Totuși, comportamentul editorului este împărțit între servicii focalizate. Această decizie poate părea mai complicată la prima vedere, dar a adus trei avantaje clare:
-
-\begin{enumerate}[leftmargin=1.5cm]
-  \item comportamentele precum zoom, gesturi sau istoric au putut fi dezvoltate independent;
-  \item persistarea și exportul au rămas conectate la starea editorului fără să încarce excesiv componenta;
-  \item logica a devenit mai ușor de urmărit atunci când apăreau bug-uri pe zone specifice.
-\end{enumerate}
-
-Pentru proiecte viitoare, această organizare face mai ușoară introducerea unor funcții precum comentarii pe canvas, componente reutilizabile, colaborare în timp real sau reguli de aliniere mai avansate.
-
 \section{Exemplu simplificat de evenimente de streaming}
 
 În scenariile de generare incrementală, frontend-ul nu primește doar un răspuns final, ci o secvență de evenimente SSE. Varianta simplificată de mai jos redă forma protocolului folosit pentru notificarea progresului și pentru transmiterea rezultatului final.
@@ -149,15 +116,3 @@ data: {"success":true,"stopAfterPhase":3}
 \end{lstlisting}
 
 Din punct de vedere al interfeței, acest format face posibilă afișarea unui progres real, nu doar a unei stări generice de așteptare. Din punct de vedere al depanării, el ajută la observarea etapei în care apare o eventuală eroare sau oprire prematură.
-
-\noindent\textbf{Compilarea documentației.}
-
-Lucrarea este gândită să poată fi compilată local prin scriptul PowerShell din `docs/licenta`. Pașii executați sunt:
-
-\begin{enumerate}[leftmargin=1.5cm,topsep=2pt,itemsep=1pt]
-  \item prima trecere `xelatex`, pentru fișiere auxiliare și structură;
-  \item `biber`, pentru procesarea bibliografiei;
-  \item încă două treceri `xelatex`, pentru rezolvarea referințelor, figurilor și citărilor.
-\end{enumerate}
-
-Scriptul folosește această succesiune explicită deoarece în mediul local `latexmk` nu poate fi folosit direct fără Perl. Din acest motiv, varianta manuală controlată este mai robustă pentru repository-ul actual.

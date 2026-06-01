@@ -797,17 +797,17 @@
       \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{title}{Chat Completions}
+      \field{title}{Chat Completions API Reference}
       \field{urlday}{23}
       \field{urlmonth}{5}
       \field{urlyear}{2026}
       \field{year}{2026}
       \field{urldateera}{ce}
       \verb{urlraw}
-      \verb https://platform.openai.com/docs/api-reference/chat/commands
+      \verb https://developers.openai.com/api/reference/resources/chat
       \endverb
       \verb{url}
-      \verb https://platform.openai.com/docs/api-reference/chat/commands
+      \verb https://developers.openai.com/api/reference/resources/chat
       \endverb
     \endentry
     \entry{openaiStructuredOutputs2026}{online}{}{}
@@ -1012,6 +1012,45 @@
       \endverb
       \verb{url}
       \verb http://doi.ieeecomputersociety.org/10.1109/MC.1983.1654471
+      \endverb
+    \endentry
+    \entry{wan2024dcgen}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{1}{}{%
+        {{hash=747384ae31b320890e9936a8dc82b11d}{%
+           family={Wan},
+           familyi={W\bibinitperiod},
+           given={Yuxuan},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{e0484efbd6b78aac99902da482957668}
+      \strng{fullhash}{e0484efbd6b78aac99902da482957668}
+      \strng{fullhashraw}{e0484efbd6b78aac99902da482957668}
+      \strng{bibnamehash}{e0484efbd6b78aac99902da482957668}
+      \strng{authorbibnamehash}{e0484efbd6b78aac99902da482957668}
+      \strng{authornamehash}{e0484efbd6b78aac99902da482957668}
+      \strng{authorfullhash}{e0484efbd6b78aac99902da482957668}
+      \strng{authorfullhashraw}{e0484efbd6b78aac99902da482957668}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2406.16386}
+      \field{title}{Automatically Generating UI Code from Screenshot: A Divide-and-Conquer-Based Approach}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2406.16386
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2406.16386
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2406.16386
       \endverb
     \endentry
     \entry{webflow2026}{online}{}{}

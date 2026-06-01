@@ -1,0 +1,100 @@
+\chapter{Scenarii de utilizare și evaluare practică}
+
+\section{Rolul acestui capitol în contextul lucrării}
+
+După prezentarea arhitecturii, a implementării și a mecanismelor de generare asistată de AI, este utilă o etapă intermediară în care aplicația să fie privită ca produs utilizabil, nu doar ca ansamblu de module. În practică, valoarea unui sistem precum Favigon nu rezultă numai din existența unui editor canvas, a unui pipeline AI sau a unui convertor, ci din felul în care acestea lucrează împreună într-un flux coerent pentru utilizator.
+
+Din acest motiv, capitolul de față urmărește câteva scenarii reprezentative, alese astfel încât să acopere atât utilizarea clasică a editorului, cât și scenariile care implică generare asistată, publicare și reutilizare. Scopul nu este repetarea implementării descrise deja în capitolele anterioare, ci observarea modului în care subsistemele colaboratoare se comportă atunci când sunt folosite cap-coadă.
+
+În plus, această abordare ajută și la justificarea deciziilor de proiectare. Unele alegeri care par excesiv de tehnice atunci când sunt privite izolat, de exemplu reprezentarea intermediară, persistarea automată sau separarea convertorului într-un proiect dedicat, devin mai ușor de înțeles când sunt raportate la pașii parcurși de utilizator într-un scenariu concret.
+
+\section{Criteriile urmărite în evaluarea practică}
+
+Scenariile alese nu urmăresc performanțe de benchmark și nici o comparație formală cu produse comerciale. Ele au un obiectiv mai simplu și mai potrivit pentru lucrarea de față: să arate dacă fluxurile importante ale produsului pot fi parcurse fără rupturi majore între editare, persistare, generare, preview, export și publicare.
+
+La nivel concret, au fost urmărite patru criterii.
+
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{coerența fluxului de lucru}, adică măsura în care utilizatorul poate trece natural de la o etapă la alta;
+  \item \textbf{trasabilitatea rezultatului}, adică posibilitatea de a înțelege de unde provine un anumit rezultat și în ce zonă apare o problemă;
+  \item \textbf{stabilitatea operațiilor frecvente}, precum salvarea, schimbarea paginilor, preview-ul și exportul;
+  \item \textbf{continuitatea dintre zona de creație și zona socială}, adică publicarea, explorarea și reutilizarea proiectelor.
+\end{enumerate}
+
+Aceste criterii au fost alese deoarece reflectă direct obiectivele proiectului. Favigon nu își propune doar să deseneze elemente pe un canvas și nici doar să apeleze un model AI, ci să ofere un traseu relativ complet de la idee la rezultat reutilizabil. În consecință, o evaluare practică relevantă trebuie să urmărească exact această continuitate.
+
+\section{Scenariul 1: creare manuală și export al unui proiect}
+
+Primul scenariu urmărește utilizarea aplicației fără generare AI, pentru a observa în ce măsură editorul, persistarea și exportul pot susține singure fluxul principal de lucru. Scenariul pornește de la crearea unui proiect nou și continuă cu editarea lui în canvas, verificarea prin preview și obținerea artefactelor finale de export.
+
+În practică, utilizatorul începe prin crearea unui proiect și deschiderea editorului dedicat. Odată încărcată pagina, interfața principală a editorului oferă atât zona de lucru, cât și panourile laterale necesare pentru navigarea printre pagini, inspectarea structurii și modificarea proprietăților. Figura~\ref{fig:canvas-editor} ilustrează această stare de lucru și este relevantă deoarece arată că editorul nu este tratat ca o simplă suprafață grafică, ci ca un spațiu în care structura documentului și proprietățile elementelor rămân vizibile și controlabile.
+
+În acest scenariu, utilizatorul construiește manual o pagină de prezentare simplă, formată dintr-un navbar, o secțiune hero, o zonă de beneficii și un call-to-action final. Din perspectiva experienței de lucru, un aspect important este faptul că operațiile de selecție, mutare, redimensionare și configurare a proprietăților sunt integrate într-un singur flux. Utilizatorul nu lucrează separat într-un ``mod de design'' și într-un ``mod de structură'', ci vede în același timp atât rezultatul vizual, cât și organizarea internă a elementelor.
+
+Această observație este importantă pentru că arată rolul serviciilor descrise în capitolul precedent. `CanvasEditorStateService`, `CanvasGestureService` și `CanvasViewportService` nu apar direct în interfață sub forma unor concepte teoretice, dar efectul lor cumulat devine vizibil tocmai în astfel de operații simple. Dacă ele nu ar colabora corect, editorul ar părea imediat inconsistent: selecția ar rămâne în urmă, gesturile ar reacționa prost sau starea documentului s-ar rupe de suprafața vizuală.
+
+Un al doilea aspect urmărit în acest scenariu este persistarea. În timpul editării, modificările nu sunt gândite ca acțiuni care trebuie confirmate permanent de utilizator prin salvare manuală. În schimb, editorul folosește autosave cu debounce și flush controlat la ieșirea din pagină. Din punct de vedere practic, această alegere este foarte importantă. Într-un produs de tip design tool, orice dependență excesivă de salvare manuală ar rupe ritmul de lucru și ar transforma editorul într-un prototip fragil.
+
+În cazul Favigon, comportamentul observat este apropiat de cel așteptat pentru un instrument de lucru continuu. Utilizatorul poate face mai multe modificări succesive, poate schimba selecția, poate naviga între pagini și poate reveni asupra unor elemente fără să aibă impresia că lucrează împotriva mecanismului de persistență. Acest lucru nu elimină toate riscurile, dar arată că partea de autosave nu a rămas un detaliu de implementare, ci susține direct experiența de utilizare.
+
+După editare, scenariul continuă cu verificarea rezultatului în pagina de preview. Aici apare una dintre diferențele importante dintre suprafața de editare și produsul rezultat. În locul reproducerii directe a documentului intern al editorului, aplicația reconstruiește reprezentarea intermediară și cere backend-ului generarea HTML/CSS pentru pagina curentă. Figura~\ref{fig:project-preview} arată această etapă și evidențiază faptul că preview-ul funcționează ca un pas de validare realistă, nu ca o simplă captură a canvas-ului.
+
+Din punct de vedere practic, preview-ul este util din două motive. Primul este validarea vizuală: utilizatorul poate observa mai ușor cum arată rezultatul într-un mediu mai apropiat de randarea finală. Al doilea este validarea fluxului tehnic: dacă designul arată corect în editor, dar nu se mai păstrează în preview, problema nu mai este în zona de manipulare vizuală, ci în maparea către IR sau în convertor.
+
+Ultimul pas al scenariului este exportul. Odată ce pagina a fost verificată, utilizatorul poate cere generarea artefactelor finale. Figura~\ref{fig:generated-code} ilustrează o astfel de situație și arată că ieșirea nu constă într-un singur bloc de text, ci într-un set de fișiere inspectabile. Pentru lucrarea de față, acest detaliu este important deoarece arată că fluxul nu se oprește la o promisiune de tip ``design-to-code'', ci duce efectiv la un rezultat care poate fi citit și reutilizat.
+
+Per ansamblu, acest prim scenariu confirmă că Favigon poate susține un traseu complet chiar și fără AI: creare, editare, salvare, preview și export. Asta este relevant deoarece demonstrează că aplicația nu depinde complet de componenta generativă pentru a avea sens ca produs. AI-ul extinde sistemul, dar nu îl înlocuiește.
+
+\section{Scenariul 2: generare pornind de la prompt și rafinare ulterioară}
+
+Al doilea scenariu urmărește zona care diferențiază cel mai mult proiectul: utilizarea AI-ului ca punct de pornire pentru construcția unei interfețe, urmată de integrarea rezultatului în editor și de rafinarea lui manuală. Acest scenariu este important pentru că arată dacă relația dintre prompt, pipeline, reprezentare intermediară și editare directă rămâne coerentă și în practică, nu doar la nivel conceptual.
+
+Punctul de pornire este un prompt de nivel produs, de exemplu o cerere pentru o pagină landing a unei aplicații SaaS, cu secțiuni standard, accent pe call-to-action și stil vizual modern. În această etapă, utilizatorul nu descrie fiecare pixel și nici nu dictează structura exactă a arborelui intern. Rolul promptului este să exprime intenția, iar sistemul trebuie să o transforme într-o bază de lucru utilizabilă.
+
+Din punct de vedere arhitectural, acesta este exact contextul în care devine vizibil avantajul pipeline-ului în trei faze. Dacă generarea ar produce direct cod final, orice neclaritate din rezultat ar fi greu de localizat. În schimb, în Favigon, drumul trece prin intenție, structură și stilizare. Asta face ca rezultatul final să poată fi discutat și corectat pe etape. Chiar dacă utilizatorul final nu vede explicit fiecare structură intermediară, efectul este unul important: sistemul oferă un rezultat mai controlabil.
+
+După finalizarea pipeline-ului, rezultatul nu rămâne izolat într-o fereastră de răspuns și nici nu este oferit doar ca export static. El este integrat în editor, unde poate fi tratat ca document de lucru normal. Din perspectiva produsului, acesta este probabil cel mai important pas al întregii aplicații. Dacă designul generat nu ar putea fi preluat în editor, Favigon ar rămâne mai aproape de un generator de mockup-uri decât de o platformă de design asistat.
+
+Odată încărcat în editor, utilizatorul poate modifica structura, poate rescrie texte, poate ajusta dimensiuni, spațieri, culori și layout-uri, sau poate adăuga elemente noi. În acest fel, AI-ul funcționează ca accelerator al primei versiuni, nu ca autor final incontestabil al interfeței. Acest aspect este important și pentru tonul academic al lucrării, deoarece arată o abordare realistă: modelul propune o soluție inițială, iar utilizatorul rămâne în controlul rezultatului.
+
+În practică, etapa de rafinare este cea care validează calitatea integrării dintre generare și editare. Dacă rezultatul AI ar intra în editor într-o formă greu de manipulat, cu elemente poziționate arbitrar sau cu proprietăți incoerente, întreaga idee de continuitate s-ar pierde. Observația importantă aici este că reprezentarea intermediară acționează tocmai ca stratul care face posibilă această tranziție. Designul generat poate fi tratat în același limbaj intern ca un design creat manual, ceea ce simplifică atât editarea, cât și exportul ulterior.
+
+În plus, scenariul acesta evidențiază și una dintre limitările reale ale aplicației. Calitatea rezultatului inițial depinde încă de prompt și de disciplina regulilor folosite în mesajele de sistem. Uneori, prima variantă este foarte aproape de ce se dorește; alteori, ea cere ajustări mai vizibile. Totuși, tocmai faptul că rezultatul poate fi corectat în editor fără ruperea fluxului face ca această limitare să fie mai ușor de acceptat în practică.
+
+După rafinare, utilizatorul poate relua pașii de preview și export, ca în scenariul anterior. Din această perspectivă, scenariul 2 nu este complet diferit de scenariul 1, ci îl extinde. Diferența este că punctul de intrare nu mai este o pagină goală, ci o propunere generată. În rest, traseul rămâne același: document editabil, preview realist și artefacte de ieșire inspectabile.
+
+Acesta este un rezultat important pentru lucrare, deoarece arată că AI-ul nu introduce un ``tunel'' paralel în aplicație. El alimentează același flux general de produs. Din punct de vedere al proiectării software, aceasta este una dintre cele mai solide justificări pentru separarea dintre generare, reprezentare intermediară și conversie.
+
+\section{Scenariul 3: publicare, explorare și reutilizare prin fork}
+
+Al treilea scenariu urmărește trecerea din zona individuală de lucru în zona socială a aplicației. Pentru multe proiecte academice, această parte ar putea părea secundară, însă în cazul Favigon ea are un rol important: arată că rezultatele create nu rămân blocate în spațiul privat al unui singur utilizator, ci pot circula, pot fi descoperite și pot deveni puncte de plecare pentru alte proiecte.
+
+Scenariul pornește de la un proiect considerat suficient de matur pentru a fi făcut public. După publicare, el devine eligibil pentru afișare în zona `Explore`, unde utilizatorii pot vedea proiecte populare sau recomandate și pot descoperi alți autori. Figura~\ref{fig:explore-page} este relevantă tocmai pentru această etapă, deoarece arată că aplicația nu se oprește la o listă administrativă de proiecte, ci oferă un spațiu distinct de descoperire.
+
+Din punct de vedere al produsului, publicarea schimbă statutul proiectului. El nu mai este doar un document persistat în contul unui autor, ci o resursă care poate primi vizualizări, aprecieri și bookmark-uri și care poate fi asociată mai clar cu identitatea creatorului său. Acest lucru contează deoarece mută aplicația din zona unui instrument de lucru local către zona unui ecosistem mic, dar coerent, de creare și reutilizare.
+
+O funcție deosebit de relevantă în acest context este fork-ul. Dacă un utilizator găsește un proiect public interesant, el poate crea o copie proprie pornind de la acel punct. Din perspectivă tehnică, această operație nu înseamnă doar duplicarea unui document JSON, ci păstrarea unei relații între proiectul-sursă și cel derivat. Din perspectivă practică, rezultatul este foarte util: reutilizarea devine concretă și trasabilă.
+
+Acest scenariu este valoros și pentru că arată întâlnirea dintre două zone care altfel ar putea rămâne separate: partea de producție și partea socială. În multe produse, zona de explorare este doar un catalog de exemple. În Favigon, ea are efect direct asupra procesului de creație, deoarece un proiect descoperit public poate fi transformat într-un punct de pornire pentru o nouă iterație de editare și export.
+
+Mai mult, acest scenariu oferă și un argument bun pentru existența infrastructurii de profiluri, follow, like, star și proiecte publice. Dacă lucrarea s-ar opri doar la generarea AI și la export, aceste funcții ar părea poate suplimentare. Însă, puse într-un flux concret de publicare, explorare și fork, ele capătă o justificare clară la nivel de produs.
+
+\section{Observații asupra comportamentului sistemului}
+
+Scenariile anterioare permit câteva observații generale despre comportamentul aplicației în utilizare practică.
+
+Prima observație este că separarea pe subsisteme nu rupe experiența utilizatorului. Deși intern există granițe clare între editor, pipeline AI, convertor, backend REST și componenta socială, în utilizare acestea apar ca părți ale aceluiași produs. Acesta este un semn bun pentru proiect, fiindcă o arhitectură curată, dar resimțită de utilizator ca fragmentare, nu ar reprezenta un rezultat reușit.
+
+A doua observație este că reprezentarea intermediară nu este doar o decizie tehnică elegantă, ci un element cu efect vizibil în flux. Ea face posibilă trecerea dintre editare, generare și export fără schimbarea ``limbajului intern'' al documentului. Din acest motiv, multe dintre operațiile discutate în scenariile anterioare par mai naturale decât ar părea într-un sistem bazat doar pe transformări ad-hoc între formate incompatibile.
+
+A treia observație este că preview-ul joacă un rol mai important decât ar putea părea inițial. El nu este doar o etapă de prezentare, ci și un punct de control între documentul editabil și ieșirea finală. În practică, el ajută la separarea problemelor vizuale de problemele de conversie și reduce riscul ca utilizatorul să descopere abia la export că rezultatul nu corespunde așteptărilor.
+
+A patra observație privește limitările rămase. Deși fluxul general este coerent, sistemul nu elimină complet costul rafinării manuale, mai ales în scenariile pornite din prompt. Pentru proiectul de față, însă, acest lucru nu trebuie privit ca eșec. O platformă academică realistă nu trebuie să pretindă că AI-ul înlocuiește complet editarea, ci că reduce costul pornirii și al iterării. Din această perspectivă, comportamentul actual este acceptabil și explicabil.
+
+În fine, scenariile practice confirmă că Favigon nu este doar un demo izolat pentru una dintre componente. Editorul are utilitate și fără AI, AI-ul este util pentru accelerarea construcției, convertorul produce artefacte inspectabile, iar zona socială oferă un sens suplimentar proiectelor create. Împreună, acestea susțin ideea că aplicația funcționează ca produs unitar, chiar dacă există încă limite și zone extensibile.
+
+\section{Concluzii intermediare}
+
+Capitolul de față a urmărit aplicația dintr-o perspectivă pragmatică, orientată pe trasee reale de utilizare. Rezultatul principal este că fluxurile importante ale produsului pot fi parcurse într-o succesiune coerentă: creare, editare, generare asistată, preview, export, publicare și reutilizare. Acest lucru întărește observația că valoarea proiectului nu stă într-o singură funcționalitate spectaculoasă, ci în integrarea consistentă a mai multor subsisteme.
+
+În capitolul următor sunt discutate măsurile de securitate, testarea automată și validarea sistemului, adică partea care completează observațiile practice de aici cu o analiză explicită a fiabilității și a limitelor de verificare.

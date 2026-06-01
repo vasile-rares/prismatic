@@ -2381,7 +2381,8 @@
     <bcf:citekey order="3" intorder="2">martin2017cleanarchitecture</bcf:citekey>
     <bcf:citekey order="4" intorder="1">beltramelli2017pix2code</bcf:citekey>
     <bcf:citekey order="5" intorder="1">shen2024uicoder</bcf:citekey>
-    <bcf:citekey order="5" intorder="2">xu2025latcoder</bcf:citekey>
+    <bcf:citekey order="5" intorder="2">wan2024dcgen</bcf:citekey>
+    <bcf:citekey order="5" intorder="3">xu2025latcoder</bcf:citekey>
     <bcf:citekey order="6" intorder="1">figmaDevMode2026</bcf:citekey>
     <bcf:citekey order="7" intorder="1">webflow2026</bcf:citekey>
     <bcf:citekey order="8" intorder="1">framerWireframer2026</bcf:citekey>
