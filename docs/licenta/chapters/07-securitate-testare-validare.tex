@@ -16,7 +16,7 @@ Din acest motiv, validarea a fost privită pe trei niveluri:
 
 \subsection{Autentificare și sesiune}
 
-Securitatea începe în mod firesc din zona de autentificare. În Favigon, autentificarea se bazează pe JWT bearer validat în backend, dar transportat către client prin cookie HTTP only. Refresh token-ul este separat și limitat la un path specific. Această alegere reduce expunerea directă a token-urilor în codul client și simplifică rotația lor la refresh \cite{aspnetJwt2025,owaspAuth2026}.
+Securitatea începe din zona de autentificare. În Favigon, autentificarea se bazează pe JWT bearer validat în backend, dar transportat către client prin cookie HTTP only. Refresh token-ul este separat și limitat la un path specific. Această alegere reduce expunerea directă a token-urilor în codul client și simplifică rotația lor la refresh \cite{aspnetJwt2025,owaspAuth2026}.
 
 Pentru scenariile de risc mai mare, proiectul include și autentificare în doi pași. Această măsură crește costul unui atac bazat exclusiv pe compromiterea parolei \cite{owaspMfa2026}. Chiar dacă implementarea actuală folosește cod prin email și nu un factor hardware, ea rămâne o îmbunătățire reală față de autentificarea cu un singur factor.
 
@@ -60,7 +60,7 @@ Tabelul~\ref{tab:masuri-securitate} rezumă măsurile principale, însă valoare
 
 \subsection{Testare automată backend}
 
-La data de 25 mai 2026, rularea locală a comenzii `dotnet test` pentru proiectul `Backend/Favigon.Tests` a raportat 108 teste trecute, 0 eșuate și o durată totală de aproximativ 5 secunde. Testele acoperă servicii, controllere, middleware și convertorul. Acest fapt este important pentru că zonele cele mai sensibile tehnic ale aplicației se află tocmai în backend și în motorul de conversie.
+La data de 1 iunie 2026, rularea locală a comenzii `dotnet test` pentru proiectul `Backend/Favigon.Tests` a raportat 108 teste trecute, 0 eșuate și o durată totală de aproximativ 6 secunde. Testele acoperă servicii, controllere, middleware și convertorul. Acest fapt este important pentru că zonele cele mai sensibile tehnic ale aplicației se află tocmai în backend și în motorul de conversie.
 
 Mai precis, există teste pentru:
 
@@ -144,7 +144,7 @@ Pe lângă distribuția testelor din Tabelul~\ref{tab:distributie-teste}, valida
     \toprule
     \textbf{Indicator} & \textbf{Valoare observată} & \textbf{Sursă} \\
     \midrule
-    Execuția suitei backend & 108 / 108 teste trecute, 0 eșuate, aproximativ 5 s & rulare `dotnet test` în `Backend/Favigon.Tests` la 25.05.2026 \\
+    Execuția suitei backend & 108 / 108 teste trecute, 0 eșuate, aproximativ 6 s & rulare `dotnet test` în `Backend/Favigon.Tests` la 01.06.2026 \\
     Suprafața API expusă & 6 controllere și 62 endpoint-uri anotate HTTP & inventar din controllerele API \\
     Politici de rate limiting & 4 politici distincte (`auth`, `ai`, `converter`, `users`) & configurarea din `Program.cs` \\
     Persistare automată în editor & debounce de 500 ms, flush maxim 4 s, 4 reîncercări cu bază 2 s & `CanvasPersistenceService` \\

@@ -6,7 +6,7 @@ Zona de \textit{design-to-code} nu este nouă, dar a devenit mult mai vizibilă 
 
 În practică, piața a evoluat într-o direcție puțin diferită de lucrările academice. Produsele comerciale au observat că utilizatorul nu are nevoie doar de un model care produce cod, ci de un întreg flux de lucru: proiectare, organizare pe pagini, colaborare, verificare, export, publicare și iterație. Din acest motiv, instrumentele moderne nu mai pot fi analizate doar prin întrebarea ``generează sau nu cod?'', ci prin ansamblul de funcții pe care îl oferă.
 
-Mai există și un detaliu important. În multe situații, problema nu este că nu se poate genera ceva, ci că rezultatul generat nu este suficient de ușor de integrat într-un produs real. Un layout poate arăta bine ca demonstrație, dar dacă nu are o structură logică, dacă nu respectă constrângeri tehnice și dacă nu poate fi controlat prin iterații mici, valoarea lui practică scade. Această observație a influențat direct proiectarea Favigon: în loc să trateze AI-ul ca pe un generator final, platforma îl include într-un lanț controlat, în care reprezentarea intermediară și validarea joacă un rol central.
+Un aspect care apare repede în practică este următorul: nu contează doar dacă se poate genera ceva, ci și dacă rezultatul poate fi integrat ușor într-un produs real. Un layout poate arăta bine într-o demonstrație, dar dacă nu are o structură logică, nu respectă constrângeri tehnice și nu poate fi ajustat prin iterații mici, valoarea lui scade. De aici a pornit și decizia din Favigon de a nu trata AI-ul ca pe un generator final, ci ca pe un pas dintr-un flux controlat, sprijinit de reprezentarea intermediară și de validare.
 
 \section{Criterii de comparație}
 
@@ -27,15 +27,15 @@ Aceste criterii nu sunt perfecte și nu încearcă să stabilească ``cel mai bu
 
 \subsection{Figma}
 
-Figma este, în mod firesc, un punct de referință pentru orice discuție despre proiectarea interfețelor. Din perspectiva acestei lucrări, interesul nu este dat doar de partea de design colaborativ, ci și de Dev Mode. Documentația oficială arată clar că Dev Mode este gândit ca spațiu pentru inspectarea designurilor și pentru apropierea dintre design și implementare \cite{figmaDevMode2026}. Cu toate acestea, Figma rămâne în primul rând un instrument de design și handoff. Chiar dacă poate genera fragmente de cod sau poate conecta design system-uri la bazele de cod, el nu devine automat un mediu complet de construire și publicare a produsului.
+Figma este un punct de referință pentru orice discuție despre proiectarea interfețelor. Din perspectiva acestei lucrări, interesul nu este dat doar de partea de design colaborativ, ci și de Dev Mode. Documentația oficială arată clar că Dev Mode este gândit ca spațiu pentru inspectarea designurilor și pentru apropierea dintre design și implementare \cite{figmaDevMode2026}. Cu toate acestea, Figma rămâne în primul rând un instrument de design și handoff. Chiar dacă poate genera fragmente de cod sau poate conecta design system-uri la bazele de cod, el nu devine automat un mediu complet de construire și publicare a produsului.
 
-Pentru Favigon, Figma este util mai ales ca termen de comparație în două direcții. Prima direcție este ideea de structură vizuală clară și multi-page. A doua este faptul că handoff-ul către dezvoltare nu este suficient în sine; dacă se urmăresc iterații rapide, este necesar un spațiu în care designul să poată fi nu doar inspectat, ci și transformat mai departe în ceva executabil.
+Pentru comparația cu Favigon, Figma este util în două direcții. Prima este ideea de structură vizuală clară și multi-page. A doua este faptul că handoff-ul către dezvoltare nu este suficient în sine; dacă se urmăresc iterații rapide, este necesar un spațiu în care designul să poată fi nu doar inspectat, ci și transformat mai departe în ceva executabil.
 
 \subsection{Webflow}
 
 Webflow este relevant deoarece reprezintă foarte bine zona de \textit{visual website builder}. Pagina oficială pune accent pe construcția vizuală, publicare și generare rapidă de site-uri \cite{webflow2026}. Avantajul evident al acestei abordări este că rezultatul ajunge repede online și este ușor de gestionat din punct de vedere al conținutului. În schimb, Webflow are un focus clar pe zona de website publishing și CMS, nu pe un model general de interfață reutilizabil între mai multe framework-uri.
 
-Pentru poziționarea Favigon, Webflow este important tocmai pentru a delimita intenția aplicației. Nu a fost urmărită construirea încă unui publicator vizual de site-uri. Accentul cade mai mult pe controlul tehnic al structurii, exportul în cod și legătura dintre un editor vizual și o reprezentare internă care poate fi convertită.
+Pentru poziționarea Favigon, Webflow este important în special pentru a delimita intenția aplicației. Nu a fost urmărită construirea încă unui publicator vizual de site-uri. Accentul cade mai mult pe controlul tehnic al structurii, exportul în cod și legătura dintre un editor vizual și o reprezentare internă care poate fi convertită.
 
 \subsection{Framer}
 
@@ -76,9 +76,9 @@ Tabelul~\ref{tab:comparatie-platforme} nu are rolul de a demonstra că Favigon e
 
 \section{Poziționarea proiectului Favigon}
 
-În urma comparației, Favigon poate fi poziționat ca o platformă experimentală de tip \textit{AI-assisted visual builder}, orientată mai puțin spre publicare imediată și mai mult spre explorarea unui flux coerent între idee, design, model intern și cod executabil. Cu alte cuvinte, produsul nu își propune să concureze prin maturitatea ecosistemului, ci prin claritatea traseului tehnic pe care îl oferă.
+În urma comparației, Favigon poate fi poziționat ca o platformă experimentală de tip editor vizual asistat de AI, orientată mai puțin spre publicare imediată și mai mult spre explorarea unui flux coerent între idee, design, model intern și cod executabil. Cu alte cuvinte, produsul nu își propune să concureze prin maturitatea ecosistemului, ci prin claritatea traseului tehnic pe care îl oferă.
 
-În termeni practici, produsul este mai potrivit pentru prototipare rapidă, experimente de interfață, proiecte academice și aplicații mici sau medii decât pentru scenarii enterprise foarte rigide. Această delimitare este importantă, deoarece explică mai bine valoarea reală a platformei: nu promite înlocuirea unui ecosistem comercial matur, ci oferă un cadru integrat pentru a trece mai repede de la idee la un rezultat executabil și analizabil tehnic.
+În termeni practici, produsul este mai potrivit pentru prototipare rapidă, experimente de interfață, proiecte academice și aplicații mici sau medii decât pentru scenarii enterprise foarte rigide. Această delimitare explică mai bine valoarea reală a platformei: nu promite înlocuirea unui ecosistem comercial matur, ci oferă un cadru integrat pentru a trece mai repede de la idee la un rezultat executabil și ușor de analizat tehnic.
 
 Această poziționare vine și cu limite. De exemplu, Favigon nu are nivelul de rafinament vizual sau de integrare enterprise al unor produse comerciale mature. Nici partea de colaborare simultană în timp real nu este încă implementată. Totuși, pentru scopul lucrării, aceste limite nu sunt un dezavantaj major. Ele permit concentrarea pe întrebările urmărite aici:
 
@@ -101,7 +101,7 @@ Din analiza de mai sus rezultă că există un spațiu intermediar între instru
   \item o integrare a AI-ului care poate fi analizată, validată și îmbunătățită pas cu pas.
 \end{enumerate}
 
-Din punct de vedere academic, acesta reprezintă un unghi bun pentru o lucrare de licență. Proiectul nu se reduce la folosirea unui model AI pentru obținerea unor pagini, ci pune în discuție mai multe aspecte inginerești: modelare internă, arhitectură pe straturi, validare, testare, UX și decizii de produs.
+Din punct de vedere academic, aceasta este o direcție relevantă pentru o lucrare de licență. Proiectul nu se reduce la folosirea unui model AI pentru obținerea unor pagini, ci pune în discuție mai multe aspecte inginerești: modelare internă, arhitectură pe straturi, validare, testare, UX și decizii de produs.
 
 \section{Concluzii intermediare}
 

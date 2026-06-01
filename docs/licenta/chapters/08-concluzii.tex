@@ -2,65 +2,46 @@
 
 \section{Gradul de îndeplinire a obiectivelor}
 
-Analiza din capitolele anterioare arată că obiectivul principal al lucrării a fost atins. A fost proiectată și implementată o platformă web care permite crearea și editarea vizuală a interfețelor, generarea asistată de AI, conversia în cod și partajarea proiectelor între utilizatori. În plus, aceste funcții nu există separat, ci sunt integrate într-un produs unitar.
+Analiza din capitolele anterioare arată că obiectivul principal al lucrării a fost atins. A fost proiectată și implementată o platformă web care permite editare vizuală, generare asistată de AI, conversie în cod și reutilizarea proiectelor într-un context social. Mai important decât lista de funcții este faptul că acestea nu au rămas separate, ci au fost integrate într-un produs unitar.
 
-Din obiectivele specifice formulate la început, cele mai importante au fost îndeplinite astfel:
+Obiectivele specifice formulate la început au fost acoperite în mod satisfăcător. Arhitectura aplicației este separată clar pe frontend, API, aplicație, infrastructură și convertor. Editorul canvas suportă lucru multi-page, istoric, clipboard, gesturi și persistare automată. Reprezentarea intermediară leagă editorul, AI-ul și exportul. Pipeline-ul AI în trei faze funcționează controlat, iar exportul este disponibil pentru HTML, React și Angular. În plus, partea de produs include autentificare, proiecte publice și private, precum și mecanisme de tip like, star, follow și fork.
 
-\begin{itemize}[leftmargin=1.5cm]
-  \item arhitectura full-stack este separată clar pe frontend, API, aplicație, infrastructură și convertor;
-  \item editorul canvas suportă stări, gesturi, istoric, clipboard, persistare și lucru multi-page;
-  \item reprezentarea intermediară permite decuplarea dintre editor, AI și export;
-  \item pipeline-ul AI în trei faze funcționează și poate fi urmărit în mod controlat;
-  \item exportul în HTML, React și Angular este operațional, inclusiv pentru scenarii multi-page și responsive;
-  \item produsul include funcții sociale reale, nu doar componente tehnice izolate.
-\end{itemize}
-
-Din perspectiva unei lucrări de licență, este important și faptul că proiectul nu s-a blocat la nivel de demo local. Existența autentificării, a profilurilor, a proiectelor publice și a testării automate pe backend arată că soluția a fost tratată ca aplicație completă, nu doar ca experiment punctual. Trasabilitatea dintre obiective, module și validare este sintetizată deja în Tabelul~\ref{tab:trasabilitate-obiective}, iar indicatorii cantitativi principali apar în Tabelul~\ref{tab:indicatori-validare}.
+Pentru o lucrare de licență, este relevant și faptul că proiectul nu a rămas la nivelul unui demo local. Existența autentificării, a profilurilor, a testelor automate backend și a unei infrastructuri de rulare complete arată că soluția a fost tratată ca aplicație software coerentă, nu doar ca experiment punctual.
 
 \section{Puncte forte ale proiectului}
 
-Principalul punct forte al proiectului este coerența dintre subsisteme. Editorul, AI-ul, exportul și zona socială nu sunt doar funcții alăturate, ci lucrează pe același model de proiect și pe aceeași infrastructură de produs. Tocmai această integrare este contribuția cea mai valoroasă.
+Primul punct forte este coerența dintre subsisteme. Editorul, AI-ul, exportul și zona socială folosesc aceeași bază de proiect și aceeași infrastructură generală. În mod normal, aceste zone apar în produse diferite sau sunt tratate superficial atunci când sunt puse împreună. În Favigon, tocmai integrarea lor reprezintă partea cea mai valoroasă.
 
-Un al doilea punct forte este reprezentarea intermediară. Fără ea, proiectul ar fi avut fie un editor izolat, fie un generator AI greu de controlat, fie un convertor legat rigid de o singură tehnologie. IR-ul a permis toate aceste funcții simultan.
+Al doilea punct forte este reprezentarea intermediară a interfeței. Ea a permis separarea dintre editare, generare și conversie, fără a lega platforma de un singur framework sau de o singură formă de ieșire. Din punct de vedere tehnic, aceasta este una dintre deciziile care au făcut proiectul extensibil.
 
-Un al treilea punct forte este modul în care este introdus AI-ul. În loc ca modelul să fie tratat ca o sursă imprevizibilă de cod final, sunt introduse etape, constrângeri și validări. Rezultatul nu este perfect, dar este mult mai potrivit pentru o aplicație software decât un simplu apel direct din prompt în cod.
+Al treilea punct forte este modul în care a fost introdus AI-ul. În locul unei abordări de tip „prompt și cod final”, proiectul folosește etape, constrângeri și validări. Rezultatul nu elimină variabilitatea modelului, dar o face mai ușor de controlat și de explicat.
 
-În fine, un punct forte este și faptul că backend-ul a fost testat consistent. Cele 108 teste automate nu acoperă întreaga aplicație, dar oferă încredere în zonele cele mai sensibile ale logicii de business și ale convertorului.
+Un al patrulea punct forte este validarea backend-ului și a convertorului. Cele 108 teste automate nu acoperă tot produsul, dar oferă încredere în zonele cele mai sensibile: autentificare, proiecte, middleware și conversie.
 
 \section{Limitări}
 
-Ca orice proiect de licență, Favigon are și limitări clare.
+Ca orice proiect de licență, Favigon are și limite clare.
 
-Prima limită este testarea frontend-ului, în special a editorului canvas. Deși acesta funcționează și a fost verificat funcțional, nu are încă o acoperire automată comparabilă cu backend-ul.
+Prima limită este testarea frontend-ului, în special a editorului canvas. Deși comportamentele principale au fost verificate funcțional, acoperirea automată este încă redusă în comparație cu partea de backend.
 
-A doua limită este dependența de calitatea ieșirilor AI. Chiar dacă pipeline-ul și validarea reduc variabilitatea, rezultatul final depinde totuși de model și de prompt.
+A doua limită este dependența de calitatea ieșirilor AI. Chiar dacă pipeline-ul și validarea reduc din variabilitate, rezultatul final depinde în continuare de model și de promptul primit.
 
-A treia limită este lipsa colaborării în timp real între utilizatori în interiorul aceluiași proiect. Pentru o platformă orientată și spre social și reutilizare, aceasta ar fi o direcție logică de extindere.
+A treia limită ține de colaborare. Platforma permite publicare, fork și reutilizare, dar nu oferă încă editare simultană sau comentarii direct în interiorul proiectului.
 
-A patra limită este legată de rafinarea exportului. Deși motorul produce rezultate utile și coerente, proiectele generate ar putea fi îmbunătățite în viitor prin integrare mai profundă cu convențiile fiecărui framework sau cu design systems preexistente.
+A patra limită este nivelul de rafinare al exportului. Codul generat este util și coerent, dar poate fi îmbunătățit în viitor prin reguli mai avansate pentru fiecare ecosistem țintă și prin integrare mai bună cu design systems externe.
 
 \section{Perspective de dezvoltare}
 
-Pornind de la aceste limite, văd mai multe direcții naturale de continuare.
+O direcție firească de continuare este introducerea colaborării în timp real și a unei forme mai bogate de versionare. Pentru un produs orientat și spre reutilizare, această extindere ar aduce mai multă valoare decât simpla adăugare de noi tipuri de export.
 
-\subsection{Colaborare și versionare}
+A doua direcție privește partea de AI. Pipeline-ul actual poate fi rafinat prin exemple contextuale, evaluare mai bună a rezultatului intermediar și transformări iterative pornind de la un design deja existent, nu doar de la un prompt nou.
 
-O primă direcție ar fi introducerea colaborării în timp real și a unei forme mai bogate de versionare. În prezent, proiectele pot fi persistate și fork-uite, dar nu există încă editare simultană sau comentarii direct în canvas. Acest pas ar apropia platforma de instrumentele moderne folosite în echipe.
+A treia direcție este componentizarea la nivel de editor și de export. În forma actuală, proiectul lucrează bine cu pagini și secțiuni, dar un nivel mai clar de componente reutilizabile ar face platforma mai potrivită pentru aplicații mai mari.
 
-\subsection{Îmbunătățirea pipeline-ului AI}
-
-O a doua direcție este rafinarea pipeline-ului AI. De exemplu, pot fi introduse exemple contextuale pe tipuri de pagini, ranking pentru rezultate alternative, evaluare automată a structurii sau suport pentru transformări iterative mai precise pornind de la un design existent.
-
-\subsection{Componentizare și design systems}
-
-O a treia direcție este introducerea componentelor reutilizabile la nivel de editor și de export. În acest moment, structura este suficient de bogată pentru pagini și secțiuni, dar un nivel suplimentar de componentizare ar face proiectul mai potrivit pentru aplicații mai mari și pentru integrare cu biblioteci UI existente.
-
-\subsection{Testare frontend și observabilitate}
-
-O a patra direcție, foarte importantă, este extinderea testării frontend și introducerea unei observabilități mai bune. Pentru editor ar fi utile teste end-to-end și teste vizuale automate. Pentru backend și pentru AI ar fi utilă și o zonă mai clară de metrics și logging operațional.
+A patra direcție importantă este extinderea testării și a observabilității. Pentru frontend ar fi utile teste end-to-end și verificări vizuale automate, iar pentru backend și AI ar ajuta metrici și loguri mai detaliate.
 
 \section{Încheiere}
 
-Dincolo de rezultatul tehnic, proiectul a fost și un exercițiu de integrare. Au trebuit combinate decizii de arhitectură, experiență de utilizator, persistare, securitate, AI și export într-o singură aplicație. Nu toate zonele sunt la nivelul unui produs comercial matur, dar platforma demonstrează clar fezabilitatea unui astfel de flux integrat.
+Favigon nu rezolvă complet toate problemele din zona design-to-code, dar demonstrează că un astfel de flux poate fi construit într-o formă coerentă și controlabilă. Editorul vizual, reprezentarea intermediară, pipeline-ul AI și motorul de conversie funcționează împreună suficient de bine încât să susțină un produs real, nu doar o demonstrație izolată.
 
-Lucrarea își atinge scopul tocmai prin faptul că nu prezintă doar o idee, ci un produs funcțional în care ideea poate fi observată concret. Favigon arată că un editor vizual, o reprezentare intermediară, un pipeline AI și un motor de conversie pot fi reunite într-o arhitectură coerentă și extensibilă. Din acest motiv, proiectul poate reprezenta atât un rezultat final valid pentru lucrarea de licență, cât și o bază reală pentru dezvoltări viitoare.
+Din punctul de vedere al lucrării, rezultatul este relevant tocmai pentru că îmbină decizii de arhitectură, experiență de utilizator, securitate, persistare și integrare AI în aceeași aplicație. În această formă, proiectul reprezintă atât un rezultat valid pentru lucrarea de licență, cât și o bază bună pentru dezvoltări ulterioare.

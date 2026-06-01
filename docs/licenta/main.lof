@@ -2,22 +2,22 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Vedere simplificată asupra stack-ului tehnologic folosit de Favigon}}{13}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vedere simplificată asupra stack-ului tehnologic folosit de Favigon}}{12}{figure.caption.7}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Diagrama de use-case simplificată pentru funcționalitățile principale din Favigon}}{16}{figure.caption.9}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Arhitectura logică generală a sistemului}}{17}{figure.caption.10}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Vedere de tip clean architecture pentru backend-ul Favigon}}{18}{figure.caption.11}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Model conceptual simplificat al datelor principale}}{19}{figure.caption.12}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces ERD simplificat pentru schema fizică a bazei de date}}{19}{figure.caption.13}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Diagrama de use-case simplificată pentru funcționalitățile principale din Favigon}}{15}{figure.caption.9}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Arhitectura logică generală a sistemului}}{16}{figure.caption.10}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Vedere de tip clean architecture pentru backend-ul Favigon}}{17}{figure.caption.11}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Model conceptual simplificat al datelor principale}}{18}{figure.caption.12}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces ERD simplificat pentru schema fizică a bazei de date}}{18}{figure.caption.13}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Vedere structurală simplificată a principalelor clase și servicii backend}}{27}{figure.caption.16}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Servicii principale implicate în funcționarea editorului canvas}}{29}{figure.caption.17}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Vedere structurală simplificată a principalelor clase și servicii backend}}{26}{figure.caption.16}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Servicii principale implicate în funcționarea editorului canvas}}{28}{figure.caption.17}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Pipeline-ul AI în trei faze folosit în Favigon}}{32}{figure.caption.18}%
-\contentsline {figure}{\numberline {6.2}{\ignorespaces Diagrama de secvență simplificată pentru fluxul AI cu streaming}}{35}{figure.caption.20}%
-\contentsline {figure}{\numberline {6.3}{\ignorespaces Fluxul design-to-code bazat pe reprezentarea intermediară}}{38}{figure.caption.21}%
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Pipeline-ul AI în trei faze folosit în Favigon}}{31}{figure.caption.18}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Diagrama de secvență simplificată pentru fluxul AI cu streaming}}{34}{figure.caption.20}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Fluxul design-to-code bazat pe reprezentarea intermediară}}{37}{figure.caption.21}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Straturi complementare de validare folosite în proiect}}{45}{figure.caption.26}%
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Straturi complementare de validare folosite în proiect}}{44}{figure.caption.26}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
