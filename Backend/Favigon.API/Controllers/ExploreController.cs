@@ -7,6 +7,7 @@ namespace Favigon.API.Controllers;
 
 [ApiController]
 [Route("api/explore")]
+[Authorize]
 public class ExploreController : ControllerBase
 {
   private readonly IExploreService _exploreService;
@@ -17,7 +18,6 @@ public class ExploreController : ControllerBase
   }
 
   [HttpGet("trending")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetTrending()
   {
     User.TryGetUserId(out var viewerUserId);
@@ -26,7 +26,6 @@ public class ExploreController : ControllerBase
   }
 
   [HttpGet("recommended")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetRecommended()
   {
     User.TryGetUserId(out var viewerUserId);
@@ -35,7 +34,6 @@ public class ExploreController : ControllerBase
   }
 
   [HttpGet("people")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetSuggestedPeople()
   {
     User.TryGetUserId(out var viewerUserId);

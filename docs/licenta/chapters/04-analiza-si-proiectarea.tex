@@ -68,7 +68,7 @@ Aceste cerințe nefuncționale au influențat puternic structura aplicației. Ne
 
 Sistemul are două categorii principale de actori.
 
-\textbf{Utilizatorul neautentificat} poate accesa paginile publice, poate vedea proiectele expuse și poate explora conținutul public. El nu poate modifica proiecte și nu poate folosi editorul complet.
+\textbf{Utilizatorul neautentificat} poate accesa doar fluxurile de autentificare și recuperare a accesului. El nu poate intra în editor, nu poate vedea zona de explorare și nu poate accesa profilurile sau proiectele celorlalți utilizatori.
 
 \textbf{Utilizatorul autentificat} reprezintă actorul central al sistemului. Acesta își poate administra profilul, își poate crea și edita proiectele, poate folosi editorul canvas, poate apela generarea AI, poate exporta cod și poate interacționa social cu alți utilizatori.
 
@@ -203,7 +203,6 @@ A patra decizie a fost folosirea unei baze relaționale pentru metadate și a un
 În urma analizei și proiectării, sistemul rezultat are o formă coerentă atât la nivel de produs, cât și la nivel tehnic. Cerințele au fost traduse într-o arhitectură cu straturi clare, actori bine definiți, fluxuri importante și un model de date adaptat problemei.
 
 Capitolul următor trece de la această vedere de ansamblu la implementarea concretă a platformei: autentificare, proiecte, funcții sociale și editorul canvas.
-
 
 
 

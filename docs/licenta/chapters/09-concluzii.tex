@@ -12,9 +12,11 @@ Pentru o lucrare de licență, este relevant și faptul că proiectul nu a răma
 
 Prima decizie majoră a fost introducerea unei reprezentări intermediare explicite a interfeței. Aceasta a fost probabil cea mai importantă alegere tehnică din întreg proiectul. Fără ea, editorul, AI-ul și convertorul ar fi rămas mult mai strâns legate de formate diferite și ar fi fost mai greu de extins. În același timp, această alegere are și costuri: modelul intern trebuie menținut coerent, mapper-ele trebuie păstrate sincronizate, iar debugging-ul cere înțelegerea unui strat suplimentar între canvas și codul final.
 
-A doua decizie importantă a fost tratarea AI-ului ca accelerator al fluxului, nu ca sursă finală de adevăr. În locul unei abordări de tip „prompt în, cod afară”, proiectul folosește un pipeline în trei faze, ieșiri structurate și validare intermediară. Rezultatul este mai controlabil și mai ușor de explicat. Costul acestei decizii este însă clar: latența crește, logica de orchestration devine mai complexă, iar benchmark-ul din capitolul anterior arată că timpul de generare rămâne semnificativ.
+A doua decizie importantă a fost tratarea AI-ului ca accelerator integrat într-un pipeline controlat, nu ca sursă finală de adevăr. Abordarea în trei faze, cu ieșiri structurate și validare intermediară, face rezultatul mai explicabil, dar crește latența și complexitatea orchestration-ului.
 
 A treia decizie importantă a fost introducerea autosave-ului și a flush-ului explicit la ieșirea din pagină. Pentru un editor vizual, această alegere susține experiența de lucru și elimină dependența de salvare manuală continuă. Totuși, ea vine cu compromisuri reale între confortul utilizatorului, consistența stării și complexitatea implementării. Persistența automată, gestionarea reîncercărilor, restaurarea contextului și generarea de thumbnail-uri complică subsistemul editorului mai mult decât ar părea la prima vedere.
+
+Privind retrospectiv, una dintre cele mai utile lecții tehnice ale proiectului a fost dificultatea sincronizării dintre breakpoint-uri. La nivel conceptual, ideea pare simplă: o variantă mobilă trebuie să moștenească ceva din varianta principală, dar să poată devia local acolo unde layout-ul o cere. În implementare, această regulă produce multe cazuri-limită: un element poate rămâne sincronizat pe stil, dar nu și pe poziție; un container poate moșteni copii, dar nu și direcția de flex; preview-ul și exportul trebuie să păstreze aceeași logică fără a dubla noduri sau a pierde override-uri locale. Tocmai aceste detalii arată diferența dintre un prototip de editor și un produs care încearcă să rămână coerent pe întregul flux.
 
 \section{Puncte forte ale proiectului}
 
@@ -24,11 +26,13 @@ Al doilea punct forte este claritatea traseului tehnic. Pentru majoritatea func�
 
 Al treilea punct forte este faptul că produsul rămâne util și fără AI. Benchmark-ul și scenariile practice au arătat că partea generativă este valoroasă pentru pornirea rapidă, dar nu este singurul motiv pentru care aplicația are sens. Editorul, preview-ul, exportul și componenta socială susțin împreună o utilizare reală și în absența generării automate.
 
+Un alt rezultat important al implementării este clarificarea diferenței dintre un editor vizual și un generator de cod. Cele două par apropiate doar la suprafață. În realitate, editorul optimizează pentru manipulare directă, feedback rapid și toleranță la stări intermediare, în timp ce generatorul optimizează pentru structură validă, consistență și ieșire reproductibilă. Faptul că Favigon le conectează printr-o reprezentare intermediară și prin validare explicită este unul dintre motivele pentru care produsul rămâne explicabil tehnic și nu cade într-o automatizare opacă.
+
 \section{Limitări actuale}
 
 Ca orice proiect de licență, Favigon are și limite clare, care trebuie tratate explicit.
 
-Prima limită este testarea frontend-ului, în special a editorului canvas. Deși comportamentele principale au fost verificate funcțional, acoperirea automată este încă redusă în comparație cu partea de backend. Această limită este vizibilă și în cifre: există doar două teste frontend, în timp ce backend-ul are 109 teste și coverage măsurat explicit.
+Prima limită este testarea frontend-ului, în special a editorului canvas. Deși comportamentele principale au fost verificate funcțional, acoperirea automată rămâne modestă în raport cu partea de backend.
 
 A doua limită este dependența de model și de prompt. Benchmark-ul AI pe cinci prompturi a produs rezultate valide și exportabile în toate cazurile testate, dar asta nu înseamnă că variabilitatea a dispărut. Mai ales la nivel de stilizare, text, ierarhie vizuală și fine tuning, utilizatorul rămâne în continuare o parte importantă a fluxului.
 
@@ -38,15 +42,25 @@ A patra limită este acoperirea inegală a testelor. Deși \texttt{Application} 
 
 A cincea limită este absența colaborării în timp real și a observabilității mai avansate. Platforma permite publicare, fork și reutilizare, dar nu oferă încă editare simultană, comentarii contextuale, telemetrie mai bogată sau load testing sistematic.
 
+Dincolo de aceste limite punctuale, proiectul a confirmat și faptul că integrarea AI într-un produs real cere mai mult control decât pare la prima vedere. Nu este suficient ca modelul să răspundă într-un format valid; răspunsul trebuie să poată trece prin validare, să fie compatibil cu editorul și să poată fi exportat repetabil. Din acest motiv, controlul pipeline-ului și verificarea intermediară nu trebuie văzute ca detalii auxiliare, ci ca o parte centrală a soluției.
+
 \section{Direcții de dezvoltare}
 
 Prima direcție firească de continuare este extinderea testării frontend și introducerea testelor end-to-end pentru editor. Aceasta nu ar crește doar încrederea în produs, ci ar reduce și costul regresiilor într-o zonă care acum este validată în mare parte manual.
 
 A doua direcție privește partea de AI. Rezultatele actuale sugerează că pasul următor nu este neapărat ``mai mult AI'', ci un AI mai eficient și mai bine măsurat: benchmark-uri mai largi, mai multe modele, măsurători de cost și latență, precum și mecanisme de caching sau precompunere care să reducă timpul de răspuns.
 
-A treia direcție este componentizarea mai clară a designului și a exportului. În forma actuală, proiectul lucrează bine cu pagini și secțiuni, dar ar câștiga în extensibilitate dacă ar introduce o noțiune mai puternică de componente reutilizabile și de integrare cu design systems externe.
+A treia direcție este componentizarea mai clară a designului și a exportului. În forma actuală, proiectul lucrează bine cu pagini și secțiuni, dar ar câștiga în extensibilitate dacă ar introduce o noțiune mai puternică de componente reutilizabile, apropiată de modul în care instrumente precum Figma sau Framer tratează elementele refolosibile și variantele lor, precum și de integrare cu design systems externe.
 
-A patra direcție este zona de colaborare și observabilitate. Dacă produsul ar evolua dincolo de tema de licență, editarea simultană, comentariile în proiect, logurile de produs și instrumentele de monitorizare ar deveni mai importante decât adăugarea unor noi tipuri de export.
+A patra direcție este publicarea proiectelor ca site-uri live. Dincolo de preview și export, produsul ar putea evolua spre publicare efectivă, fie pe subdomenii gestionate de platformă, fie prin atașarea unui domeniu personalizat configurat de utilizator.
+
+A cincea direcție este versionarea mai avansată a proiectelor. Istoricul existent ajută la editarea curentă, dar un produs matur ar beneficia de versiuni salvate explicit, comparație între stări, revenire la repere importante și o trasabilitate mai clară a modificărilor.
+
+A șasea direcție este extinderea suportului pentru animații. În forma actuală, accentul cade pe structură, stil și export, însă o etapă viitoare ar putea introduce animații mai avansate, tranziții între stări și un control mai bogat al comportamentului vizual în interfețele generate.
+
+A șaptea direcție este zona de colaborare și observabilitate. Dacă produsul ar evolua dincolo de tema de licență, editarea simultană, comentariile în proiect, logurile de produs și instrumentele de monitorizare ar deveni mai importante decât adăugarea unor noi tipuri de export.
+
+Dacă aceste direcții ar trebui prioritizate, primele două investiții rezonabile ar fi consolidarea editorului și a calității interne a produsului. Mai întâi ar merita extinsă testarea frontend și zona end-to-end, deoarece editorul este partea cu cea mai mare complexitate interactivă și cu cel mai mare risc de regresie. Imediat după aceasta, componentizarea reutilizabilă ar aduce cel mai clar câștig de produs, fiindcă ar reduce duplicarea în design, ar îmbunătăți consistența între pagini și ar pregăti terenul atât pentru versionare mai avansată, cât și pentru colaborare. Abia după aceste două etape aș considera prioritară publicarea ca site live la scară mai mare sau suportul pentru animații sofisticate.
 
 \section{Încheiere}
 

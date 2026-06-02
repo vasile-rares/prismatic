@@ -30,6 +30,8 @@ Zona de autentificare din Favigon combină mai multe mecanisme: login și regist
 
 ASP.NET Core oferă suport direct pentru autentificare JWT bearer \cite{aspnetJwt2025}. În proiect, token-ul de acces este transportat prin cookie HTTP only, iar backend-ul îl extrage din cookie-ul `jwt` în cadrul configurării `JwtBearer`. Practic, acest lucru combină avantajul token-ului auto-conținut cu avantajul unui transport mai greu de accesat din JavaScript. Această alegere nu elimină orice risc posibil, dar este rezonabilă pentru tipul de aplicație construit aici.
 
+Alternativa cea mai des întâlnită în aplicațiile SPA este păstrarea token-ului în \texttt{localStorage} sau \texttt{sessionStorage}. Pentru Favigon, această variantă ar fi simplificat anumite detalii de implementare, dar ar fi crescut expunerea în cazul unor vulnerabilități de tip XSS, deoarece scripturile din pagină pot citi direct aceste zone de stocare. Folosirea cookie-urilor \textit{HTTP only} mută o parte importantă a protecției în browser și în pipeline-ul serverului. În schimb, această alegere cere mai multă atenție la configurarea politicilor CORS, a atributelor \texttt{SameSite} și a fluxurilor de refresh, deci nu este o soluție „gratuită”, ci un compromis orientat spre securitate operațională.
+
 În plus, proiectul folosește refresh token separat și limitează calea cookie-ului de refresh la endpoint-ul de reînnoire, ceea ce reduce suprafața de expunere. Pentru operații sensibile sau scenarii de risc mai mare, este introdusă și autentificare în doi pași pe bază de cod temporar transmis prin email. Din perspectiva ghidurilor OWASP, folosirea unui factor suplimentar este una dintre cele mai eficiente măsuri pentru reducerea atacurilor care pornesc de la compromiterea parolei \cite{owaspAuth2026,owaspMfa2026}.
 
 Dincolo de autentificare, backend-ul folosește și rate limiting. Documentația ASP.NET Core tratează rate limiting-ul ca mecanism de control al fluxului de cereri, util pentru protecție împotriva abuzului și pentru stabilitate \cite{aspnetRateLimiting2025}. În proiect sunt definite politici diferite pentru zone precum autentificare, AI, converter și users, tocmai pentru că profilul de risc și costul operațiilor nu sunt aceleași.
@@ -42,6 +44,8 @@ Avantajul principal al unui astfel de model este separarea preocupărilor. Edito
 
 În plus, modelul intermediar permite validare înainte de generare. Dacă un arbore de noduri este incomplet, inconsistent sau imposibil de randat corect, problema poate fi detectată înainte de etapa de export. Acesta este un avantaj important față de abordările care merg direct din prompt în cod. În Favigon, această validare intermediară face posibilă combinarea AI-ului cu un flux tehnic controlabil.
 
+Valoarea practică a acestui strat se vede și în faptul că editorul și convertorul evoluează în ritmuri diferite. Editorul are nevoie de noțiuni precum selecție, istoric, clipboard, breakpoint-uri sau sincronizare între variante responsive, în timp ce convertorul are nevoie de clase, stiluri și structură DOM stabilă. Dacă ambele zone ar lucra direct pe HTML final, fiecare modificare a editorului ar risca să spargă exportul, iar fiecare regulă nouă din convertor ar risca să forțeze schimbări artificiale în UI. Reprezentarea intermediară reduce tocmai acest cuplaj și face proiectul mai ușor de extins pe termen lung.
+
 \section{JSON Schema și ieșiri structurate pentru AI}
 
 În momentul în care s-a decis folosirea unui model AI pentru generarea interfețelor, una dintre primele probleme a fost fiabilitatea formatului de ieșire. Un răspuns foarte bun ca limbaj natural nu este automat util pentru o aplicație software. Este nevoie de date structurate, de câmpuri verificabile și de o formă care să poată fi procesată programatic.
@@ -49,6 +53,8 @@ Avantajul principal al unui astfel de model este separarea preocupărilor. Edito
 Pentru această nevoie, JSON Schema este un instrument foarte potrivit. Specificația definește un mod standardizat de a exprima structura, tipurile și restricțiile unui document JSON \cite{jsonSchemaCore2022,jsonSchemaValidation2022}. În Favigon, schema este folosită pentru a constrânge ieșirile modelului AI atunci când se generează atât blueprint-ul intenției, cât și arborele intermediar al interfeței.
 
 Din perspectiva OpenAI API, această idee este compatibilă cu \textit{structured outputs}, adică solicitarea unui răspuns care respectă o anumită schemă \cite{openaiStructuredOutputs2026,openaiChatCompletions2026}. Totuși, faptul că formatul este corect nu garantează automat că și conținutul este potrivit. De aceea, în implementare nu s-a mers doar până la schema JSON, ci au fost adăugate și validări semantice, plus un mecanism de reparare atunci când modelul produce ieșiri invalide sau incomplete.
+
+Această diferență dintre „valid JSON” și „design utilizabil” este esențială pentru întreaga lucrare. Un model poate respecta schema și totuși să producă ierarhii greșite, dimensiuni nerealiste, noduri redundante sau combinații de stil dificil de exportat. Din acest motiv, JSON Schema este doar prima barieră de control, nu garanția finală a calității. Abia împreună cu validarea IR și cu regulile convertorului, schema devine parte dintr-un lanț de verificare care transformă ieșirea probabilistică a modelului într-un artefact suficient de robust pentru a intra în editor și apoi în export.
 
 \section{Baza de date relațională și persistența}
 
@@ -59,6 +65,8 @@ Pe lângă modelul relațional clasic, aplicația păstrează și un câmp de ti
 În implementarea concretă, schema rezultată este compactă, dar suficient de expresivă pentru produsul construit. Baza de date conține tabelele \texttt{users}, \texttt{projects}, \texttt{linked\_accounts}, \texttt{user\_follows}, \texttt{project\_bookmarks} și \texttt{project\_likes}. Tabelele relaționale descriu identitatea utilizatorului, proiectele, relațiile sociale și interacțiunile dintre utilizatori și proiecte, iar câmpul \texttt{DesignJson} din \texttt{projects} păstrează documentul de canvas sub formă \texttt{jsonb}. Această alegere permite filtrare și agregare eficientă pentru metadate, fără a forța fragmentarea structurii vizuale în numeroase tabele auxiliare.
 
 Schema fizică include și constrângeri relevante pentru consistență. Email-ul utilizatorului este unic, conturile OAuth au unicitate atât pe perechea `(Provider, ProviderUserId)`, cât și pe perechea `(UserId, Provider)`, iar tabelele de tip follow, bookmark și like folosesc chei compuse pentru a preveni dublurile. În plus, proiectele folosesc o autoreferință prin `ForkedFromProjectId`, ceea ce face posibilă trasabilitatea unui fork fără a duplica separat noțiunea de proiect-sursă. Contextul EF Core completează automat timestamp-urile `CreatedAt` și `UpdatedAt`, astfel încât persistența să rămână coerentă și la nivel operațional, nu doar la nivel de structură.
+
+Din punct de vedere arhitectural, această combinație între model relațional și \texttt{jsonb} are și un avantaj de evoluție. Entitățile de bază, precum utilizatorul sau proiectul, au stabilitate mare și merită modelate explicit în tabele și relații. În schimb, structura internă a canvas-ului se schimbă mai des, mai ales când apar noi tipuri de noduri, proprietăți de layout sau reguli responsive. Dacă această structură ar fi fost normalizată excesiv în tabele separate, orice extindere a editorului ar fi cerut migrații mai frecvente și o complexitate mai mare la serializare și hidratare. Folosirea unui document JSON pentru design păstrează flexibilitatea exact acolo unde produsul evoluează cel mai repede.
 
 \section{Orchestrare și infrastructură}
 
@@ -89,6 +97,8 @@ Avantajul principal al acestui mod de lucru este repetabilitatea. Când toate co
 
 Pentru expunerea aplicației în exterior este folosit și Cloudflare Tunnel. Documentația oficială subliniază faptul că tunelul funcționează prin conexiuni doar outbound dintre infrastructura locală și rețeaua Cloudflare, evitând expunerea directă a unui IP public și reducând suprafața de atac \cite{cloudflareTunnel2026}. În proiect, această alegere a fost utilă mai ales pentru publicare și testare externă, fără a complica prea mult configurarea rețelei. Vederea simplificată a stack-ului rezultat este redată în Figura~\ref{fig:stack-favigon}.
 
+Este important de subliniat că acest mecanism nu înseamnă că aplicația este „hostată de Cloudflare” în sensul clasic al termenului. Execuția frontend-ului, a API-ului și persistența datelor rămân în infrastructura controlată de proiect, iar Cloudflare Tunnel joacă rolul de strat de expunere și rutare securizată. Această distincție contează și în evaluarea tehnică a soluției: produsul rămâne responsabil pentru propriile procese, volume și configurări, iar tunelul doar simplifică accesul live și demonstrarea aplicației din exterior.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{diagrams/stack-favigon.drawio.pdf}
@@ -101,6 +111,8 @@ Pentru expunerea aplicației în exterior este folosit și Cloudflare Tunnel. Do
 Privită în ansamblu, combinația Angular + ASP.NET Core + PostgreSQL + OpenAI API + Docker Compose nu este una neobișnuită. Tocmai aici stă avantajul ei practic. Sunt folosite tehnologii bine documentate, mature și suficient de separate ca responsabilitate. Angular acoperă interfața și interacțiunea clientului. ASP.NET Core acoperă API-ul și middleware-ul. PostgreSQL acoperă persistența relațională. OpenAI API acoperă generarea asistată. Docker Compose și Cloudflare Tunnel simplifică operaționalizarea.
 
 Această alegere are și un beneficiu pedagogic. Într-o lucrare de licență, prea multe tehnologii neobișnuite riscă să mute accentul de pe soluția inginerească pe complexitatea setării mediului. Aici valoarea nu vine din folosirea unor instrumente rare, ci din modul în care acestea sunt combinate pentru a obține un produs coerent.
+
+Mai important, această combinație reflectă și tipul de problemă rezolvată de Favigon. Aplicația nu este nici doar un CRUD clasic, nici doar un experiment AI, nici doar un editor vizual. Ea trebuie să susțină în același timp interacțiune bogată în browser, persistență de produs, integrare cu servicii externe și conversie controlată în cod. Din acest motiv, alegerea tehnologiilor a urmărit nu doar compatibilitatea lor individuală, ci și faptul că fiecare strat poate eșua, evolua sau fi testat relativ independent de celelalte. Tocmai această separare face posibilă extinderea ulterioară a proiectului fără rescrierea completă a bazei existente.
 
 \section{Concluzii intermediare}
 

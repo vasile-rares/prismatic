@@ -29,15 +29,15 @@ Rutarea este organizată astfel încât paginile principale să fie încărcate 
     \path{/reset-password} & recuperare acces & rută publică pentru resetarea parolei \\
     \path{/project/:slug} & editorul canvas & \texttt{authGuard} și \texttt{canDeactivate} pentru flush \\
     \path{/project/:slug/preview} & previzualizare HTML & necesită autentificare și randare separată \\
-    \path{/explore} & descoperire de proiecte & punct de intrare în zona socială \\
+    \path{/explore} & descoperire de proiecte & \texttt{authGuard}; punct de intrare în zona socială după autentificare \\
     \path{/settings} & configurări de profil & disponibilă doar utilizatorului autentificat \\
     \path{/stars} & proiecte salvate & afișează bookmark-urile proprii \\
-    \path{/:username} & profil public / propriu & destinație implicită după încărcarea sesiunii \\
+    \path{/:username} & profil propriu / al altor utilizatori & disponibil doar după autentificare; destinație implicită după încărcarea sesiunii \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-Interacțiunea dintre rutare și infrastructura HTTP este completată de doi interceptori importanți: unul pentru trimiterea credențialelor către API și altul pentru încercarea automată de refresh atunci când sesiunea curentă expiră. Din punct de vedere al utilizatorului, această logică face ca aplicația să pară mai continuă și mai coerentă; din punct de vedere tehnic, ea mută comportamentele repetitive într-un strat transversal, în loc să fie duplicate în fiecare pagină sau serviciu.
+Interacțiunea dintre rutare și infrastructura HTTP este completată de doi interceptori importanți: unul pentru trimiterea credențialelor către API și altul pentru încercarea automată de refresh atunci când sesiunea curentă expiră. Din punct de vedere al utilizatorului, această logică face ca aplicația să pară mai continuă și mai coerentă. Din punct de vedere tehnic, ea mută comportamentele repetitive într-un strat transversal, în loc să fie duplicate în fiecare pagină sau serviciu.
 
 \section{Modulul de autentificare și profil}
 
@@ -97,7 +97,7 @@ Componenta socială este construită peste fluxurile de explorare, proiecte și 
 
 Deși această zonă nu este nucleul tehnic al lucrării, ea schimbă semnificativ caracterul produsului. Fără ea, Favigon ar fi rămas un editor personal. Cu ea, proiectul capătă logică de comunitate: există autori, conținut public, indicatori de interes și relații între utilizatori.
 
-În implementare, `ExploreService` tratează separat trei fluxuri: proiecte \textit{trending}, proiecte recomandate și utilizatori sugerați. Pentru proiectele populare este folosit un set limitat de rezultate, potrivit pentru afișarea rapidă a conținutului public. Pentru recomandări, backend-ul verifică mai întâi dacă utilizatorul autentificat urmărește deja alte conturi; dacă da, încearcă să construiască un răspuns personalizat, iar dacă nu există bază suficientă sau utilizatorul este anonim, revine la o selecție generală de proiecte recente și relevante. Pentru sugestiile de persoane, serviciul returnează informații derivate precum numărul de urmăritori, numărul de proiecte publice și starea \textit{isFollowedByCurrentUser}. Această logică oferă zonei `explore` un comportament mai apropiat de un produs real decât de o simplă listă statică.
+În implementare, `ExploreService` tratează separat trei fluxuri: proiecte \textit{trending}, proiecte recomandate și utilizatori sugerați. Pentru proiectele populare este folosit un set limitat de rezultate, potrivit pentru afișarea rapidă a conținutului public. Pentru recomandări, backend-ul verifică mai întâi dacă utilizatorul autentificat urmărește deja alte conturi. Dacă da, încearcă să construiască un răspuns personalizat, iar dacă nu există bază suficientă, revine la o selecție generală de proiecte recente și relevante. Pentru sugestiile de persoane, serviciul returnează informații derivate precum numărul de urmăritori, numărul de proiecte publice și starea \textit{isFollowedByCurrentUser}. Această logică oferă zonei `explore` un comportament mai apropiat de un produs real decât de o simplă listă statică.
 
 Operația de fork este deosebit de interesantă deoarece leagă partea socială de partea de producție. Când un utilizator face fork la un proiect public, sistemul creează un nou proiect privat pentru el, cu design-ul copiat și cu legătura către proiectul-sursă. Astfel, reutilizarea nu este doar conceptuală, ci concretă și trasabilă.
 
@@ -200,7 +200,7 @@ Preview-ul nu este doar o captură statică. El permite schimbarea paginii curen
 
 Editorul nu este un spațiu închis. El comunică permanent cu serviciile de proiect, cu zona de preview și cu motorul de conversie. `CanvasPersistenceService` este legătura principală dintre starea editorului și backend. `CanvasGenerationService` este puntea spre export. `CanvasAiChatPersistenceService` și istoricul extind editorul dincolo de o simplă editare de suprafață.
 
-Din punct de vedere practic, această integrare a fost mai grea decât scrierea unui editor minimal. Nu era suficientă mutarea unui element pe ecran; era necesară și posibilitatea de salvare, validare, export și reîncărcare a rezultatului fără inconsistențe majore.
+Din punct de vedere practic, această integrare a fost mai grea decât scrierea unui editor minimal. Nu era suficientă mutarea unui element pe ecran. Era necesară și posibilitatea de salvare, validare, export și reîncărcare a rezultatului fără inconsistențe majore.
 
 \subsection{Persistența locală a conversației AI}
 

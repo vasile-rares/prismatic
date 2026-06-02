@@ -107,7 +107,7 @@ OpenAI documentează explicit posibilitatea obținerii unor ieșiri structurate,
 
 Literatura recentă despre \textit{structured outputs} și \textit{constrained decoding} confirmă că această problemă merită tratată separat. \textit{JSONSchemaBench} arată că generarea de ieșiri conforme cu o schemă este o dimensiune tehnică distinctă de calitatea semantică a conținutului și propune evaluarea separată a conformității, eficienței și calității rezultatului \cite{geng2025jsonschemabench}. Această observație se potrivește foarte bine cu nevoile Favigon: pentru platformă nu este suficient ca răspunsul să fie valid JSON, ci trebuie să fie și suficient de coerent încât să poată fi editat și exportat mai departe.
 
-Totuși, experiența din implementare arată că \textit{structured output} nu este o soluție magică. El ajută la format, dar nu garantează automat calitatea semantică a rezultatului. De exemplu, un JSON perfect valid poate descrie o structură slabă sau o ierarhie de secțiuni nepotrivită. Din acest motiv, `AiPipelineService` folosește atât deserializare și validare structurală, cât și reguli suplimentare și un pas de auto-reparare când rezultatul nu este acceptabil.
+În implementare, această limită apare concret atunci când un răspuns trece schema, dar produce o ierarhie slabă sau o structură greu de exportat. Din acest motiv, `AiPipelineService` nu se oprește la validarea structurală, ci aplică și reguli semantice și un pas de auto-reparare când rezultatul nu este acceptabil.
 
 \section{Mecanisme de validare și reparare}
 
@@ -191,7 +191,7 @@ Pe scurt, pipeline-ul AI generează un arbore care este suficient de bogat pentr
 
 Deși soluția funcționează și este coerentă, există și limite.
 
-În primul rând, calitatea rezultatului AI depinde încă mult de prompt și de regulile incluse în mesajele de sistem. Cu alte cuvinte, caracterul probabilistic al modelului nu este eliminat; el este doar controlat mai bine.
+În primul rând, calitatea rezultatului AI depinde încă mult de prompt și de regulile incluse în mesajele de sistem. Cu alte cuvinte, caracterul probabilistic al modelului nu este eliminat. El este doar controlat mai bine.
 
 În al doilea rând, reprezentarea intermediară este suficient de bogată pentru scopurile actuale, dar nu acoperă toate situațiile pe care le-ar avea un constructor comercial matur. De exemplu, colaborarea în timp real, constrângerile mai avansate de componentizare sau integrarea automată cu design systems externe ar necesita extinderi suplimentare.
 
@@ -202,4 +202,3 @@ Deși soluția funcționează și este coerentă, există și limite.
 Capitolul de față descrie partea cea mai originală din proiect. Generarea asistată de AI nu este tratată ca un artificiu separat, ci ca parte a unei arhitecturi care include reprezentare intermediară, validare, reparare și conversie în cod. Tocmai această integrare controlată face diferența între o demonstrație izolată și un produs software coerent.
 
 În capitolul următor sunt urmărite scenarii concrete de utilizare, pentru a observa cum colaborează în practică editorul, AI-ul, preview-ul, exportul și componenta socială. Abia după această etapă este discutată explicit validarea sistemului prin măsuri de securitate și testare.
-

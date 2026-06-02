@@ -107,6 +107,14 @@ Benchmark-ul AI spune ceva despre performanță și stabilitate pe un set de pro
 
 Al treilea scenariu, publicare și reutilizare prin fork, completează evaluarea din punct de vedere al produsului. El arată că proiectele generate sau editate nu rămân blocate în spațiul privat al autorului, ci pot intra în circuitul de descoperire și reutilizare. Din perspectivă inginerească, această parte este importantă fiindcă leagă persistența proiectelor, profilurile, relațiile sociale și editorul de același model de date.
 
+\subsection{Scenariu detaliat: de la idee la proiect reutilizabil}
+
+Un flux reprezentativ pentru produs începe cu crearea unui proiect nou și alegerea unei pagini goale, după care utilizatorul introduce un prompt pentru o primă variantă de interfață. În momentul în care pipeline-ul AI se încheie, rezultatul nu este folosit direct ca produs final, ci ca punct de pornire în editor. Utilizatorul verifică ierarhia secțiunilor, mută elementele care nu sunt încă în poziția dorită, ajustează textele și corectează dimensiunile sau culorile care nu corespund intenției inițiale. În practică, această etapă confirmă că AI-ul reduce costul primei construcții, dar nu elimină rolul editorului.
+
+După rafinarea primei variante pe breakpoint-ul principal, utilizatorul poate continua cu adaptarea responsive. Aici apar unele dintre cele mai relevante verificări practice pentru Favigon: păstrarea sincronizării dintre varianta primară și breakpoint-urile secundare, modificarea direcției de flex, reglarea spațierii și repoziționarea unor componente fără a rupe legătura logică dintre ele. Fluxul este important deoarece tocmai în această zonă se întâlnesc editorul, modelul intern și regulile de export. Dacă sincronizarea dintre breakpoint-uri ar fi instabilă, rezultatul s-ar degrada rapid fie în canvas, fie în preview, fie în codul generat.
+
+În pasul următor, utilizatorul verifică proiectul în preview și apoi rulează exportul. Din punct de vedere practic, acesta este momentul în care se vede dacă structura editată rămâne coerentă și în afara editorului. Un rezultat bun nu înseamnă doar că pagina „arată corect” pe ecran, ci și că arborele intermediar poate fi serializat, validat și convertit fără erori. Dacă proiectul este suficient de reușit, el poate fi făcut public în platformă, iar un alt utilizator îl poate descoperi, aprecia sau reutiliza prin fork. Astfel, scenariul nu se încheie la export, ci continuă până la validarea ideii că designul produs în Favigon poate intra într-un circuit de reutilizare.
+
 \section{Comparație internă: flux manual versus flux pornit din AI}
 
 În lipsa unei comparații formale cu produse comerciale, este mai utilă o comparație internă între cele două moduri principale de lucru oferite chiar de Favigon: construcția manuală și construcția pornită din AI.
@@ -129,7 +137,7 @@ Al treilea scenariu, publicare și reutilizare prin fork, completează evaluarea
   \end{tabularx}
 \end{table}
 
-Tabelul~\ref{tab:comparatie-manual-ai} arată că AI-ul nu înlocuiește editorul, ci îi schimbă punctul de intrare. În practica actuală, valoarea lui principală este accelerarea primei versiuni, nu eliminarea muncii de rafinare. Această concluzie este importantă și pentru tonul lucrării: proiectul nu promite o automatizare completă a proiectării, ci un mod mai eficient de a porni și itera.
+Tabelul~\ref{tab:comparatie-manual-ai} arată că AI-ul nu înlocuiește editorul, ci îi schimbă punctul de intrare. În practica actuală, valoarea lui principală este accelerarea primei versiuni, nu eliminarea muncii de rafinare. Pentru utilizator, diferența reală dintre cele două fluxuri este distribuția efortului: varianta manuală investește mai mult la început, iar varianta pornită din AI mută costul spre evaluare și corectare. Astfel, cele două moduri de lucru nu concurează direct, ci se completează.
 
 \section{Discuție asupra limitărilor observate}
 
@@ -137,8 +145,12 @@ Rezultatele de mai sus trebuie citite cu precauție. În primul rând, benchmark
 
 În al treilea rând, benchmark-ul măsoară doar rulări individuale, nu comportamentul sub sarcină și nici stabilitatea pe sesiuni lungi de utilizare. Nu au fost urmărite încă scenarii cu mai mulți utilizatori concurenți, nici efectul unor campanii de load testing asupra endpoint-urilor AI sau de conversie. În fine, evaluarea actuală nu include scoruri estetice formale sau studii cu utilizatori, ceea ce înseamnă că partea de ``calitate percepută'' rămâne doar parțial acoperită.
 
+Mai există și o limitare de interpretare care merită menționată explicit: valorile bune din benchmark nu trebuie confundate cu absența muncii manuale. Faptul că toate cele cinci cazuri au fost exportabile imediat arată robustețea tehnică a pipeline-ului, nu perfecțiunea designului obținut. În practică, cele mai frecvente corecții rămân cele de conținut și finisare vizuală: schimbarea unor titluri prea generice, reglarea densității informației într-o secțiune, simplificarea unor compoziții prea încărcate sau adaptarea unor blocuri pentru breakpoint-uri mai înguste. Cu alte cuvinte, benchmark-ul validează mai ales infrastructura de generare, nu și eliminarea completă a rolului uman.
+
 \section{Concluzii intermediare}
 
 Rezultatul principal al acestui capitol este că Favigon poate fi susținut cu indicatori mai concreți decât simpla enumerare a funcționalităților. Pentru benchmark-ul AI rulat la 1 iunie 2026, pipeline-ul a avut rată de succes de 100\%, conformitate structurală din prima încercare de 100\% și export HTML reușit în toate cele cinci cazuri testate. În același timp, timpul mediu de generare de aproximativ 106.8 s arată clar că latența rămâne limita practică principală a fluxului asistat de AI.
 
 Completate cu scenariile funcționale cap-coadă, aceste rezultate arată că produsul este coerent și utilizabil, dar și că nu trebuie prezentat ca o soluție ``instantanee''. Editorul rămâne important, iar AI-ul trebuie înțeles mai degrabă ca accelerator al primei versiuni decât ca sursă finală de adevăr. În capitolul următor, această evaluare practică este completată cu partea de securitate, testare și validare formală.
+
+Din perspectiva lucrării, un câștig important al acestei evaluări este că mută discuția de la nivel declarativ la nivel operațional. Nu mai este vorba doar despre faptul că Favigon „are” editor, preview, export și pipeline AI, ci despre modul în care aceste părți se comportă atunci când sunt folosite împreună. Tocmai această verificare cap-coadă face mai credibilă concluzia că produsul este deja funcțional ca platformă, chiar dacă mai are limite clare de latență, testare și rafinare vizuală.

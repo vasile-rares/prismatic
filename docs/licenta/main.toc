@@ -29,118 +29,119 @@
 \contentsline {section}{\numberline {3.6}JSON Schema și ieșiri structurate pentru AI}{11}{section.3.6}%
 \contentsline {section}{\numberline {3.7}Baza de date relațională și persistența}{11}{section.3.7}%
 \contentsline {section}{\numberline {3.8}Orchestrare și infrastructură}{12}{section.3.8}%
-\contentsline {section}{\numberline {3.9}De ce această combinație tehnologică a fost potrivită}{13}{section.3.9}%
-\contentsline {section}{\numberline {3.10}Concluzii intermediare}{13}{section.3.10}%
-\contentsline {chapter}{\numberline {4}Analiza și proiectarea sistemului}{14}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Pornirea de la cerințe}{14}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Cerințe funcționale}{14}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Cerințe nefuncționale}{14}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Actorii principali}{15}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Scenarii principale de utilizare}{16}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Scenariul 1: creare și editare proiect}{16}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Scenariul 2: generare asistată de AI}{16}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Scenariul 3: export în cod}{16}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Scenariul 4: distribuire și reutilizare}{17}{subsection.4.5.4}%
-\contentsline {section}{\numberline {4.6}Arhitectura generală}{17}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Organizarea backend-ului pe straturi}{17}{section.4.7}%
-\contentsline {section}{\numberline {4.8}Organizarea frontend-ului pe feature-uri}{18}{section.4.8}%
-\contentsline {section}{\numberline {4.9}Modelul de date conceptual}{19}{section.4.9}%
-\contentsline {section}{\numberline {4.10}Fluxurile principale}{20}{section.4.10}%
-\contentsline {subsection}{\numberline {4.10.1}Fluxul de autentificare}{20}{subsection.4.10.1}%
-\contentsline {subsection}{\numberline {4.10.2}Fluxul de editare}{20}{subsection.4.10.2}%
-\contentsline {subsection}{\numberline {4.10.3}Fluxul de export}{20}{subsection.4.10.3}%
-\contentsline {subsection}{\numberline {4.10.4}Fluxul AI}{20}{subsection.4.10.4}%
-\contentsline {section}{\numberline {4.11}Decizii de proiectare care au influențat cel mai mult implementarea}{20}{section.4.11}%
-\contentsline {section}{\numberline {4.12}Concluzii intermediare}{21}{section.4.12}%
-\contentsline {chapter}{\numberline {5}Implementarea platformei Favigon}{22}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Privire de ansamblu asupra implementării}{22}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Rutare și pornirea aplicației frontend}{22}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Modulul de autentificare și profil}{23}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Fluxurile de bază}{23}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}JWT în cookie și refresh token}{23}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}Autentificarea în doi pași}{24}{subsection.5.3.3}%
-\contentsline {subsection}{\numberline {5.3.4}Profilul utilizatorului}{24}{subsection.5.3.4}%
-\contentsline {section}{\numberline {5.4}Gestionarea proiectelor}{24}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Ciclul de viață al proiectelor}{24}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Persistarea designului}{24}{subsection.5.4.2}%
-\contentsline {subsection}{\numberline {5.4.3}Thumbnail și asset-uri}{25}{subsection.5.4.3}%
-\contentsline {section}{\numberline {5.5}Funcționalități sociale și explorare}{25}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Suprafața API și distribuția responsabilităților}{26}{section.5.6}%
-\contentsline {section}{\numberline {5.7}Editorul canvas}{27}{section.5.7}%
-\contentsline {subsection}{\numberline {5.7.1}Rolul editorului în întregul produs}{27}{subsection.5.7.1}%
-\contentsline {subsection}{\numberline {5.7.2}Starea editorului}{28}{subsection.5.7.2}%
-\contentsline {subsection}{\numberline {5.7.3}Viewport, selecție și gesturi}{28}{subsection.5.7.3}%
-\contentsline {subsection}{\numberline {5.7.4}Istoric și clipboard}{28}{subsection.5.7.4}%
-\contentsline {subsection}{\numberline {5.7.5}Managementul paginilor}{29}{subsection.5.7.5}%
-\contentsline {subsection}{\numberline {5.7.6}Preview-ul interactiv}{29}{subsection.5.7.6}%
-\contentsline {subsection}{\numberline {5.7.7}Persistare și integrare cu restul aplicației}{29}{subsection.5.7.7}%
-\contentsline {subsection}{\numberline {5.7.8}Persistența locală a conversației AI}{30}{subsection.5.7.8}%
-\contentsline {section}{\numberline {5.8}Decizii de implementare cu impact major}{30}{section.5.8}%
-\contentsline {section}{\numberline {5.9}Concluzii intermediare}{31}{section.5.9}%
-\contentsline {chapter}{\numberline {6}Generarea asistată de AI și conversia interfețelor în cod}{32}{chapter.6}%
-\contentsline {section}{\numberline {6.1}De ce nu este suficientă generarea directă}{32}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Principiul pipeline-ului în trei faze}{32}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Faza 1: extragerea intenției}{33}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Faza 2: generarea structurii}{33}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Faza 3: stilizarea}{34}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Integrarea cu OpenAI API}{34}{section.6.6}%
-\contentsline {section}{\numberline {6.7}Structura cererilor AI și feedback incremental}{34}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Rolul ieșirilor structurate}{36}{section.6.8}%
-\contentsline {section}{\numberline {6.9}Mecanisme de validare și reparare}{36}{section.6.9}%
-\contentsline {section}{\numberline {6.10}Reprezentarea intermediară în detaliu}{37}{section.6.10}%
-\contentsline {section}{\numberline {6.11}Maparea dintre canvas și IR}{37}{section.6.11}%
-\contentsline {section}{\numberline {6.12}Exemplu concret de flux de la prompt la IR și export}{37}{section.6.12}%
-\contentsline {section}{\numberline {6.13}Motorul de conversie}{38}{section.6.13}%
-\contentsline {subsection}{\numberline {6.13.1}Separarea în proiect dedicat}{38}{subsection.6.13.1}%
-\contentsline {subsection}{\numberline {6.13.2}Validarea}{38}{subsection.6.13.2}%
-\contentsline {subsection}{\numberline {6.13.3}Generarea single-page și multi-page}{38}{subsection.6.13.3}%
-\contentsline {subsection}{\numberline {6.13.4}Responsive output}{39}{subsection.6.13.4}%
-\contentsline {section}{\numberline {6.14}Legătura dintre AI și convertor}{39}{section.6.14}%
-\contentsline {section}{\numberline {6.15}Limitări actuale}{40}{section.6.15}%
-\contentsline {section}{\numberline {6.16}Concluzii intermediare}{40}{section.6.16}%
-\contentsline {chapter}{\numberline {7}Scenarii de utilizare și evaluare practică}{41}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Rolul acestui capitol în contextul lucrării}{41}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Metodologia evaluării}{41}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Benchmark AI cu prompturi fixe}{42}{section.7.3}%
-\contentsline {subsection}{\numberline {7.3.1}Setul de prompturi}{42}{subsection.7.3.1}%
-\contentsline {subsection}{\numberline {7.3.2}Indicatorii agregați}{42}{subsection.7.3.2}%
-\contentsline {section}{\numberline {7.4}Scenarii funcționale cap-coadă}{43}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Comparație internă: flux manual versus flux pornit din AI}{43}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Discuție asupra limitărilor observate}{44}{section.7.6}%
-\contentsline {section}{\numberline {7.7}Concluzii intermediare}{44}{section.7.7}%
-\contentsline {chapter}{\numberline {8}Securitate, testare și validare}{45}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Rolul acestei etape în proiect}{45}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Măsuri de securitate implementate}{45}{section.8.2}%
-\contentsline {subsection}{\numberline {8.2.1}Autentificare și sesiune}{45}{subsection.8.2.1}%
-\contentsline {subsection}{\numberline {8.2.2}Limitarea expunerii API-ului}{45}{subsection.8.2.2}%
-\contentsline {subsection}{\numberline {8.2.3}Middleware și antete de securitate}{45}{subsection.8.2.3}%
-\contentsline {subsection}{\numberline {8.2.4}Upload-uri și asset-uri}{46}{subsection.8.2.4}%
-\contentsline {section}{\numberline {8.3}Strategia de testare}{46}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Testare automată backend}{47}{section.8.4}%
-\contentsline {subsection}{\numberline {8.4.1}Distribuția pe suite}{47}{subsection.8.4.1}%
-\contentsline {subsection}{\numberline {8.4.2}Scenarii reprezentative acoperite automat}{48}{subsection.8.4.2}%
-\contentsline {section}{\numberline {8.5}Code coverage backend}{49}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Testare frontend}{50}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Validare funcțională}{50}{section.8.7}%
-\contentsline {section}{\numberline {8.8}Limitări ale testării actuale}{52}{section.8.8}%
-\contentsline {section}{\numberline {8.9}Concluzii intermediare}{52}{section.8.9}%
-\contentsline {chapter}{\numberline {9}Concluzii și perspective de dezvoltare}{54}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Gradul de îndeplinire a obiectivelor}{54}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Decizii de proiectare care au influențat cel mai mult rezultatul}{54}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Puncte forte ale proiectului}{55}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Limitări actuale}{55}{section.9.4}%
-\contentsline {section}{\numberline {9.5}Direcții de dezvoltare}{55}{section.9.5}%
-\contentsline {section}{\numberline {9.6}Încheiere}{56}{section.9.6}%
-\contentsline {chapter}{\numberline {A}Exemple tehnice suplimentare}{57}{chapter.A}%
-\contentsline {section}{\numberline {A.1}Exemplu simplificat de reprezentare intermediară}{57}{section.A.1}%
-\contentsline {section}{\numberline {A.2}Exemple simplificate de cereri către API}{58}{section.A.2}%
-\contentsline {section}{\numberline {A.3}Exemplu simplificat de cod generat}{58}{section.A.3}%
-\contentsline {section}{\numberline {A.4}Exemplu simplificat de evenimente de streaming}{59}{section.A.4}%
-\contentsline {chapter}{\numberline {B}Inventar de endpoint-uri API}{60}{chapter.B}%
-\contentsline {section}{\numberline {B.1}Observații generale}{60}{section.B.1}%
-\contentsline {section}{\numberline {B.2}Endpoint-uri pentru cont și autentificare}{60}{section.B.2}%
-\contentsline {section}{\numberline {B.3}Endpoint-uri pentru proiecte}{60}{section.B.3}%
-\contentsline {section}{\numberline {B.4}Endpoint-uri pentru utilizatori și profiluri}{61}{section.B.4}%
-\contentsline {section}{\numberline {B.5}Endpoint-uri pentru explore și recomandări}{62}{section.B.5}%
-\contentsline {section}{\numberline {B.6}Endpoint-uri pentru AI și conversie}{62}{section.B.6}%
-\contentsline {chapter}{Bibliografie}{63}{appendix*.37}%
+\contentsline {section}{\numberline {3.9}De ce această combinație tehnologică a fost potrivită}{14}{section.3.9}%
+\contentsline {section}{\numberline {3.10}Concluzii intermediare}{14}{section.3.10}%
+\contentsline {chapter}{\numberline {4}Analiza și proiectarea sistemului}{15}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Pornirea de la cerințe}{15}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Cerințe funcționale}{15}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Cerințe nefuncționale}{15}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Actorii principali}{16}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Scenarii principale de utilizare}{17}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Scenariul 1: creare și editare proiect}{17}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Scenariul 2: generare asistată de AI}{17}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Scenariul 3: export în cod}{17}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}Scenariul 4: distribuire și reutilizare}{18}{subsection.4.5.4}%
+\contentsline {section}{\numberline {4.6}Arhitectura generală}{18}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Organizarea backend-ului pe straturi}{18}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Organizarea frontend-ului pe feature-uri}{19}{section.4.8}%
+\contentsline {section}{\numberline {4.9}Modelul de date conceptual}{20}{section.4.9}%
+\contentsline {section}{\numberline {4.10}Fluxurile principale}{21}{section.4.10}%
+\contentsline {subsection}{\numberline {4.10.1}Fluxul de autentificare}{21}{subsection.4.10.1}%
+\contentsline {subsection}{\numberline {4.10.2}Fluxul de editare}{21}{subsection.4.10.2}%
+\contentsline {subsection}{\numberline {4.10.3}Fluxul de export}{21}{subsection.4.10.3}%
+\contentsline {subsection}{\numberline {4.10.4}Fluxul AI}{21}{subsection.4.10.4}%
+\contentsline {section}{\numberline {4.11}Decizii de proiectare care au influențat cel mai mult implementarea}{21}{section.4.11}%
+\contentsline {section}{\numberline {4.12}Concluzii intermediare}{22}{section.4.12}%
+\contentsline {chapter}{\numberline {5}Implementarea platformei Favigon}{23}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Privire de ansamblu asupra implementării}{23}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Rutare și pornirea aplicației frontend}{23}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Modulul de autentificare și profil}{24}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Fluxurile de bază}{24}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}JWT în cookie și refresh token}{24}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Autentificarea în doi pași}{25}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Profilul utilizatorului}{25}{subsection.5.3.4}%
+\contentsline {section}{\numberline {5.4}Gestionarea proiectelor}{25}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Ciclul de viață al proiectelor}{25}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Persistarea designului}{25}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}Thumbnail și asset-uri}{26}{subsection.5.4.3}%
+\contentsline {section}{\numberline {5.5}Funcționalități sociale și explorare}{26}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Suprafața API și distribuția responsabilităților}{27}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Editorul canvas}{28}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Rolul editorului în întregul produs}{28}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}Starea editorului}{29}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}Viewport, selecție și gesturi}{29}{subsection.5.7.3}%
+\contentsline {subsection}{\numberline {5.7.4}Istoric și clipboard}{29}{subsection.5.7.4}%
+\contentsline {subsection}{\numberline {5.7.5}Managementul paginilor}{30}{subsection.5.7.5}%
+\contentsline {subsection}{\numberline {5.7.6}Preview-ul interactiv}{30}{subsection.5.7.6}%
+\contentsline {subsection}{\numberline {5.7.7}Persistare și integrare cu restul aplicației}{30}{subsection.5.7.7}%
+\contentsline {subsection}{\numberline {5.7.8}Persistența locală a conversației AI}{31}{subsection.5.7.8}%
+\contentsline {section}{\numberline {5.8}Decizii de implementare cu impact major}{31}{section.5.8}%
+\contentsline {section}{\numberline {5.9}Concluzii intermediare}{32}{section.5.9}%
+\contentsline {chapter}{\numberline {6}Generarea asistată de AI și conversia interfețelor în cod}{33}{chapter.6}%
+\contentsline {section}{\numberline {6.1}De ce nu este suficientă generarea directă}{33}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Principiul pipeline-ului în trei faze}{33}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Faza 1: extragerea intenției}{34}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Faza 2: generarea structurii}{34}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Faza 3: stilizarea}{35}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Integrarea cu OpenAI API}{35}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Structura cererilor AI și feedback incremental}{35}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Rolul ieșirilor structurate}{37}{section.6.8}%
+\contentsline {section}{\numberline {6.9}Mecanisme de validare și reparare}{37}{section.6.9}%
+\contentsline {section}{\numberline {6.10}Reprezentarea intermediară în detaliu}{38}{section.6.10}%
+\contentsline {section}{\numberline {6.11}Maparea dintre canvas și IR}{38}{section.6.11}%
+\contentsline {section}{\numberline {6.12}Exemplu concret de flux de la prompt la IR și export}{38}{section.6.12}%
+\contentsline {section}{\numberline {6.13}Motorul de conversie}{39}{section.6.13}%
+\contentsline {subsection}{\numberline {6.13.1}Separarea în proiect dedicat}{39}{subsection.6.13.1}%
+\contentsline {subsection}{\numberline {6.13.2}Validarea}{39}{subsection.6.13.2}%
+\contentsline {subsection}{\numberline {6.13.3}Generarea single-page și multi-page}{39}{subsection.6.13.3}%
+\contentsline {subsection}{\numberline {6.13.4}Responsive output}{40}{subsection.6.13.4}%
+\contentsline {section}{\numberline {6.14}Legătura dintre AI și convertor}{40}{section.6.14}%
+\contentsline {section}{\numberline {6.15}Limitări actuale}{41}{section.6.15}%
+\contentsline {section}{\numberline {6.16}Concluzii intermediare}{41}{section.6.16}%
+\contentsline {chapter}{\numberline {7}Scenarii de utilizare și evaluare practică}{42}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Rolul acestui capitol în contextul lucrării}{42}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Metodologia evaluării}{42}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Benchmark AI cu prompturi fixe}{43}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Setul de prompturi}{43}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Indicatorii agregați}{43}{subsection.7.3.2}%
+\contentsline {section}{\numberline {7.4}Scenarii funcționale cap-coadă}{44}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Scenariu detaliat: de la idee la proiect reutilizabil}{44}{subsection.7.4.1}%
+\contentsline {section}{\numberline {7.5}Comparație internă: flux manual versus flux pornit din AI}{45}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Discuție asupra limitărilor observate}{45}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Concluzii intermediare}{46}{section.7.7}%
+\contentsline {chapter}{\numberline {8}Securitate, testare și validare}{47}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Rolul acestei etape în proiect}{47}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Măsuri de securitate implementate}{47}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Autentificare și sesiune}{47}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Limitarea expunerii API-ului}{47}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Middleware și antete de securitate}{47}{subsection.8.2.3}%
+\contentsline {subsection}{\numberline {8.2.4}Upload-uri și asset-uri}{48}{subsection.8.2.4}%
+\contentsline {section}{\numberline {8.3}Strategia de testare}{48}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Testare automată backend}{49}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}Distribuția pe suite}{49}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}Scenarii reprezentative acoperite automat}{50}{subsection.8.4.2}%
+\contentsline {section}{\numberline {8.5}Code coverage backend}{51}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Testare frontend}{52}{section.8.6}%
+\contentsline {section}{\numberline {8.7}Validare funcțională}{52}{section.8.7}%
+\contentsline {section}{\numberline {8.8}Limitări ale testării actuale}{54}{section.8.8}%
+\contentsline {section}{\numberline {8.9}Concluzii intermediare}{54}{section.8.9}%
+\contentsline {chapter}{\numberline {9}Concluzii și perspective de dezvoltare}{56}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Gradul de îndeplinire a obiectivelor}{56}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Decizii de proiectare care au influențat cel mai mult rezultatul}{56}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Puncte forte ale proiectului}{57}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Limitări actuale}{57}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Direcții de dezvoltare}{58}{section.9.5}%
+\contentsline {section}{\numberline {9.6}Încheiere}{58}{section.9.6}%
+\contentsline {chapter}{\numberline {A}Exemple tehnice suplimentare}{60}{chapter.A}%
+\contentsline {section}{\numberline {A.1}Exemplu simplificat de reprezentare intermediară}{60}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Exemple simplificate de cereri către API}{61}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Exemplu simplificat de cod generat}{61}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Exemplu simplificat de evenimente de streaming}{62}{section.A.4}%
+\contentsline {chapter}{\numberline {B}Inventar de endpoint-uri API}{63}{chapter.B}%
+\contentsline {section}{\numberline {B.1}Observații generale}{63}{section.B.1}%
+\contentsline {section}{\numberline {B.2}Endpoint-uri pentru cont și autentificare}{63}{section.B.2}%
+\contentsline {section}{\numberline {B.3}Endpoint-uri pentru proiecte}{63}{section.B.3}%
+\contentsline {section}{\numberline {B.4}Endpoint-uri pentru utilizatori și profiluri}{64}{section.B.4}%
+\contentsline {section}{\numberline {B.5}Endpoint-uri pentru explore și recomandări}{65}{section.B.5}%
+\contentsline {section}{\numberline {B.6}Endpoint-uri pentru AI și conversie}{65}{section.B.6}%
+\contentsline {chapter}{Bibliografie}{66}{appendix*.37}%
