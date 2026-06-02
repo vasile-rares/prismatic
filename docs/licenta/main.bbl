@@ -566,6 +566,217 @@
       \verb https://www.framer.com/wireframer/
       \endverb
     \endentry
+    \entry{geng2025jsonschemabench}{article}{}{}
+      \name{author}{9}{}{%
+        {{hash=762a5f6658d22154811c621330eabf9b}{%
+           family={Geng},
+           familyi={G\bibinitperiod},
+           given={Saibo},
+           giveni={S\bibinitperiod}}}%
+        {{hash=3e23ae56e60ec625cb3d00541ce604f7}{%
+           family={Cooper},
+           familyi={C\bibinitperiod},
+           given={Hudson},
+           giveni={H\bibinitperiod}}}%
+        {{hash=a75c7cf5ad89a41dafbda6ffbb37ce53}{%
+           family={Moskal},
+           familyi={M\bibinitperiod},
+           given={Micha{ł}},
+           giveni={M\bibinitperiod}}}%
+        {{hash=7f4ba028ec6fce8608025ae5eeb4348f}{%
+           family={Jenkins},
+           familyi={J\bibinitperiod},
+           given={Samuel},
+           giveni={S\bibinitperiod}}}%
+        {{hash=845b53f873023e59a8353846acf8a70b}{%
+           family={Berman},
+           familyi={B\bibinitperiod},
+           given={Julian},
+           giveni={J\bibinitperiod}}}%
+        {{hash=64cf650f7c9006e0cf3e9fa2f0b95fa8}{%
+           family={Ranchin},
+           familyi={R\bibinitperiod},
+           given={Nathan},
+           giveni={N\bibinitperiod}}}%
+        {{hash=9d2787872d7eadcedce1aeb8e7af9eb0}{%
+           family={West},
+           familyi={W\bibinitperiod},
+           given={Robert},
+           giveni={R\bibinitperiod}}}%
+        {{hash=a2d47a50d998e20d2bfd01b71fffa12c}{%
+           family={Horvitz},
+           familyi={H\bibinitperiod},
+           given={Eric},
+           giveni={E\bibinitperiod}}}%
+        {{hash=689f6367be4908c45b32999c3f3f070f}{%
+           family={Nori},
+           familyi={N\bibinitperiod},
+           given={Harsha},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{6d25cba336e48571aaee5489da23b0db}
+      \strng{fullhash}{ff0c6545f08944968a8786ac55dba3ee}
+      \strng{fullhashraw}{ff0c6545f08944968a8786ac55dba3ee}
+      \strng{bibnamehash}{6d25cba336e48571aaee5489da23b0db}
+      \strng{authorbibnamehash}{6d25cba336e48571aaee5489da23b0db}
+      \strng{authornamehash}{6d25cba336e48571aaee5489da23b0db}
+      \strng{authorfullhash}{ff0c6545f08944968a8786ac55dba3ee}
+      \strng{authorfullhashraw}{ff0c6545f08944968a8786ac55dba3ee}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2501.10868}
+      \field{title}{JSONSchemaBench: A Rigorous Benchmark of Structured Outputs for Language Models}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2501.10868
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2501.10868
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2501.10868
+      \endverb
+    \endentry
+    \entry{gui2024vision2ui}{article}{}{}
+      \name{author}{9}{}{%
+        {{hash=3fd6d82ef03fab5113e6a204b24df54c}{%
+           family={Gui},
+           familyi={G\bibinitperiod},
+           given={Yi},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=1e181d320377f5c489b768686bb952ee}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Zhen},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=763d627054b8ba1e68b70d34e0f76ab1}{%
+           family={Wan},
+           familyi={W\bibinitperiod},
+           given={Yao},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=ec4a66be7b14edeae96b0021a495a279}{%
+           family={Shi},
+           familyi={S\bibinitperiod},
+           given={Yemin},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=d7086ec21f72e8e904e3dfb11f97caa6}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Hongyu},
+           giveni={H\bibinitperiod}}}%
+        {{hash=cbba6f8400b9e13d55993b4612949abb}{%
+           family={Su},
+           familyi={S\bibinitperiod},
+           given={Yi},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=29f8577439e73e411492025ccbe54563}{%
+           family={Dong},
+           familyi={D\bibinitperiod},
+           given={Shaoling},
+           giveni={S\bibinitperiod}}}%
+        {{hash=1035fe71d584ffddaebc266241b37db5}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Xing},
+           giveni={X\bibinitperiod}}}%
+        {{hash=972983ffa49e41b3d6c32cf89e31699a}{%
+           family={Jiang},
+           familyi={J\bibinitperiod},
+           given={Wenbin},
+           giveni={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{10e0e320c74831de40153974d8cf69cd}
+      \strng{fullhash}{fbad8a937fa5704e11254ee292fffce2}
+      \strng{fullhashraw}{fbad8a937fa5704e11254ee292fffce2}
+      \strng{bibnamehash}{10e0e320c74831de40153974d8cf69cd}
+      \strng{authorbibnamehash}{10e0e320c74831de40153974d8cf69cd}
+      \strng{authornamehash}{10e0e320c74831de40153974d8cf69cd}
+      \strng{authorfullhash}{fbad8a937fa5704e11254ee292fffce2}
+      \strng{authorfullhashraw}{fbad8a937fa5704e11254ee292fffce2}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2404.06369}
+      \field{title}{VISION2UI: A Real-World Dataset with Layout for Code Generation from UI Designs}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2404.06369
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2404.06369
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2404.06369
+      \endverb
+    \endentry
+    \entry{huang2021text2ui}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=521372546cae6d8bd340b6f2164f93c4}{%
+           family={Huang},
+           familyi={H\bibinitperiod},
+           given={Forrest},
+           giveni={F\bibinitperiod}}}%
+        {{hash=56ba559f18e74cf681fe113aba3fa9af}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Gang},
+           giveni={G\bibinitperiod}}}%
+        {{hash=35b53a5f450cc6a8ce8bce633606e1de}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Xin},
+           giveni={X\bibinitperiod}}}%
+        {{hash=88b73a1099b5a5d169a4a3f6d993c0f9}{%
+           family={Canny},
+           familyi={C\bibinitperiod},
+           given={John\bibnamedelima F.},
+           giveni={J\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+        {{hash=2af761d9bef859ea29248418adce0dd7}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Yang},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{0020de0a50b3057fd9d2ee4536370bea}
+      \strng{fullhash}{bb95b2af910a79f9b4205270ebf9dc27}
+      \strng{fullhashraw}{bb95b2af910a79f9b4205270ebf9dc27}
+      \strng{bibnamehash}{0020de0a50b3057fd9d2ee4536370bea}
+      \strng{authorbibnamehash}{0020de0a50b3057fd9d2ee4536370bea}
+      \strng{authornamehash}{0020de0a50b3057fd9d2ee4536370bea}
+      \strng{authorfullhash}{bb95b2af910a79f9b4205270ebf9dc27}
+      \strng{authorfullhashraw}{bb95b2af910a79f9b4205270ebf9dc27}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2110.07775}
+      \field{title}{Creating User Interface Mock-ups from High-Level Text Descriptions with Deep-Learning Models}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2021}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2110.07775
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2110.07775
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2110.07775
+      \endverb
+    \endentry
     \entry{jsonSchemaValidation2022}{online}{}{}
       \name{author}{4}{}{%
         {{hash=2075eae811e7ac9aaa1af14d4842f872}{%
@@ -745,6 +956,63 @@
       \endverb
       \verb{url}
       \verb https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-9.0
+      \endverb
+    \endentry
+    \entry{moran2018redraw}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=3c28911495f2364a07496d8bc82e245e}{%
+           family={Moran},
+           familyi={M\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod}}}%
+        {{hash=d632589ba018073c1e471e007e685978}{%
+           family={Bernal-Cárdenas},
+           familyi={B\bibinithyphendelim C\bibinitperiod},
+           given={Carlos},
+           giveni={C\bibinitperiod}}}%
+        {{hash=2ef33b7fbf107f1e81b56ad11b29e5d5}{%
+           family={Curcio},
+           familyi={C\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod}}}%
+        {{hash=87c1c9b79f8f20c2b8a9967bcd1dd584}{%
+           family={Bonett},
+           familyi={B\bibinitperiod},
+           given={Richard},
+           giveni={R\bibinitperiod}}}%
+        {{hash=e49aa631edbf4e6bb1f966390ca96328}{%
+           family={Poshyvanyk},
+           familyi={P\bibinitperiod},
+           given={Denys},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{6f8e4cf78117915396ee5da166111d3a}
+      \strng{fullhash}{4cca65b42c683c64b9fd3f4218e69464}
+      \strng{fullhashraw}{4cca65b42c683c64b9fd3f4218e69464}
+      \strng{bibnamehash}{6f8e4cf78117915396ee5da166111d3a}
+      \strng{authorbibnamehash}{6f8e4cf78117915396ee5da166111d3a}
+      \strng{authornamehash}{6f8e4cf78117915396ee5da166111d3a}
+      \strng{authorfullhash}{4cca65b42c683c64b9fd3f4218e69464}
+      \strng{authorfullhashraw}{4cca65b42c683c64b9fd3f4218e69464}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1802.02312}
+      \field{title}{Machine Learning-Based Prototyping of Graphical User Interfaces for Mobile Apps}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2018}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1802.02312
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1802.02312
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1802.02312
       \endverb
     \endentry
     \entry{npgsqlEfCore2026}{online}{}{}
@@ -1014,6 +1282,68 @@
       \verb http://doi.ieeecomputersociety.org/10.1109/MC.1983.1654471
       \endverb
     \endentry
+    \entry{si2024design2code}{article}{}{}
+      \name{author}{6}{}{%
+        {{hash=50e55ce524a6cabd5d5e862c580e6869}{%
+           family={Si},
+           familyi={S\bibinitperiod},
+           given={Chenglei},
+           giveni={C\bibinitperiod}}}%
+        {{hash=59fcb540a2298abe7ac08e0cf2cd90ae}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Yanzhe},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=b7084c71af5e6ed93c8537dce93d4856}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Ryan},
+           giveni={R\bibinitperiod}}}%
+        {{hash=2d3579ec7df6d4114e1dcbc418a92dd1}{%
+           family={Yang},
+           familyi={Y\bibinitperiod},
+           given={Zhengyuan},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=b7c590b7d8bce1d94cc14195bf6b9b40}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Ruibo},
+           giveni={R\bibinitperiod}}}%
+        {{hash=6ff611991cba7ee48521ab941158ac2f}{%
+           family={Yang},
+           familyi={Y\bibinitperiod},
+           given={Diyi},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{3ba93831df0e0c79198d806b7093b644}
+      \strng{fullhash}{ac13835092957480dd00493e0934d61e}
+      \strng{fullhashraw}{ac13835092957480dd00493e0934d61e}
+      \strng{bibnamehash}{3ba93831df0e0c79198d806b7093b644}
+      \strng{authorbibnamehash}{3ba93831df0e0c79198d806b7093b644}
+      \strng{authornamehash}{3ba93831df0e0c79198d806b7093b644}
+      \strng{authorfullhash}{ac13835092957480dd00493e0934d61e}
+      \strng{authorfullhashraw}{ac13835092957480dd00493e0934d61e}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2403.03163}
+      \field{title}{Design2Code: Benchmarking Multimodal Code Generation for Automated Front-End Engineering}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2403.03163
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2403.03163
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2403.03163
+      \endverb
+    \endentry
     \entry{wan2024dcgen}{article}{}{}
       \true{moreauthor}
       \true{morelabelname}
@@ -1130,6 +1460,83 @@
       \endverb
       \verb{url}
       \verb https://json-schema.org/draft/2020-12
+      \endverb
+    \endentry
+    \entry{xiao2025interaction2code}{article}{}{}
+      \name{author}{9}{}{%
+        {{hash=908ec63a9e37ed0da7ad17be4fee56c4}{%
+           family={Xiao},
+           familyi={X\bibinitperiod},
+           given={Jingyu},
+           giveni={J\bibinitperiod}}}%
+        {{hash=747384ae31b320890e9936a8dc82b11d}{%
+           family={Wan},
+           familyi={W\bibinitperiod},
+           given={Yuxuan},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=b34c59123609d2461f65956c1edaa174}{%
+           family={Huo},
+           familyi={H\bibinitperiod},
+           given={Yintong},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=00fc59ae1653335dc63b68233bc70598}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Zixin},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=a5c1da4c30d45b59c4b1ae3784550044}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Xinyi},
+           giveni={X\bibinitperiod}}}%
+        {{hash=ea392bf57e05695a2a152ef2a5fc6062}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Wenxuan},
+           giveni={W\bibinitperiod}}}%
+        {{hash=938121f1f088f7502c88733a9ce2da3e}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Zhiyao},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=f3d32915ff548d4b55bb78cee22be006}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Yuhang},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=89afa2af91c8dfa048fdcec740d6684e}{%
+           family={Lyu},
+           familyi={L\bibinitperiod},
+           given={Michael\bibnamedelima R.},
+           giveni={M\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \strng{namehash}{e8bb38f9c729a17dcff51d2d6a732171}
+      \strng{fullhash}{952548c6d78d4128a007f4eb82c12b1a}
+      \strng{fullhashraw}{952548c6d78d4128a007f4eb82c12b1a}
+      \strng{bibnamehash}{e8bb38f9c729a17dcff51d2d6a732171}
+      \strng{authorbibnamehash}{e8bb38f9c729a17dcff51d2d6a732171}
+      \strng{authornamehash}{e8bb38f9c729a17dcff51d2d6a732171}
+      \strng{authorfullhash}{952548c6d78d4128a007f4eb82c12b1a}
+      \strng{authorfullhashraw}{952548c6d78d4128a007f4eb82c12b1a}
+      \field{sortinit}{X}
+      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2411.03292}
+      \field{title}{Interaction2Code: Benchmarking MLLM-based Interactive Webpage Code Generation from Interactive Prototyping}
+      \field{urlday}{1}
+      \field{urlmonth}{6}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2411.03292
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2411.03292
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2411.03292
       \endverb
     \endentry
     \entry{xu2025latcoder}{article}{}{}

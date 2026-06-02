@@ -176,6 +176,10 @@ export class CanvasDomStyleService {
       style['justify-content'] = element.justifyContent ?? 'flex-start';
       style['align-items'] = element.alignItems ?? 'flex-start';
       style['flex-wrap'] = element.flexWrap ?? 'nowrap';
+      const alignContent = this.resolveFlexAlignContent(element);
+      if (alignContent) {
+        style['align-content'] = alignContent;
+      }
       const gapX = element.gapX ?? element.gap;
       const gapY = element.gapY ?? element.gap;
       if (typeof gapX === 'number' && typeof gapY === 'number') {
@@ -455,5 +459,21 @@ export class CanvasDomStyleService {
       width: '100%',
       height: '100%',
     };
+  }
+
+  private resolveFlexAlignContent(element: CanvasElement): string | null {
+    if (element.flexWrap !== 'wrap') {
+      return null;
+    }
+
+    switch (element.alignItems) {
+      case 'center':
+      case 'flex-end':
+      case 'stretch':
+      case 'baseline':
+        return element.alignItems;
+      default:
+        return 'flex-start';
+    }
   }
 }

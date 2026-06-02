@@ -159,6 +159,7 @@ export class CanvasClipboardService {
       const cloned = structuredClone(element);
       cloned.id = idMap.get(element.id) ?? crypto.randomUUID();
       cloned.primarySyncId = undefined;
+      cloned.detachedPrimarySyncId = undefined;
       cloned.isPrimary = false;
 
       if (rootIds.has(element.id)) {

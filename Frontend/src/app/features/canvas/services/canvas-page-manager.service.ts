@@ -838,6 +838,9 @@ export class CanvasPageManagerService {
       id: idMap.get(element.id) ?? crypto.randomUUID(),
       parentId: element.parentId ? (idMap.get(element.parentId) ?? null) : null,
       primarySyncId: element.primarySyncId ? idMap.get(element.primarySyncId) : undefined,
+      detachedPrimarySyncId: element.detachedPrimarySyncId
+        ? idMap.get(element.detachedPrimarySyncId)
+        : undefined,
     }));
   }
 
@@ -1022,6 +1025,7 @@ export class CanvasPageManagerService {
       parentId: null,
       isPrimary: false,
       primarySyncId: undefined,
+      detachedPrimarySyncId: undefined,
     };
 
     return elements.map((element) => (element.id === targetFrame.id ? syncedFrame : element));
@@ -1043,6 +1047,7 @@ export class CanvasPageManagerService {
       id: crypto.randomUUID(),
       parentId: targetParent.id,
       primarySyncId: sourceElement.id,
+      detachedPrimarySyncId: undefined,
       isPrimary: false,
       x: shouldScalePosition ? roundToTwoDecimals(sourceElement.x * scaleX) : 0,
       y: shouldScalePosition ? roundToTwoDecimals(sourceElement.y * scaleY) : 0,

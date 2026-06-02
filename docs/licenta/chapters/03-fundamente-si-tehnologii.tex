@@ -81,8 +81,8 @@ Avantajul principal al acestui mod de lucru este repetabilitatea. Când toate co
     \texttt{api} & aplicația ASP.NET Core expusă intern pe portul 8080 & depinde de sănătatea bazei de date și montează directorul de upload-uri \\
     \texttt{frontend} & aplicația Angular compilată pentru mediu de producție & depinde de API și rulează în aceeași rețea internă \\
     \texttt{cloudflared} & publicare externă controlată prin Cloudflare Tunnel & folosește token extern și pornește doar după frontend \\
-    \texttt{postgres\_data} & persistă datele PostgreSQL & evită pierderea datelor la recrearea containerelor \\
-    \texttt{uploads\_data} & persistă fișierele încărcate și thumbnail-urile & separă conținutul generat de ciclul de build/deploy \\
+    postgres data & persistă datele PostgreSQL & evită pierderea datelor la recrearea containerelor \\
+    uploads data & persistă fișierele încărcate și thumbnail-urile & separă conținutul generat de ciclul de build/deploy \\
     \bottomrule
   \end{tabularx}
 \end{table}

@@ -119,16 +119,16 @@ Distribuția responsabilităților pe controllere are un rol important în clari
   \caption{Controllere API și responsabilitățile lor dominante}
   \label{tab:controllere-api}
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.8cm}>{\RaggedRight\arraybackslash}p{4.8cm}Y}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{2.9cm}>{\RaggedRight\arraybackslash}p{5.1cm}Y}
     \toprule
     \textbf{Controller} & \textbf{Resurse / operații principale} & \textbf{Observații utile} \\
     \midrule
-    \texttt{AccountController} & autentificare, sesiune, parole, OAuth, 2FA & concentrează logica de intrare în sistem \\
-    \texttt{ProjectsController} & CRUD proiecte, design, asset-uri, reacții, fork & controllerul cel mai bogat din zona de produs \\
-    \texttt{UsersController} & profil curent/public, follow, linked accounts & leagă identitatea utilizatorului de zona socială \\
-    \texttt{ExploreController} & trending, recomandări și sugestii de utilizatori & pune în valoare date agregate și filtrate, nu doar resurse brute \\
-    \texttt{AiDesignController} & generare directă, streaming, pipeline pe faze & include atât răspuns sincron, cât și SSE incremental \\
-    \texttt{ConverterController} & validare IR, export HTML/React/Angular, multi-page & separă clar validarea de generarea finală \\
+    Account & autentificare, sesiune, parole, OAuth, 2FA & concentrează logica de intrare în sistem \\
+    Projects & CRUD proiecte, design, asset-uri, reacții, fork & controllerul cel mai bogat din zona de produs \\
+    Users & profil curent/public, follow, linked accounts & leagă identitatea utilizatorului de zona socială \\
+    Explore & trending, recomandări și sugestii de utilizatori & pune în valoare date agregate și filtrate, nu doar resurse brute \\
+    AI design & generare directă, streaming, pipeline pe faze & include atât răspuns sincron, cât și SSE incremental \\
+    Converter & validare IR, export HTML/React/Angular, multi-page & separă clar validarea de generarea finală \\
     \bottomrule
   \end{tabularx}
 \end{table}

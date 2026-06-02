@@ -47,7 +47,15 @@ public sealed class ConverterEngine : IConverterEngine
   private GeneratedPageArtifacts GeneratePageArtifacts(IRNode root, string framework)
   {
     var exportRoot = NormalizeExportRoot(root);
-    var cssClassMap = CssClassNameResolver.Build(exportRoot);
+    return GeneratePageArtifactsFromExportRoot(exportRoot, framework);
+  }
+
+  private GeneratedPageArtifacts GeneratePageArtifactsFromExportRoot(
+    IRNode exportRoot,
+    string framework,
+    IReadOnlyDictionary<string, NodeCssClasses>? cssClassMapOverride = null)
+  {
+    var cssClassMap = cssClassMapOverride ?? CssClassNameResolver.Build(exportRoot);
 
     var frameworkMappers = ResolveFrameworkMappers(framework);
 
@@ -103,7 +111,7 @@ public sealed class ConverterEngine : IConverterEngine
       else
       {
         var breakpoints = sorted.Skip(1).Select(bp => (
-          GeneratePageArtifacts(bp.Ir, framework),
+          bp.Ir,
           bp.ViewportWidth,
           $"{bp.PageName} – {bp.ViewportWidth}px"));
         (htmlFragment, pageCss) = BuildResponsiveArtifacts(primaryArtifacts, breakpoints, framework);
@@ -766,7 +774,12 @@ public sealed class ConverterEngine : IConverterEngine
   public string GenerateDiffCss(IRNode primary, IRNode breakpoint, string framework, int maxWidth, string label)
   {
     var primaryArtifacts = GeneratePageArtifacts(primary, framework);
-    var breakpointArtifacts = GeneratePageArtifacts(breakpoint, framework);
+    var breakpointExportRoot = NormalizeExportRoot(breakpoint);
+    var breakpointCssClassMap = BuildResponsiveCssClassMap(primaryArtifacts.CssClassMap, breakpointExportRoot);
+    var breakpointArtifacts = GeneratePageArtifactsFromExportRoot(
+      breakpointExportRoot,
+      framework,
+      breakpointCssClassMap);
     var orderDiffs = BuildNodeOrderDiffs(primaryArtifacts.ExportRoot, breakpointArtifacts.ExportRoot, primaryArtifacts.CssClassMap);
     return BuildBreakpointDiffCss(primaryArtifacts.Styles, breakpointArtifacts.Styles, orderDiffs, maxWidth, label);
   }
@@ -783,10 +796,8 @@ public sealed class ConverterEngine : IConverterEngine
     if (sortedDescending.Count == 1)
       return (primaryArtifacts.Html, primaryArtifacts.Css);
 
-    var breakpoints = sortedDescending.Skip(1).Select(p => (
-      GeneratePageArtifacts(p.Ir, framework),
-      p.ViewportWidth,
-      p.Label));
+    var breakpoints = sortedDescending.Skip(1)
+      .Select(p => (p.Ir, p.ViewportWidth, p.Label));
 
     return BuildResponsiveArtifacts(primaryArtifacts, breakpoints, framework);
   }
@@ -795,7 +806,7 @@ public sealed class ConverterEngine : IConverterEngine
 
   private (string Html, string Css) BuildResponsiveArtifacts(
     GeneratedPageArtifacts primaryArtifacts,
-    IEnumerable<(GeneratedPageArtifacts Artifacts, int ViewportWidth, string Label)> breakpoints,
+    IEnumerable<(IRNode Ir, int ViewportWidth, string Label)> breakpoints,
     string framework)
   {
     var primaryIds = CollectNodeIds(primaryArtifacts.ExportRoot);
@@ -805,8 +816,17 @@ public sealed class ConverterEngine : IConverterEngine
     var diffCssSb = new StringBuilder();
     var alreadyProcessedIds = new HashSet<string>(StringComparer.Ordinal);
 
-    foreach (var (bpArtifacts, viewportWidth, label) in breakpoints)
+    foreach (var (bpIr, viewportWidth, label) in breakpoints)
     {
+      var breakpointExportRoot = NormalizeExportRoot(bpIr);
+      var breakpointCssClassMap = BuildResponsiveCssClassMap(
+        primaryArtifacts.CssClassMap,
+        breakpointExportRoot);
+      var bpArtifacts = GeneratePageArtifactsFromExportRoot(
+        breakpointExportRoot,
+        framework,
+        breakpointCssClassMap);
+
       // Append exclusive breakpoint nodes to the HTML (hidden by default).
       var exclusiveRoots = CollectExclusiveRoots(bpArtifacts.ExportRoot, primaryIds, alreadyProcessedIds);
       foreach (var exclusiveRoot in exclusiveRoots)
@@ -830,6 +850,47 @@ public sealed class ConverterEngine : IConverterEngine
 
     baseCssSb.Append(diffCssSb);
     return (htmlSb.ToString(), baseCssSb.ToString());
+  }
+
+  private static IReadOnlyDictionary<string, NodeCssClasses> BuildResponsiveCssClassMap(
+    IReadOnlyDictionary<string, NodeCssClasses> primaryCssClassMap,
+    IRNode breakpointRoot)
+  {
+    var fallbackMap = CssClassNameResolver.Build(breakpointRoot);
+    var usedTargetClasses = new HashSet<string>(
+      primaryCssClassMap.Values.Select(css => css.TargetClass),
+      StringComparer.Ordinal);
+    var result = new Dictionary<string, NodeCssClasses>(StringComparer.Ordinal);
+
+    foreach (var node in FlattenNodes(breakpointRoot))
+    {
+      if (primaryCssClassMap.TryGetValue(node.Id, out var primaryCssClasses))
+      {
+        result[node.Id] = primaryCssClasses;
+        continue;
+      }
+
+      var fallbackCssClasses = fallbackMap[node.Id];
+      var targetClass = EnsureUniqueTargetClass(fallbackCssClasses.TargetClass, usedTargetClasses);
+      usedTargetClasses.Add(targetClass);
+      result[node.Id] = targetClass == fallbackCssClasses.TargetClass
+        ? fallbackCssClasses
+        : fallbackCssClasses with { TargetClass = targetClass };
+    }
+
+    return result;
+  }
+
+  private static string EnsureUniqueTargetClass(string candidate, IReadOnlySet<string> usedTargetClasses)
+  {
+    if (!usedTargetClasses.Contains(candidate))
+      return candidate;
+
+    var suffix = 2;
+    while (usedTargetClasses.Contains($"{candidate}-{suffix}"))
+      suffix++;
+
+    return $"{candidate}-{suffix}";
   }
 
   private static string BuildBreakpointDiffCss(
@@ -945,16 +1006,24 @@ public sealed class ConverterEngine : IConverterEngine
   private static HashSet<string> CollectNodeIds(IRNode root)
   {
     var ids = new HashSet<string>(StringComparer.Ordinal);
+    foreach (var node in FlattenNodes(root))
+      ids.Add(node.Id);
+
+    return ids;
+  }
+
+  private static IEnumerable<IRNode> FlattenNodes(IRNode root)
+  {
     var queue = new Queue<IRNode>();
     queue.Enqueue(root);
+
     while (queue.Count > 0)
     {
       var node = queue.Dequeue();
-      ids.Add(node.Id);
+      yield return node;
       foreach (var child in node.Children)
         queue.Enqueue(child);
     }
-    return ids;
   }
 
   private static List<IRNode> CollectExclusiveRoots(

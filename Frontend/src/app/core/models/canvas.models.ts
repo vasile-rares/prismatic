@@ -334,6 +334,7 @@ export interface CanvasElement {
   parentId?: string | null;
   isPrimary?: boolean;
   primarySyncId?: string;
+  detachedPrimarySyncId?: string;
   irMeta?: CanvasElementIrMeta;
 }
 

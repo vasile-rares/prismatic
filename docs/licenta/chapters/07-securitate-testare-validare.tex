@@ -2,14 +2,14 @@
 
 \section{Rolul acestei etape în proiect}
 
-Într-un proiect de tip Favigon, securitatea și validarea nu pot fi tratate ca pași de final adăugați formal. Aplicația gestionează autentificare, sesiuni, proiecte private, upload de fișiere și integrare cu servicii externe costisitoare. În același timp, editorul și pipeline-ul AI au suficientă complexitate încât să necesite un efort real de verificare.
+Într-un proiect de tip Favigon, securitatea și validarea nu pot fi tratate ca pași de final adăugați formal. Aplicația gestionează autentificare, sesiuni, proiecte private, upload de fișiere și integrare cu servicii externe costisitoare. În plus, editorul și pipeline-ul AI introduc suficientă complexitate încât o simplă demonstrație vizuală nu este suficientă pentru a susține că produsul este stabil.
 
 Din acest motiv, validarea a fost privită pe trei niveluri:
 
 \begin{itemize}[leftmargin=1.5cm]
   \item \textbf{măsuri preventive în implementare}, care reduc suprafața de risc;
   \item \textbf{testare automată}, concentrată în special pe backend și convertor;
-  \item \textbf{validare funcțională}, prin scenarii operaționale și fluxuri reale în interfață.
+  \item \textbf{validare funcțională}, prin scenarii operaționale și verificări cap-coadă în interfață.
 \end{itemize}
 
 \section{Măsuri de securitate implementate}
@@ -22,17 +22,17 @@ Pentru scenariile de risc mai mare, proiectul include și autentificare în doi 
 
 \subsection{Limitarea expunerii API-ului}
 
-O altă măsură importantă este rate limiting-ul configurat diferențiat pe categorii de endpoint-uri. Zona de autentificare are praguri mai stricte, zona AI este limitată pentru a controla costul și abuzul, iar anumite endpoint-uri de utilizatori au propriile reguli. Documentația ASP.NET Core recomandă această abordare pentru protejarea aplicațiilor expuse public \cite{aspnetRateLimiting2025}. În configurația curentă, politicile observabile în `Program.cs` sunt: `auth` 10 cereri / minut, `ai` 10 cereri / minut, `converter` 30 cereri / minut cu coadă de 2 cereri și `users` 60 cereri / minut.
+O altă măsură importantă este rate limiting-ul configurat diferențiat pe categorii de endpoint-uri. Zona de autentificare are praguri mai stricte, zona AI este limitată pentru a controla costul și abuzul, iar anumite endpoint-uri de utilizatori au propriile reguli. Documentația ASP.NET Core recomandă această abordare pentru protejarea aplicațiilor expuse public \cite{aspnetRateLimiting2025}. În configurația curentă, politicile observabile în \texttt{Program.cs} sunt: \texttt{auth} 10 cereri / minut, \texttt{ai} 10 cereri / minut, \texttt{converter} 30 cereri / minut cu coadă de 2 cereri și \texttt{users} 60 cereri / minut.
 
 În plus, backend-ul impune limite pentru dimensiunea cererilor. Cererile JSON globale au limită de 1 MB, iar endpoint-urile pentru upload sau flush folosesc praguri dedicate de 5 MB, 10 MB și 15 MB, în funcție de tipul operației. Este o măsură simplă, dar utilă împotriva folosirii necontrolate a resurselor.
 
 \subsection{Middleware și antete de securitate}
 
-În `Program.cs`, backend-ul include middleware personalizat pentru tratarea excepțiilor și middleware pentru antete de securitate. În mediul non-development sunt activate HSTS și redirecționarea HTTPS. CORS este configurat explicit pe baza unei liste de origini permise. Aceste decizii nu fac aplicația invulnerabilă, dar indică o preocupare practică pentru comportamentul în producție \cite{aspnetCors2024,aspnetErrorHandling2025}.
+În \texttt{Program.cs}, backend-ul include middleware personalizat pentru tratarea excepțiilor și middleware pentru antete de securitate. În mediul non-development sunt activate HSTS și redirecționarea HTTPS. CORS este configurat explicit pe baza unei liste de origini permise. Aceste decizii nu fac aplicația invulnerabilă, dar indică o preocupare practică pentru comportamentul în producție \cite{aspnetCors2024,aspnetErrorHandling2025}.
 
 \subsection{Upload-uri și asset-uri}
 
-Proiectul permite încărcarea de imagini pentru profil și pentru proiecte. Din acest motiv, fișierele primite nu sunt tratate ca date ``neutre''. Backend-ul validează tipul, dimensiunea și contextul în care upload-ul este permis. În plus, la actualizarea designului sunt identificate și șterse asset-urile orfane, tocmai pentru a evita acumularea de fișiere inutile.
+Proiectul permite încărcarea de imagini pentru profil și pentru proiecte. Din acest motiv, fișierele primite nu sunt tratate ca date neutre. Backend-ul validează tipul, dimensiunea și contextul în care upload-ul este permis. În plus, la actualizarea designului sunt identificate și șterse asset-urile orfane, tocmai pentru a evita acumularea de fișiere inutile.
 
 \begin{table}[H]
   \centering
@@ -54,115 +54,131 @@ Proiectul permite încărcarea de imagini pentru profil și pentru proiecte. Din
   \end{tabularx}
 \end{table}
 
-Tabelul~\ref{tab:masuri-securitate} rezumă măsurile principale, însă valoarea lor practică apare tocmai din combinația lor: autentificare bazată pe cookie HTTP only, rotație separată prin refresh token, politici de limitare a cererilor și restricții explicite pentru upload-uri.
-
 \section{Strategia de testare}
 
-\subsection{Testare automată backend}
+Strategia de testare urmărită în proiect a avut două obiective. Primul a fost acoperirea automată a zonelor backend cu risc tehnic mare: autentificare, proiecte, middleware și convertor. Al doilea a fost verificarea cap-coadă a fluxurilor majore, mai ales acolo unde automatizarea completă nu exista încă pe frontend.
 
-La data de 1 iunie 2026, rularea locală a comenzii `dotnet test` pentru proiectul `Backend/Favigon.Tests` a raportat 108 teste trecute, 0 eșuate și o durată totală de aproximativ 6 secunde. Testele acoperă servicii, controllere, middleware și convertorul. Acest fapt este important pentru că zonele cele mai sensibile tehnic ale aplicației se află tocmai în backend și în motorul de conversie.
-
-Mai precis, există teste pentru:
-
-\begin{itemize}[leftmargin=1.5cm]
-  \item autentificare: login, register, refresh, resetare parolă, 2FA;
-  \item proiecte: controller și service;
-  \item utilizatori: controller și service;
-  \item convertor: controller și motorul propriu-zis;
-  \item middleware: tratarea excepțiilor și antetele de securitate.
-\end{itemize}
+La data de 1 iunie 2026, situația observabilă în repository este sintetizată în Tabelul~\ref{tab:indicatori-validare-sinteza}. El arată că validarea actuală este puternic orientată spre backend și spre convertor, în timp ce frontend-ul rămâne relativ slab acoperit automat.
 
 \begin{table}[H]
   \centering
-  \caption{Distribuția testelor automate backend}
-  \label{tab:distributie-teste}
+  \caption{Indicatori sintetici ai validării curente}
+  \label{tab:indicatori-validare-sinteza}
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{6.2cm}Y>{\RaggedLeft\arraybackslash}p{2cm}}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{6.2cm}Y}
     \toprule
-    \textbf{Zonă testată} & \textbf{Ce verifică în principal} & \textbf{Nr. teste} \\
+    \textbf{Indicator} & \textbf{Valoare observată} \\
     \midrule
-    Autentificare și cont & login, register, refresh, parole, 2FA, recuperare cont & 25 \\
-    Servicii pentru proiecte & gestionare proiecte, fork, bookmark, like și upload logic & 20 \\
-    Endpoint-uri pentru proiecte & comportamentul controllerului pentru proiecte & 11 \\
-    Utilizatori și profil & profil, follow, search, stele și operații auxiliare & 17 \\
-    Convertor și export & validare IR, export, responsive și multi-page & 19 \\
-    Middleware și securitate & tratarea erorilor și antetele HTTP & 16 \\
-    \midrule
-    \textbf{Total} & \textbf{teste backend automate trecute} & \textbf{108} \\
+    Teste backend automate trecute & 109 / 109 \\
+    Endpoint-uri HTTP expuse de API & 62 \\
+    Teste frontend existente în repository & 2 \\
+    Coverage backend total (\textit{line coverage}) & 18.33\% \\
+    Coverage backend total (\textit{branch coverage}) & 27.79\% \\
+    Politici de rate limiting configurate & 4 (auth, ai, converter, users) \\
+    Benchmark AI cu prompturi fixe & 5 prompturi, rată de succes 100\%, timp mediu 106.83 s \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\subsection{Testarea convertorului}
+\section{Testare automată backend}
 
-Convertorul merită menționat separat deoarece este una dintre zonele cele mai sensibile la regresii. Testele existente nu se opresc la cazul simplu de export pentru un singur ecran. Ele includ și cazuri pentru:
+\subsection{Distribuția pe suite}
 
-\begin{itemize}[leftmargin=1.5cm]
-  \item normalizarea rădăcinii provenite din canvas;
-  \item generarea de clase CSS distincte pentru nume duplicate;
-  \item omiterea unor stiluri implicite nerelevante;
-  \item propagarea modului de overflow;
-  \item noduri exclusive pentru anumite breakpoint-uri;
-  \item reordonarea copiilor în layout-uri flex;
-  \item diferențe de pseudo-clase și keyframes în export responsive.
-\end{itemize}
+Rularea locală a comenzii \texttt{dotnet test} pentru proiectul \texttt{Backend/Favigon.Tests} a raportat 109 teste trecute, 0 eșuate și o durată totală de aproximativ 5--6 s. Numărul brut este util, dar mai importantă este distribuția lui pe zone de responsabilitate. În forma actuală, backend-ul nu are o singură suită compactă, ci mai multe suite specializate pe servicii, controllere, middleware și convertor.
 
-Această suită de teste este importantă deoarece confirmă faptul că motorul nu este doar un generator static. El tratează situații reale care apar atunci când aceeași pagină trebuie exportată în mai multe variante sau cu structuri ușor diferite pe breakpoint-uri diferite.
+\begin{table}[H]
+  \centering
+  \caption{Distribuția testelor automate backend pe suite}
+  \label{tab:distributie-teste-suite}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.2cm}Y>{\RaggedLeft\arraybackslash}p{2cm}}
+    \toprule
+    \textbf{Suită} & \textbf{Zonă verificată în principal} & \textbf{Nr. teste} \\
+    \midrule
+    Project service & logică de proiecte, fork, like, bookmark, asset-uri & 20 \\
+    Converter engine & reguli de export, responsive și multi-page & 11 \\
+    Exception handler middleware & tratarea erorilor și maparea excepțiilor & 10 \\
+    Projects controller & contractul HTTP pentru proiecte & 11 \\
+    Users controller & contractul HTTP pentru utilizatori și profil & 9 \\
+    Converter controller & validare și generare prin API-ul convertorului & 9 \\
+    User service & operații de profil, follow, search și stări auxiliare & 8 \\
+    Auth login & login și stări de acces inițiale & 7 \\
+    Security headers middleware & antete de securitate HTTP & 6 \\
+    Auth refresh & rotație și validare refresh token & 5 \\
+    Auth register & înregistrare și reguli asociate & 5 \\
+    Auth password management & parole, resetare și schimbare credențiale & 4 \\
+    Auth two-factor & login și operații de administrare 2FA & 4 \\
+    \midrule
+    \textbf{Total} & \textbf{suită backend automată} & \textbf{109} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
-\subsection{Scenarii reprezentative ancorate în teste}
+Privită agregat, distribuția aceasta înseamnă 53 teste de servicii, 29 teste de controllere, 16 teste de middleware și 11 teste pentru motorul de conversie. Pentru proiectul de față, concentrarea este logică: cele mai multe reguli de business și cele mai sensibile transformări se află tocmai în aceste zone.
 
-Dincolo de numărul total al testelor, este utilă și observarea unor scenarii concrete care există deja în suită. Acestea arată mai clar ce comportamente sensibile sunt verificate efectiv, nu doar enumerate generic. Exemplele sintetice sunt rezumate în Tabelul~\ref{tab:scenarii-teste-reprezentative}.
+\subsection{Scenarii reprezentative acoperite automat}
+
+Dincolo de numărul total, este mai util să se observe și ce comportamente sensibile sunt verificate efectiv. Tabelul~\ref{tab:scenarii-teste-reprezentative} rezumă câteva scenarii reprezentative deja ancorate în suitele automate.
 
 \begin{table}[H]
   \centering
   \caption{Scenarii reprezentative verificate prin teste automate}
   \label{tab:scenarii-teste-reprezentative}
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm}YY}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.4cm}YY}
     \toprule
     \textbf{Zonă} & \textbf{Scenariu testat} & \textbf{Comportament verificat} \\
     \midrule
-    Autentificare 2FA & login cu 2FA activ & este emis un token intermediar, se trimite codul pe email și sesiunea finală nu este acordată înainte de verificare \\
-    Autentificare 2FA & verificarea codului valid de login & token-urile finale sunt emise, iar starea temporară de challenge este ștearsă \\
+    Autentificare 2FA & login cu 2FA activ & este emis un token intermediar, se trimite codul și sesiunea finală nu este acordată înainte de verificare \\
+    Refresh token & cerere de refresh validă sau invalidă & token-urile sunt reemise corect sau refuzate controlat \\
     Persistență proiect & înlocuirea unui asset imagine & asset-ul vechi nefolosit este eliminat, evitând acumularea de fișiere orfane \\
-    Export multi-page & normalizarea rădăcinii provenite din canvas & coordonatele specifice editorului nu sunt propagate incorect în CSS-ul paginii exportate \\
-    Export responsive & reordonarea copiilor flex pe breakpoint & diferențele de ordine sunt emise în media queries, fără duplicarea inutilă a întregii structuri \\
+    Interacțiuni sociale & fork, like și bookmark pe proiecte & relațiile sunt create corect și duplicatele sunt evitate \\
+    Export multi-page & normalizarea rădăcinii provenite din canvas & coordonatele specifice editorului nu sunt propagate incorect în CSS-ul exportat \\
+    Export responsive & reordonarea copiilor flex pe breakpoint & diferențele de ordine sunt emise în media queries, fără duplicarea inutilă a structurii \\
+    Middleware HTTP & excepții și antete de securitate & răspunsurile sunt mapate predictibil și includ antetele așteptate \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\subsection{Indicatori cantitativi observați}
+Aceste exemple arată că testarea nu se oprește la cazuri triviale de tip ``200 OK'', ci verifică și comportamente cu miză practică: validarea sesiunilor, controlul fluxului 2FA, curățarea asset-urilor, exportul responsive și middleware-ul de protecție.
 
-Pe lângă distribuția testelor din Tabelul~\ref{tab:distributie-teste}, validarea curentă oferă și câteva valori concrete, extrase direct din rulările și configurațiile existente ale proiectului.
+\section{Code coverage backend}
+
+Pentru a completa imaginea dată de numărul de teste, a fost rulat și \texttt{dotnet test --collect:"XPlat Code Coverage"}, ceea ce a generat un raport Cobertura pentru proiectele backend. Rezultatul global observat a fost de 18.33\% \textit{line coverage} și 27.79\% \textit{branch coverage}. Luată izolat, această valoare nu este spectaculoasă și trebuie citită cu precauție.
 
 \begin{table}[H]
   \centering
-  \caption{Indicatori cantitativi observați în validarea curentă}
-  \label{tab:indicatori-validare}
+  \caption{Coverage backend pe straturi observat la 1 iunie 2026}
+  \label{tab:coverage-backend}
   \renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.8cm}YY}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.4cm}>{\RaggedLeft\arraybackslash}p{2.6cm}>{\RaggedLeft\arraybackslash}p{2.9cm}Y}
     \toprule
-    \textbf{Indicator} & \textbf{Valoare observată} & \textbf{Sursă} \\
+    \textbf{Pachet} & \textbf{Line coverage} & \textbf{Branch coverage} & \textbf{Observație} \\
     \midrule
-    Execuția suitei backend & 108 / 108 teste trecute, 0 eșuate, aproximativ 6 s & rulare `dotnet test` în `Backend/Favigon.Tests` la 01.06.2026 \\
-    Suprafața API expusă & 6 controllere și 62 endpoint-uri anotate HTTP & inventar din controllerele API \\
-    Politici de rate limiting & 4 politici distincte (`auth`, `ai`, `converter`, `users`) & configurarea din `Program.cs` \\
-    Persistare automată în editor & debounce de 500 ms, flush maxim 4 s, 4 reîncercări cu bază 2 s & `CanvasPersistenceService` \\
-    Orchestrare AI & cache TTL 10 minute, 3 faze, suport pentru oprire după faza 1 sau 2 și evenimente SSE de progres & `AiDesignService` și `AiPipelineService` \\
-    Limite pentru cereri & 1 MB global pentru JSON și 5 / 10 / 15 MB pe endpoint-uri sensibile & `Program.cs` și atribute `RequestSizeLimit` \\
+    Converter & 47.09\% & 34.77\% & cea mai bună acoperire relevantă pentru logica de export \\
+    Application & 39.40\% & 27.27\% & acoperire moderată pe serviciile de aplicație \\
+    API & 21.86\% & 20.53\% & controllere și rutare verificate parțial \\
+    Domain & 58.62\% & 100.00\% & procent mare pe un strat mic, cu logică limitată \\
+    Infrastructure & 0.00\% & 0.00\% & practic netestat automat în forma actuală \\
+    \midrule
+    \textbf{Total backend} & \textbf{18.33\%} & \textbf{27.79\%} & valoarea globală este trasă în jos de zone neacoperite și de ramuri neexercitate \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\subsection{Testare frontend}
+Interpretarea corectă a Tabelului~\ref{tab:coverage-backend} este următoarea. Zonele cele mai bine acoperite sunt straturile Converter și Application, exact acolo unde se află reguli tehnice și de business importante pentru lucrare. În schimb, stratul Infrastructure rămâne practic neacoperit automat, iar acest lucru coboară semnificativ scorul global. În consecință, coverage-ul trebuie citit ca indicator de maturitate incompletă, nu ca dovadă că backend-ul ar fi fost testat uniform.
 
-Pe partea de frontend, testarea automată este în acest moment mult mai redusă. În repository există doar un test minimal la nivelul aplicației, nu o suită comparabilă cu cea din backend. Este importantă precizarea explicită a acestui fapt, pentru că altfel s-ar crea impresia falsă că proiectul este testat uniform în toate straturile.
+Cu alte cuvinte, proiectul are o bază de teste utilă și bine orientată, dar nu încă una suficient de largă încât să susțină un scor global mare. Prezentarea sinceră a acestei situații este mai valoroasă decât ascunderea ei.
 
-Motivul principal este complexitatea mare a editorului canvas și timpul limitat al proiectului. În locul unei suite largi, dar superficiale, efortul a fost direcționat spre stabilizarea logicii și spre validare funcțională directă. Nu este o soluție ideală pe termen lung, dar pentru stadiul actual al proiectului reprezintă un compromis explicit.
+\section{Testare frontend}
+
+Pe partea de frontend, situația este semnificativ mai modestă. În repository există doar un fișier de test, \texttt{app.spec.ts}, care conține două verificări simple la nivelul aplicației. Asta înseamnă că editorul canvas, partea de preview și fluxurile sociale nu au încă o suită automată comparabilă cu backend-ul.
+
+Motivul principal este complexitatea mare a editorului și timpul limitat al proiectului. În locul unei suite largi, dar superficiale, efortul a fost direcționat spre stabilizarea logicii și spre validare funcțională directă. Nu este o soluție ideală pe termen lung, dar pentru stadiul actual al produsului este un compromis explicit. Tocmai de aceea această limită trebuie menționată clar, nu ascunsă în formulări generale despre ``testare suficientă''.
 
 \section{Validare funcțională}
 
-În completarea testelor automate, aplicația a fost verificată prin scenarii funcționale care urmăresc fluxurile principale ale produsului. La nivel de sinteză, ele acoperă:
+În completarea testelor automate, aplicația a fost verificată prin scenarii funcționale care urmăresc fluxurile principale ale produsului. Acestea includ:
 
 \begin{enumerate}[leftmargin=1.5cm]
   \item creare cont, login și logout;
@@ -174,7 +190,31 @@ Motivul principal este complexitatea mare a editorului canvas și timpul limitat
   \item publicare, vizualizare publică, like, star și fork.
 \end{enumerate}
 
-Această validare a fost utilă mai ales fiindcă a legat împreună subsisteme care, individual, puteau părea corecte. De exemplu, un export poate funcționa separat, dar dacă designul salvat nu este mapat corect în IR, fluxul cap-coadă devine fragil. La fel, 2FA poate funcționa la nivel de API, dar dacă interfața nu tratează bine starea intermediară, experiența utilizatorului se degradează rapid. Straturile complementare folosite pentru această verificare sunt reprezentate în Figura~\ref{fig:straturi-validare}.
+Această validare a fost utilă mai ales fiindcă a legat împreună subsisteme care, individual, puteau părea corecte. De exemplu, un export poate funcționa separat, dar dacă designul salvat nu este mapat corect în IR, fluxul cap-coadă devine fragil. La fel, 2FA poate funcționa la nivel de API, dar dacă interfața nu tratează bine starea intermediară, experiența utilizatorului se degradează rapid.
+
+\begin{table}[H]
+  \centering
+  \caption{Scenarii critice și nivelul curent de acoperire}
+  \label{tab:scenarii-critice-acoperire}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{5.2cm}cccY}
+    \toprule
+    \textbf{Scenariu critic} & \textbf{Automat} & \textbf{Funcțional} & \textbf{Neacoperit} & \textbf{Observație} \\
+    \midrule
+    Login și 2FA & Da & Da & Nu & acoperit prin teste de servicii și verificat cap-coadă \\
+    Refresh token și logout & Da & Da & Nu & acoperit automat și observat în interfață \\
+    Creare și actualizare proiect & Da & Da & Nu & controller și service acoperite, plus utilizare directă \\
+    Upload asset și curățare asset orfan & Da & Da & Nu & verificat atât logic, cât și funcțional \\
+    Export HTML / React / Angular & Da & Da & Nu & exportul este testat și folosit în scenarii reale \\
+    Generare AI și integrare în editor & Nu & Da & Nu & evaluat prin benchmark și scenarii practice, nu prin teste automate dedicate \\
+    Gesturi complexe în canvas & Nu & Da & Nu & validate manual; lipsesc teste frontend bogate \\
+    Colaborare simultană în timp real & Nu & Nu & Da & funcționalitatea nu există încă în produs \\
+    Load testing pe endpoint-uri AI și converter & Nu & Nu & Da & nu a fost realizată încă o campanie de sarcină \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Straturile complementare folosite pentru această verificare sunt reprezentate și în Figura~\ref{fig:straturi-validare}.
 
 \begin{figure}[H]
   \centering
@@ -183,20 +223,20 @@ Această validare a fost utilă mai ales fiindcă a legat împreună subsisteme 
   \label{fig:straturi-validare}
 \end{figure}
 
-\section{Limitări ale validării actuale}
+\section{Limitări ale testării actuale}
 
 Deși proiectul are o bază bună de verificare, există și limite care trebuie menționate explicit.
 
-Prima limită este testarea frontend-ului. Editorul canvas ar beneficia de teste automate mai bogate, în special pentru interacțiuni complexe și regresii vizuale.
+Prima limită este testarea frontend-ului. Editorul canvas ar beneficia de teste automate mai bogate, în special pentru interacțiuni complexe, regresii vizuale și scenarii de navigare mai lungi.
 
-A doua limită este partea de AI. Chiar dacă rezultatele pot fi validate structural, evaluarea calității estetice și a adecvării conținutului rămâne într-o anumită măsură dependentă de observația umană.
+A doua limită este partea de AI. Benchmark-ul actual confirmă că pipeline-ul poate produce rezultate valide și exportabile pe un set mic de prompturi, dar nu oferă încă o evaluare largă pe modele multiple, prompturi multiple per categorie sau scenarii de stres.
 
-A treia limită este absența unor măsurători cantitative mai avansate pentru performanță sub sarcină. Proiectul are rate limiting și structură tehnică bună, dar nu a fost supus încă unei campanii complete de load testing.
+A treia limită este absența unei campanii complete de load testing. Proiectul are rate limiting și structură tehnică bună, dar nu a fost supus încă unei evaluări cantitative sub sarcină continuă, mai ales pentru endpoint-urile AI și de conversie.
+
+A patra limită este acoperirea redusă a infrastructurii. Chiar dacă \texttt{Infrastructure} este integrată în fluxurile reale de utilizare, ea nu este deocamdată exercitată suficient prin teste automate dedicate.
 
 \section{Concluzii intermediare}
 
-Securitatea și validarea din Favigon nu rezolvă toate problemele posibile, dar oferă o bază credibilă pentru funcționarea produsului. Autentificarea, 2FA, limitarea cererilor, validarea upload-urilor și middleware-ul de protecție reduc riscuri concrete. În paralel, cele 108 teste backend și scenariile funcționale confirmă că aplicația nu este doar conceptual coerentă, ci și suficient de stabilă pentru demonstrare și utilizare controlată.
+Securitatea și validarea din Favigon nu rezolvă toate problemele posibile, dar oferă o bază credibilă pentru funcționarea produsului. Autentificarea, 2FA, limitarea cererilor, validarea upload-urilor și middleware-ul de protecție reduc riscuri concrete. În paralel, cele 109 teste backend, coverage-ul măsurat explicit și scenariile funcționale arată că proiectul nu este doar conceptual coerent, ci și suficient de bine verificat pentru o lucrare de licență.
 
-Pe baza acestei evaluări, capitolul final sintetizează rezultatele proiectului și direcțiile de dezvoltare viitoare.
-
-
+În același timp, cifrele arată clar și unde produsul rămâne incomplet: frontend-ul este slab acoperit automat, \texttt{Infrastructure} este practic netestată prin suite dedicate, iar evaluarea AI trebuie extinsă în viitor prin benchmark-uri mai largi și prin măsurători sub sarcină. Tocmai această combinație dintre puncte tari și limite reale pregătește terenul pentru capitolul final.

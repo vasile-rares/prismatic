@@ -38,6 +38,10 @@ import { mutateNormalizeElement } from '../../utils/element/canvas-element-norma
 import { roundToTwoDecimals } from '../../utils/canvas-math.util';
 import { sanitizeSvg, parseSvgDimensions } from '../../utils/svg-sanitizer.util';
 import {
+  detachCanvasElementFromPrimarySync,
+  getCanvasBreakpointSourceId,
+} from '../../utils/canvas-breakpoint-link.util';
+import {
   collectSubtreeIds,
   removeWithChildren,
   buildChildrenMap,
@@ -1322,7 +1326,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
         const patchedEl = withPatch.find((e) => e.id === selectedId);
         if (patchedEl?.primarySyncId) {
           const detached = withPatch.map((e) =>
-            e.id === selectedId ? { ...e, primarySyncId: undefined } : e,
+            e.id === selectedId ? detachCanvasElementFromPrimarySync(e) : e,
           );
           return this.gesture.applyLayoutTransitionsForContainers(
             elements,
@@ -1409,7 +1413,9 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
         );
         const updatedEl = updated.find((e) => e.id === change.id);
         if (updatedEl?.primarySyncId) {
-          return updated.map((e) => (e.id === change.id ? { ...e, primarySyncId: undefined } : e));
+          return updated.map((e) =>
+            e.id === change.id ? detachCanvasElementFromPrimarySync(e) : e,
+          );
         }
         return this.gesture.syncElementPatchToPrimary(change.id, { name: change.name }, updated);
       });
@@ -1425,7 +1431,9 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
           element.id === change.id ? { ...element, visible: element.visible === false } : element,
         );
         if (el?.primarySyncId) {
-          return updated.map((e) => (e.id === change.id ? { ...e, primarySyncId: undefined } : e));
+          return updated.map((e) =>
+            e.id === change.id ? detachCanvasElementFromPrimarySync(e) : e,
+          );
         }
         return this.gesture.syncElementPatchToPrimary(change.id, { visible: newVisible }, updated);
       });
@@ -1942,8 +1950,9 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.page.selectedPageLayerId.set(pageId);
   }
 
-  onPageHeaderPlayClick(pageId: string): void {
+  async onPageHeaderPlayClick(pageId: string): Promise<void> {
     this.selectPageFromToolbar(pageId);
+    await this.flushPendingPersistence();
     this.page.openPreviewForPage(this.projectSlug, pageId);
   }
 
@@ -2082,14 +2091,15 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     const selectedIds = new Set(selectedElements.map((element) => element.id));
     const syncedSourceIds = new Set(
       elements
-        .map((element) => element.primarySyncId)
-        .filter((primarySyncId): primarySyncId is string => typeof primarySyncId === 'string'),
+        .map((element) => getCanvasBreakpointSourceId(element))
+        .filter((sourceId): sourceId is string => typeof sourceId === 'string'),
     );
     const highlightSourceIds = new Set<string>();
 
     for (const selectedElement of selectedElements) {
-      if (selectedElement.primarySyncId) {
-        highlightSourceIds.add(selectedElement.primarySyncId);
+      const selectedSourceId = getCanvasBreakpointSourceId(selectedElement);
+      if (selectedSourceId) {
+        highlightSourceIds.add(selectedSourceId);
         continue;
       }
 
@@ -2106,7 +2116,8 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       (element) =>
         !selectedIds.has(element.id) &&
         (highlightSourceIds.has(element.id) ||
-          (!!element.primarySyncId && highlightSourceIds.has(element.primarySyncId))),
+          (!!getCanvasBreakpointSourceId(element) &&
+            highlightSourceIds.has(getCanvasBreakpointSourceId(element)!))),
     );
   }
 
@@ -2378,6 +2389,10 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
     this.runWithHistory(() => {
       this.updateCurrentPageElements((elements) => {
+        const shouldReflowRootFrames = selectedIds.some((selectedId) =>
+          this.gesture.isRootFrame(elements.find((element) => element.id === selectedId) ?? null),
+        );
+
         // Before removing, record the current rendered height of any parent frame that has
         // heightMode:'fit-content' and whose last child is about to be deleted. When the
         // deletion leaves the frame empty, CSS fit-content collapses to 0px; we freeze the
@@ -2406,15 +2421,19 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
           );
         }, elements);
 
-        if (fitContentFrameHeights.size === 0) return afterRemoval;
+        let nextElements = afterRemoval;
 
-        return afterRemoval.map((el) => {
-          const frozenH = fitContentFrameHeights.get(el.id);
-          if (frozenH === undefined) return el;
-          const stillHasChildren = afterRemoval.some((e) => e.parentId === el.id);
-          if (stillHasChildren) return el;
-          return { ...el, height: Math.max(1, frozenH), heightMode: undefined };
-        });
+        if (fitContentFrameHeights.size > 0) {
+          nextElements = afterRemoval.map((el) => {
+            const frozenH = fitContentFrameHeights.get(el.id);
+            if (frozenH === undefined) return el;
+            const stillHasChildren = afterRemoval.some((e) => e.parentId === el.id);
+            if (stillHasChildren) return el;
+            return { ...el, height: Math.max(1, frozenH), heightMode: undefined };
+          });
+        }
+
+        return shouldReflowRootFrames ? this.gesture.compactRootFrames(nextElements) : nextElements;
       });
       this.clearElementSelection();
     });
@@ -2523,6 +2542,10 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
         this.gesture.runWithHistory(() => {
           this.updateCurrentPageElements((elements) => {
+            const shouldReflowRootFrames = targetIds.some((targetId) =>
+              this.gesture.isRootFrame(elements.find((element) => element.id === targetId) ?? null),
+            );
+
             const page = this.currentPage();
             const fitContentFrameHeights = new Map<string, number>();
             for (const targetId of targetIds) {
@@ -2548,15 +2571,21 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
               );
             }, elements);
 
-            if (fitContentFrameHeights.size === 0) return afterRemoval;
+            let nextElements = afterRemoval;
 
-            return afterRemoval.map((el) => {
-              const frozenH = fitContentFrameHeights.get(el.id);
-              if (frozenH === undefined) return el;
-              const stillHasChildren = afterRemoval.some((e) => e.parentId === el.id);
-              if (stillHasChildren) return el;
-              return { ...el, height: Math.max(1, frozenH), heightMode: undefined };
-            });
+            if (fitContentFrameHeights.size > 0) {
+              nextElements = afterRemoval.map((el) => {
+                const frozenH = fitContentFrameHeights.get(el.id);
+                if (frozenH === undefined) return el;
+                const stillHasChildren = afterRemoval.some((e) => e.parentId === el.id);
+                if (stillHasChildren) return el;
+                return { ...el, height: Math.max(1, frozenH), heightMode: undefined };
+              });
+            }
+
+            return shouldReflowRootFrames
+              ? this.gesture.compactRootFrames(nextElements)
+              : nextElements;
           });
           this.clearElementSelection();
         });

@@ -679,4 +679,126 @@ public class ConverterEngineTests
     Assert.Matches(@"\.alpha\s*\{[^}]*order:\s*1", mediaBlock);
     Assert.Matches(@"\.beta\s*\{[^}]*order:\s*0", mediaBlock);
   }
+
+  [Fact]
+  public void GenerateResponsiveOutput_DuplicateNamedSharedChildren_KeepPrimaryClassMapping()
+  {
+    var sut = new ConverterEngine();
+
+    var primaryRoot = new IRNode
+    {
+      Id = "canvas-duplicate-order",
+      Type = "Container",
+      Props = new Dictionary<string, object?> { ["role"] = "canvas-root" },
+      Children =
+      [
+        new IRNode
+        {
+          Id = "frame-d",
+          Type = "Frame",
+          Meta = new IRMeta { Name = "Desktop" },
+          Layout = new IRLayout { Mode = LayoutMode.Flex, Direction = FlexDirection.Row },
+          Style = new IRStyle
+          {
+            Width = new IRLength { Value = 1280, Unit = "px" },
+            Height = new IRLength { Value = 720, Unit = "px" },
+            Background = "#FFFFFF"
+          },
+          Children =
+          [
+            new IRNode
+            {
+              Id = "rect-red",
+              Type = "Container",
+              Meta = new IRMeta { Name = "Rectangle" },
+              Style = new IRStyle
+              {
+                Width = new IRLength { Value = 435, Unit = "px" },
+                Height = new IRLength { Value = 251, Unit = "px" },
+                Background = "#FF0000"
+              }
+            },
+            new IRNode
+            {
+              Id = "rect-green",
+              Type = "Container",
+              Meta = new IRMeta { Name = "Rectangle" },
+              Style = new IRStyle
+              {
+                Width = new IRLength { Value = 435, Unit = "px" },
+                Height = new IRLength { Value = 251, Unit = "px" },
+                Background = "#00FF48"
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    var mobileRoot = new IRNode
+    {
+      Id = "canvas-duplicate-order",
+      Type = "Container",
+      Props = new Dictionary<string, object?> { ["role"] = "canvas-root" },
+      Children =
+      [
+        new IRNode
+        {
+          Id = "frame-d",
+          Type = "Frame",
+          Meta = new IRMeta { Name = "Desktop" },
+          Layout = new IRLayout { Mode = LayoutMode.Flex, Direction = FlexDirection.Column },
+          Style = new IRStyle
+          {
+            Width = new IRLength { Value = 375, Unit = "px" },
+            Height = new IRLength { Value = 720, Unit = "px" },
+            Background = "#FFFFFF"
+          },
+          Children =
+          [
+            new IRNode
+            {
+              Id = "rect-green",
+              Type = "Container",
+              Meta = new IRMeta { Name = "Rectangle" },
+              Style = new IRStyle
+              {
+                Width = new IRLength { Value = 375, Unit = "px" },
+                Height = new IRLength { Value = 251, Unit = "px" },
+                Background = "#00FF48"
+              }
+            },
+            new IRNode
+            {
+              Id = "rect-red",
+              Type = "Container",
+              Meta = new IRMeta { Name = "Rectangle" },
+              Style = new IRStyle
+              {
+                Width = new IRLength { Value = 375, Unit = "px" },
+                Height = new IRLength { Value = 251, Unit = "px" },
+                Background = "#FF0000"
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    var (html, css) = sut.GenerateResponsiveOutput(
+      [(primaryRoot, 1280, "Desktop â€“ 1280px"), (mobileRoot, 375, "Mobile â€“ 375px")],
+      "html");
+
+    Assert.Contains("rect rect-1", html);
+    Assert.Contains("rect rect-2", html);
+
+    var mediaIndex = css.IndexOf("@media", StringComparison.Ordinal);
+    Assert.True(mediaIndex >= 0, "Expected @media block");
+    var mediaBlock = css[mediaIndex..];
+
+    Assert.Matches(@"\.rect-1\s*\{[\s\S]*order:\s*1;", mediaBlock);
+    Assert.Matches(@"\.rect-2\s*\{[\s\S]*order:\s*0;", mediaBlock);
+    Assert.DoesNotMatch(@"\.rect-1\s*\{[\s\S]*background:", mediaBlock);
+    Assert.DoesNotMatch(@"\.rect-2\s*\{[\s\S]*background:", mediaBlock);
+  }
 }

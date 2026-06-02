@@ -22,6 +22,10 @@ import { mutateNormalizeElement } from '../../utils/element/canvas-element-norma
 import { clamp, roundToTwoDecimals } from '../../utils/canvas-math.util';
 import { collectSubtreeIds, removeWithChildren } from '../../utils/canvas-tree.util';
 import {
+  detachCanvasElementFromPrimarySync,
+  isDetachedCanvasBreakpointOverride,
+} from '../../utils/canvas-breakpoint-link.util';
+import {
   buildSnapCandidates,
   calculateResizedBounds,
   computeSnappedPosition,
@@ -41,6 +45,35 @@ import {
 const ROOT_FRAME_INSERT_GAP = 48;
 const ELEMENT_DRAG_START_THRESHOLD = 3;
 const CONTAINER_DROP_TOLERANCE = 4;
+const ROOT_FRAME_BREAKPOINT_LOCAL_PATCH_KEYS = new Set<keyof CanvasElement>([
+  'id',
+  'name',
+  'x',
+  'y',
+  'width',
+  'widthMode',
+  'widthSizingValue',
+  'minWidth',
+  'minWidthMode',
+  'minWidthSizingValue',
+  'maxWidth',
+  'maxWidthMode',
+  'maxWidthSizingValue',
+  'height',
+  'heightMode',
+  'heightSizingValue',
+  'minHeight',
+  'minHeightMode',
+  'minHeightSizingValue',
+  'maxHeight',
+  'maxHeightMode',
+  'maxHeightSizingValue',
+  'visible',
+  'parentId',
+  'isPrimary',
+  'primarySyncId',
+  'detachedPrimarySyncId',
+]);
 
 type RectangleDrawTool = 'rectangle' | 'image';
 
@@ -755,7 +788,7 @@ export class CanvasGestureService {
       this.editorState.updateCurrentPageElements((els) => {
         const freshEl = els.find((e) => e.id === selectedOnDrop.id) ?? null;
         if (freshEl?.primarySyncId) {
-          return els.map((e) => (e.id === freshEl.id ? { ...e, primarySyncId: undefined } : e));
+          return els.map((e) => (e.id === freshEl.id ? detachCanvasElementFromPrimarySync(e) : e));
         }
         if (this.isResizing() && freshEl?.type === 'frame' && !freshEl.parentId) {
           return this.syncPrimaryFrameResize(freshEl, els);
@@ -1787,7 +1820,7 @@ export class CanvasGestureService {
       });
       const editedEl = withText.find((e) => e.id === id);
       if (editedEl?.primarySyncId) {
-        return withText.map((e) => (e.id === id ? { ...e, primarySyncId: undefined } : e));
+        return withText.map((e) => (e.id === id ? detachCanvasElementFromPrimarySync(e) : e));
       }
       return this.syncElementPatchToPrimary(id, effectivePatch, withText);
     });
@@ -2198,9 +2231,15 @@ export class CanvasGestureService {
 
   syncElementPatchToPrimary(
     elementId: string,
-    _patch: Partial<CanvasElement>,
+    patch: Partial<CanvasElement>,
     elements: CanvasElement[],
   ): CanvasElement[] {
+    const primaryFrame = this.getPrimaryFrame(elements);
+    if (primaryFrame?.id === elementId) {
+      const withSyncedRootPatch = this.syncRootFramePatchFromPrimary(primaryFrame, patch, elements);
+      return this.syncPrimarySubtreeAcrossFrames(elementId, withSyncedRootPatch);
+    }
+
     return this.syncPrimarySubtreeAcrossFrames(elementId, elements);
   }
 
@@ -2368,8 +2407,8 @@ export class CanvasGestureService {
 
   // ── Layout predicates (public, used by component handlers) ──
 
-  isRootFrame(el: CanvasElement): boolean {
-    return el.type === 'frame' && !el.parentId;
+  isRootFrame(el: CanvasElement | null | undefined): boolean {
+    return !!el && el.type === 'frame' && !el.parentId;
   }
 
   isLayoutContainer(el: CanvasElement | null | undefined): boolean {
@@ -2494,10 +2533,10 @@ export class CanvasGestureService {
       .filter((el) => el.id !== primaryFrame.id);
     if (otherRootFrames.length === 0) return elements;
 
-    let nextElements =
-      sourceRootId === primaryFrame.id
-        ? this.syncRootFramesFromPrimary(primaryFrame, elements)
-        : elements;
+    // Root frames are breakpoint-specific containers. Syncing the primary frame's
+    // own layout/style onto other root frames would wipe local breakpoint overrides
+    // such as mobile flex-direction, gap, alignment, etc.
+    let nextElements = elements;
     for (const frame of otherRootFrames) {
       const targetFrame = nextElements.find((el) => el.id === frame.id) ?? frame;
       nextElements = this.syncPrimarySubtreeToFrame(
@@ -2511,26 +2550,43 @@ export class CanvasGestureService {
     return nextElements;
   }
 
-  private syncRootFramesFromPrimary(
+  private syncRootFramePatchFromPrimary(
     primaryFrame: CanvasElement,
+    patch: Partial<CanvasElement>,
     elements: CanvasElement[],
   ): CanvasElement[] {
-    return elements.map((el) => {
-      if (!this.isRootFrame(el) || el.id === primaryFrame.id) return el;
+    const syncedPatch = this.filterRootFramePatchForBreakpoints(patch);
+    if (Object.keys(syncedPatch).length === 0) {
+      return elements;
+    }
 
-      return {
-        ...primaryFrame,
-        id: el.id,
-        name: el.name,
-        x: el.x,
-        y: el.y,
-        width: el.width,
-        height: el.height,
+    return elements.map((element) => {
+      if (!this.isRootFrame(element) || element.id === primaryFrame.id) {
+        return element;
+      }
+
+      const nextElement: CanvasElement = {
+        ...element,
+        ...syncedPatch,
         parentId: null,
         isPrimary: false,
         primarySyncId: undefined,
+        detachedPrimarySyncId: undefined,
       };
+
+      mutateNormalizeElement(nextElement, elements);
+      return nextElement;
     });
+  }
+
+  private filterRootFramePatchForBreakpoints(
+    patch: Partial<CanvasElement>,
+  ): Partial<CanvasElement> {
+    const entries = Object.entries(patch).filter(
+      ([key]) => !ROOT_FRAME_BREAKPOINT_LOCAL_PATCH_KEYS.has(key as keyof CanvasElement),
+    );
+
+    return Object.fromEntries(entries) as Partial<CanvasElement>;
   }
 
   private syncPrimarySubtreeToFrame(
@@ -2565,7 +2621,7 @@ export class CanvasGestureService {
         sourceElement.parentId === primaryFrame.id
           ? targetFrame
           : (syncedBySourceId.get(sourceElement.parentId) ??
-            this.findSyncedElementInRootFrame(
+            this.findLinkedElementInRootFrame(
               sourceElement.parentId,
               targetFrame.id,
               nextElements,
@@ -2574,11 +2630,38 @@ export class CanvasGestureService {
 
       syncedParentIds.set(sourceParent.id, targetParent.id);
 
-      const existingCopy = this.findSyncedElementInRootFrame(
+      const directSyncedCopy = this.findDirectSyncedElementInRootFrame(
         sourceElement.id,
         targetFrame.id,
         nextElements,
       );
+      const detachedOverride = this.findDetachedElementInFrameForSource(
+        sourceElement,
+        sourceParent,
+        targetParent,
+        targetFrame.id,
+        nextElements,
+      );
+
+      if (detachedOverride && detachedOverride.id !== directSyncedCopy?.id) {
+        nextElements = this.removeSyncedCopiesForSourceInRootFrame(
+          sourceElement.id,
+          targetFrame.id,
+          nextElements,
+        );
+        syncedBySourceId.set(sourceElement.id, detachedOverride);
+        continue;
+      }
+
+      nextElements = this.removeSyncedCopiesForSourceInRootFrame(
+        sourceElement.id,
+        targetFrame.id,
+        nextElements,
+        directSyncedCopy ? new Set([directSyncedCopy.id]) : undefined,
+      );
+      const existingCopy = directSyncedCopy
+        ? (nextElements.find((el) => el.id === directSyncedCopy.id) ?? directSyncedCopy)
+        : null;
       const syncedElement = this.buildSyncedElementFromSource(
         sourceElement,
         sourceParent,
@@ -2640,6 +2723,7 @@ export class CanvasGestureService {
       id: existingCopy?.id ?? crypto.randomUUID(),
       parentId: targetParent.id,
       primarySyncId: sourceElement.id,
+      detachedPrimarySyncId: undefined,
       isPrimary: false,
       x: shouldScalePosition ? roundToTwoDecimals(sourceElement.x * scaleX) : 0,
       y: shouldScalePosition ? roundToTwoDecimals(sourceElement.y * scaleY) : 0,
@@ -2733,7 +2817,11 @@ export class CanvasGestureService {
     if (!sourceRoot || sourceRoot.primarySyncId) return elements;
 
     const sourceSubtreeIds = new Set(collectSubtreeIds(sourceElements, sourceRootId));
-    return elements.filter((el) => !el.primarySyncId || !sourceSubtreeIds.has(el.primarySyncId));
+    return elements.filter(
+      (el) =>
+        (!el.primarySyncId || !sourceSubtreeIds.has(el.primarySyncId)) &&
+        (!el.detachedPrimarySyncId || !sourceSubtreeIds.has(el.detachedPrimarySyncId)),
+    );
   }
 
   breakSyncOnParentChange(
@@ -2754,7 +2842,7 @@ export class CanvasGestureService {
 
     if (current.primarySyncId) {
       return elements.map((el) =>
-        currentSubtreeIds.has(el.id) ? { ...el, primarySyncId: undefined } : el,
+        currentSubtreeIds.has(el.id) ? detachCanvasElementFromPrimarySync(el) : el,
       );
     }
 
@@ -2766,7 +2854,7 @@ export class CanvasGestureService {
     if (wasInPrimaryScope && !isInPrimaryScope) {
       return elements.map((el) =>
         el.primarySyncId && currentSubtreeIds.has(el.primarySyncId)
-          ? { ...el, primarySyncId: undefined }
+          ? detachCanvasElementFromPrimarySync(el)
           : el,
       );
     }
@@ -2801,7 +2889,7 @@ export class CanvasGestureService {
     return false;
   }
 
-  private findSyncedElementInRootFrame(
+  private findDirectSyncedElementInRootFrame(
     sourceId: string,
     rootFrameId: string,
     elements: CanvasElement[],
@@ -2811,6 +2899,88 @@ export class CanvasGestureService {
         (el) => el.primarySyncId === sourceId && this.findRootFrameId(el, elements) === rootFrameId,
       ) ?? null
     );
+  }
+
+  private findLinkedElementInRootFrame(
+    sourceId: string,
+    rootFrameId: string,
+    elements: CanvasElement[],
+  ): CanvasElement | null {
+    return (
+      this.findDirectSyncedElementInRootFrame(sourceId, rootFrameId, elements) ??
+      this.findDetachedLinkedElementInRootFrame(sourceId, rootFrameId, elements)
+    );
+  }
+
+  private findDetachedLinkedElementInRootFrame(
+    sourceId: string,
+    rootFrameId: string,
+    elements: CanvasElement[],
+  ): CanvasElement | null {
+    return (
+      elements.find(
+        (el) =>
+          el.detachedPrimarySyncId === sourceId && this.findRootFrameId(el, elements) === rootFrameId,
+      ) ?? null
+    );
+  }
+
+  private findDetachedElementInFrameForSource(
+    sourceElement: CanvasElement,
+    sourceParent: CanvasElement,
+    targetParent: CanvasElement,
+    rootFrameId: string,
+    elements: CanvasElement[],
+  ): CanvasElement | null {
+    const linked = this.findDetachedLinkedElementInRootFrame(sourceElement.id, rootFrameId, elements);
+    if (linked) {
+      return linked;
+    }
+
+    const sourceSiblings = elements.filter((el) => el.parentId === sourceParent.id && !el.primarySyncId);
+    const siblingIndex = sourceSiblings.findIndex((el) => el.id === sourceElement.id);
+    if (siblingIndex < 0) {
+      return null;
+    }
+
+    const targetSiblings = elements.filter((el) => el.parentId === targetParent.id);
+    const candidate = targetSiblings[siblingIndex] ?? null;
+    if (!candidate || candidate.type !== sourceElement.type || candidate.primarySyncId) {
+      return null;
+    }
+
+    return isDetachedCanvasBreakpointOverride(candidate) || !candidate.detachedPrimarySyncId
+      ? candidate
+      : null;
+  }
+
+  private removeSyncedCopiesForSourceInRootFrame(
+    sourceId: string,
+    rootFrameId: string,
+    elements: CanvasElement[],
+    keepIds: ReadonlySet<string> = new Set<string>(),
+  ): CanvasElement[] {
+    const duplicateRootIds = elements
+      .filter(
+        (el) =>
+          el.primarySyncId === sourceId &&
+          !keepIds.has(el.id) &&
+          this.findRootFrameId(el, elements) === rootFrameId,
+      )
+      .map((el) => el.id);
+
+    if (duplicateRootIds.length === 0) {
+      return elements;
+    }
+
+    const idsToRemove = new Set<string>();
+    for (const duplicateRootId of duplicateRootIds) {
+      for (const subtreeId of collectSubtreeIds(elements, duplicateRootId)) {
+        idsToRemove.add(subtreeId);
+      }
+    }
+
+    return elements.filter((el) => !idsToRemove.has(el.id));
   }
 
   private findRootFrameId(el: CanvasElement, elements: CanvasElement[]): string | null {
@@ -3210,6 +3380,10 @@ export class CanvasGestureService {
 
   getRootFrameCount(elements: CanvasElement[]): number {
     return this.element.getRootFrames(elements).length;
+  }
+
+  compactRootFrames(elements: CanvasElement[]): CanvasElement[] {
+    return this.reflowRootFrames(elements);
   }
 
   private reflowRootFrames(

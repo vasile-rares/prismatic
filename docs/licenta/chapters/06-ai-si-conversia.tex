@@ -105,6 +105,8 @@ Din punct de vedere operațional, fluxul complet dintre utilizator, frontend, co
 
 OpenAI documentează explicit posibilitatea obținerii unor ieșiri structurate, conforme cu un anumit format sau cu o anumită schemă \cite{openaiStructuredOutputs2026}. În proiect, această capabilitate este foarte importantă. Dacă modelul ar întoarce doar text liber, parser-ul și validarea ar deveni mult mai fragile. În schimb, cu o schemă bine definită, aplicația poate detecta mai repede abaterile și poate decide dacă rezultatul este utilizabil sau nu.
 
+Literatura recentă despre \textit{structured outputs} și \textit{constrained decoding} confirmă că această problemă merită tratată separat. \textit{JSONSchemaBench} arată că generarea de ieșiri conforme cu o schemă este o dimensiune tehnică distinctă de calitatea semantică a conținutului și propune evaluarea separată a conformității, eficienței și calității rezultatului \cite{geng2025jsonschemabench}. Această observație se potrivește foarte bine cu nevoile Favigon: pentru platformă nu este suficient ca răspunsul să fie valid JSON, ci trebuie să fie și suficient de coerent încât să poată fi editat și exportat mai departe.
+
 Totuși, experiența din implementare arată că \textit{structured output} nu este o soluție magică. El ajută la format, dar nu garantează automat calitatea semantică a rezultatului. De exemplu, un JSON perfect valid poate descrie o structură slabă sau o ierarhie de secțiuni nepotrivită. Din acest motiv, `AiPipelineService` folosește atât deserializare și validare structurală, cât și reguli suplimentare și un pas de auto-reparare când rezultatul nu este acceptabil.
 
 \section{Mecanisme de validare și reparare}
@@ -200,5 +202,4 @@ Deși soluția funcționează și este coerentă, există și limite.
 Capitolul de față descrie partea cea mai originală din proiect. Generarea asistată de AI nu este tratată ca un artificiu separat, ci ca parte a unei arhitecturi care include reprezentare intermediară, validare, reparare și conversie în cod. Tocmai această integrare controlată face diferența între o demonstrație izolată și un produs software coerent.
 
 În capitolul următor sunt urmărite scenarii concrete de utilizare, pentru a observa cum colaborează în practică editorul, AI-ul, preview-ul, exportul și componenta socială. Abia după această etapă este discutată explicit validarea sistemului prin măsuri de securitate și testare.
-
 
