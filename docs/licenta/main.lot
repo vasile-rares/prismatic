@@ -14,20 +14,22 @@
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {7.1}{\ignorespaces Rezultatele benchmark-ului AI pe cele 5 prompturi fixe}}{43}{table.caption.26}%
 \contentsline {table}{\numberline {7.2}{\ignorespaces Indicatori agregați observați în benchmark-ul AI}}{43}{table.caption.27}%
-\contentsline {table}{\numberline {7.3}{\ignorespaces Scenarii funcționale folosite în evaluarea practică}}{44}{table.caption.28}%
-\contentsline {table}{\numberline {7.4}{\ignorespaces Comparație internă între fluxul manual și fluxul pornit din AI}}{45}{table.caption.29}%
+\contentsline {table}{\numberline {7.3}{\ignorespaces Caracteristicile ieșirii generate pentru cele 5 prompturi}}{44}{table.caption.28}%
+\contentsline {table}{\numberline {7.4}{\ignorespaces Scenarii funcționale folosite în evaluarea practică}}{45}{table.caption.29}%
+\contentsline {table}{\numberline {7.5}{\ignorespaces Comparație internă între fluxul manual și fluxul pornit din AI}}{46}{table.caption.30}%
+\contentsline {table}{\numberline {7.6}{\ignorespaces Decizii tehnice și susținerea lor în rezultatele evaluării}}{47}{table.caption.31}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces Măsuri de securitate implementate în Favigon}}{48}{table.caption.30}%
-\contentsline {table}{\numberline {8.2}{\ignorespaces Indicatori sintetici ai validării curente}}{49}{table.caption.31}%
-\contentsline {table}{\numberline {8.3}{\ignorespaces Distribuția testelor automate backend pe suite}}{50}{table.caption.32}%
-\contentsline {table}{\numberline {8.4}{\ignorespaces Scenarii reprezentative verificate prin teste automate}}{51}{table.caption.33}%
-\contentsline {table}{\numberline {8.5}{\ignorespaces Coverage backend pe straturi observat la 1 iunie 2026}}{52}{table.caption.34}%
-\contentsline {table}{\numberline {8.6}{\ignorespaces Scenarii critice și nivelul curent de acoperire}}{53}{table.caption.35}%
+\contentsline {table}{\numberline {8.1}{\ignorespaces Măsuri de securitate implementate în Favigon}}{50}{table.caption.32}%
+\contentsline {table}{\numberline {8.2}{\ignorespaces Indicatori sintetici ai validării curente}}{51}{table.caption.33}%
+\contentsline {table}{\numberline {8.3}{\ignorespaces Distribuția testelor automate backend pe suite}}{52}{table.caption.34}%
+\contentsline {table}{\numberline {8.4}{\ignorespaces Scenarii reprezentative verificate prin teste automate}}{53}{table.caption.35}%
+\contentsline {table}{\numberline {8.5}{\ignorespaces Coverage backend pe straturi observat la 1 iunie 2026}}{54}{table.caption.36}%
+\contentsline {table}{\numberline {8.6}{\ignorespaces Scenarii critice și nivelul curent de acoperire}}{55}{table.caption.37}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {B.1}{\ignorespaces Endpoint-uri principale din zona de autentificare}}{63}{table.B.1}%
-\contentsline {table}{\numberline {B.2}{\ignorespaces Endpoint-uri principale pentru proiecte}}{64}{table.B.2}%
-\contentsline {table}{\numberline {B.3}{\ignorespaces Endpoint-uri principale pentru utilizatori}}{64}{table.B.3}%
-\contentsline {table}{\numberline {B.4}{\ignorespaces Endpoint-uri din zona explore}}{65}{table.B.4}%
-\contentsline {table}{\numberline {B.5}{\ignorespaces Endpoint-uri pentru AI și converter}}{65}{table.B.5}%
+\contentsline {table}{\numberline {B.1}{\ignorespaces Endpoint-uri principale din zona de autentificare}}{65}{table.B.1}%
+\contentsline {table}{\numberline {B.2}{\ignorespaces Endpoint-uri principale pentru proiecte}}{66}{table.B.2}%
+\contentsline {table}{\numberline {B.3}{\ignorespaces Endpoint-uri principale pentru utilizatori}}{66}{table.B.3}%
+\contentsline {table}{\numberline {B.4}{\ignorespaces Endpoint-uri din zona explore}}{67}{table.B.4}%
+\contentsline {table}{\numberline {B.5}{\ignorespaces Endpoint-uri pentru AI și converter}}{67}{table.B.5}%

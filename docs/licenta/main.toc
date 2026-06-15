@@ -104,44 +104,46 @@
 \contentsline {section}{\numberline {7.3}Benchmark AI cu prompturi fixe}{43}{section.7.3}%
 \contentsline {subsection}{\numberline {7.3.1}Setul de prompturi}{43}{subsection.7.3.1}%
 \contentsline {subsection}{\numberline {7.3.2}Indicatorii agregați}{43}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Caracteristicile ieșirii generate}{44}{subsection.7.3.3}%
 \contentsline {section}{\numberline {7.4}Scenarii funcționale cap-coadă}{44}{section.7.4}%
-\contentsline {subsection}{\numberline {7.4.1}Scenariu detaliat: de la idee la proiect reutilizabil}{44}{subsection.7.4.1}%
-\contentsline {section}{\numberline {7.5}Comparație internă: flux manual versus flux pornit din AI}{45}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Discuție asupra limitărilor observate}{45}{section.7.6}%
-\contentsline {section}{\numberline {7.7}Concluzii intermediare}{46}{section.7.7}%
-\contentsline {chapter}{\numberline {8}Securitate, testare și validare}{47}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Rolul acestei etape în proiect}{47}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Măsuri de securitate implementate}{47}{section.8.2}%
-\contentsline {subsection}{\numberline {8.2.1}Autentificare și sesiune}{47}{subsection.8.2.1}%
-\contentsline {subsection}{\numberline {8.2.2}Limitarea expunerii API-ului}{47}{subsection.8.2.2}%
-\contentsline {subsection}{\numberline {8.2.3}Middleware și antete de securitate}{47}{subsection.8.2.3}%
-\contentsline {subsection}{\numberline {8.2.4}Upload-uri și asset-uri}{48}{subsection.8.2.4}%
-\contentsline {section}{\numberline {8.3}Strategia de testare}{48}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Testare automată backend}{49}{section.8.4}%
-\contentsline {subsection}{\numberline {8.4.1}Distribuția pe suite}{49}{subsection.8.4.1}%
-\contentsline {subsection}{\numberline {8.4.2}Scenarii reprezentative acoperite automat}{50}{subsection.8.4.2}%
-\contentsline {section}{\numberline {8.5}Code coverage backend}{51}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Testare frontend}{52}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Validare funcțională}{52}{section.8.7}%
-\contentsline {section}{\numberline {8.8}Limitări ale testării actuale}{54}{section.8.8}%
-\contentsline {section}{\numberline {8.9}Concluzii intermediare}{54}{section.8.9}%
-\contentsline {chapter}{\numberline {9}Concluzii și perspective de dezvoltare}{56}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Gradul de îndeplinire a obiectivelor}{56}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Decizii de proiectare care au influențat cel mai mult rezultatul}{56}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Puncte forte ale proiectului}{57}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Limitări actuale}{57}{section.9.4}%
-\contentsline {section}{\numberline {9.5}Direcții de dezvoltare}{58}{section.9.5}%
-\contentsline {section}{\numberline {9.6}Încheiere}{58}{section.9.6}%
-\contentsline {chapter}{\numberline {A}Exemple tehnice suplimentare}{60}{chapter.A}%
-\contentsline {section}{\numberline {A.1}Exemplu simplificat de reprezentare intermediară}{60}{section.A.1}%
-\contentsline {section}{\numberline {A.2}Exemple simplificate de cereri către API}{61}{section.A.2}%
-\contentsline {section}{\numberline {A.3}Exemplu simplificat de cod generat}{61}{section.A.3}%
-\contentsline {section}{\numberline {A.4}Exemplu simplificat de evenimente de streaming}{62}{section.A.4}%
-\contentsline {chapter}{\numberline {B}Inventar de endpoint-uri API}{63}{chapter.B}%
-\contentsline {section}{\numberline {B.1}Observații generale}{63}{section.B.1}%
-\contentsline {section}{\numberline {B.2}Endpoint-uri pentru cont și autentificare}{63}{section.B.2}%
-\contentsline {section}{\numberline {B.3}Endpoint-uri pentru proiecte}{63}{section.B.3}%
-\contentsline {section}{\numberline {B.4}Endpoint-uri pentru utilizatori și profiluri}{64}{section.B.4}%
-\contentsline {section}{\numberline {B.5}Endpoint-uri pentru explore și recomandări}{65}{section.B.5}%
-\contentsline {section}{\numberline {B.6}Endpoint-uri pentru AI și conversie}{65}{section.B.6}%
-\contentsline {chapter}{Bibliografie}{66}{appendix*.37}%
+\contentsline {subsection}{\numberline {7.4.1}Scenariu detaliat: de la idee la proiect reutilizabil}{45}{subsection.7.4.1}%
+\contentsline {section}{\numberline {7.5}Comparație internă: flux manual versus flux pornit din AI}{46}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Argumentarea deciziilor tehnice prin rezultate}{46}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Discuție asupra limitărilor observate}{47}{section.7.7}%
+\contentsline {section}{\numberline {7.8}Concluzii intermediare}{48}{section.7.8}%
+\contentsline {chapter}{\numberline {8}Securitate, testare și validare}{49}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Rolul acestei etape în proiect}{49}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Măsuri de securitate implementate}{49}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Autentificare și sesiune}{49}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Limitarea expunerii API-ului}{49}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Middleware și antete de securitate}{49}{subsection.8.2.3}%
+\contentsline {subsection}{\numberline {8.2.4}Upload-uri și asset-uri}{50}{subsection.8.2.4}%
+\contentsline {section}{\numberline {8.3}Strategia de testare}{50}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Testare automată backend}{51}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}Distribuția pe suite}{51}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}Scenarii reprezentative acoperite automat}{52}{subsection.8.4.2}%
+\contentsline {section}{\numberline {8.5}Code coverage backend}{53}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Testare frontend}{54}{section.8.6}%
+\contentsline {section}{\numberline {8.7}Validare funcțională}{54}{section.8.7}%
+\contentsline {section}{\numberline {8.8}Limitări ale testării actuale}{56}{section.8.8}%
+\contentsline {section}{\numberline {8.9}Concluzii intermediare}{56}{section.8.9}%
+\contentsline {chapter}{\numberline {9}Concluzii și perspective de dezvoltare}{58}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Gradul de îndeplinire a obiectivelor}{58}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Decizii de proiectare care au influențat cel mai mult rezultatul}{58}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Puncte forte ale proiectului}{59}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Limitări actuale}{59}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Direcții de dezvoltare}{60}{section.9.5}%
+\contentsline {section}{\numberline {9.6}Încheiere}{60}{section.9.6}%
+\contentsline {chapter}{\numberline {A}Exemple tehnice suplimentare}{62}{chapter.A}%
+\contentsline {section}{\numberline {A.1}Exemplu simplificat de reprezentare intermediară}{62}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Exemple simplificate de cereri către API}{63}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Exemplu simplificat de cod generat}{63}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Exemplu simplificat de evenimente de streaming}{64}{section.A.4}%
+\contentsline {chapter}{\numberline {B}Inventar de endpoint-uri API}{65}{chapter.B}%
+\contentsline {section}{\numberline {B.1}Observații generale}{65}{section.B.1}%
+\contentsline {section}{\numberline {B.2}Endpoint-uri pentru cont și autentificare}{65}{section.B.2}%
+\contentsline {section}{\numberline {B.3}Endpoint-uri pentru proiecte}{65}{section.B.3}%
+\contentsline {section}{\numberline {B.4}Endpoint-uri pentru utilizatori și profiluri}{66}{section.B.4}%
+\contentsline {section}{\numberline {B.5}Endpoint-uri pentru explore și recomandări}{67}{section.B.5}%
+\contentsline {section}{\numberline {B.6}Endpoint-uri pentru AI și conversie}{67}{section.B.6}%
+\contentsline {chapter}{Bibliografie}{68}{appendix*.39}%

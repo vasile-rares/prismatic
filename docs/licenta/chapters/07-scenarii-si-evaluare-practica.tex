@@ -81,6 +81,36 @@ Există două observații importante care rezultă din Tabelul~\ref{tab:ai-bench
 
 Mai trebuie observat și faptul că timpul de export după generare a rămas neglijabil față de timpul petrecut în pipeline-ul AI. În artefactul brut generat de benchmark, exportul HTML a durat între 0 și 31 ms. Cu alte cuvinte, costul dominant al fluxului AI nu este convertorul, ci apelurile succesive către model.
 
+\subsection{Caracteristicile ieșirii generate}
+
+Indicatorii de succes și de latență arată dacă pipeline-ul funcționează, dar nu spun nimic despre \textit{ce} produce efectiv. Pentru o analiză mai apropiată de rezultat, harness-ul de benchmark a înregistrat, pentru aceeași rulare, și câteva caracteristici ale ieșirii: numărul de secțiuni identificate în faza de extragere a intenției, numărul de noduri de nivel superior din IR-ul generat și dimensiunea codului exportat. Aceste valori sunt sintetizate în Tabelul~\ref{tab:ai-benchmark-output}.
+
+\begin{table}[H]
+  \centering
+  \caption{Caracteristicile ieșirii generate pentru cele 5 prompturi}
+  \label{tab:ai-benchmark-output}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.8cm}>{\RaggedLeft\arraybackslash}p{1.7cm}>{\RaggedLeft\arraybackslash}p{1.7cm}>{\RaggedLeft\arraybackslash}p{2cm}>{\RaggedLeft\arraybackslash}p{1.8cm}>{\RaggedLeft\arraybackslash}p{1.9cm}}
+    \toprule
+    \textbf{Prompt} & \textbf{Secțiuni} & \textbf{Noduri top} & \textbf{HTML (car.)} & \textbf{CSS (car.)} & \textbf{Export (ms)} \\
+    \midrule
+    Landing SaaS & 6 & 1 & 3601 & 19552 & 18 \\
+    Dashboard analytics & 8 & 1 & 4343 & 21265 & 1 \\
+    Auth split & 3 & 3 & 2402 & 13274 & 0 \\
+    Portofoliu creativ & 7 & 7 & 4059 & 22948 & 1 \\
+    Showcase produs & 7 & 7 & 4404 & 23697 & 31 \\
+    \midrule
+    \textbf{Medie} & 6.2 & 3.8 & 3761.8 & 20147.2 & 10.2 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Din Tabelul~\ref{tab:ai-benchmark-output} se desprind trei observații utile pentru analiza rezultatelor. Prima privește raportul dintre HTML și CSS: codul de stil reprezintă constant cea mai mare parte a ieșirii, în medie aproximativ 20000 de caractere de CSS față de aproximativ 3700 de caractere de HTML, adică un raport de circa cinci la unu. Acest lucru confirmă, pe date concrete, intuiția din spatele separării fazei de stilizare: efortul dominant al generării nu este structura, ci aspectul vizual.
+
+A doua observație privește relația dintre secțiunile extrase în faza de intenție și numărul de noduri de nivel superior din IR. Pentru pagina de tip landing și pentru dashboard, cele 6, respectiv 8 secțiuni au fost grupate sub un singur nod de nivel superior, în timp ce pentru portofoliu și showcase secțiunile au rămas direct la nivelul superior. Aceasta arată că faza de generare a structurii nu impune o ierarhie rigidă, ci alege gruparea în funcție de tipul de pagină, ceea ce este de dorit pentru un editor în care utilizatorul lucrează apoi pe această structură.
+
+A treia observație leagă complexitatea ieșirii de latență. Cazul cel mai simplu, pagina de autentificare cu doar 3 secțiuni și cea mai mică ieșire de cod, a fost și cel mai rapid (aproximativ 69.6 s), în timp ce paginile cu 7--8 secțiuni s-au apropiat de 120 s. Corelația nu este perfectă, fiindcă eșantionul este mic, dar sugerează că o parte din latență este proporțională cu volumul de structură și stil pe care modelul trebuie să îl producă.
+
 \section{Scenarii funcționale cap-coadă}
 
 Benchmark-ul AI spune ceva despre performanță și stabilitate pe un set de prompturi, dar nu spune suficient despre experiența completă a produsului. Din acest motiv, validarea a fost completată și cu trei scenarii funcționale cap-coadă, alese pentru a acoperi fluxurile principale.
@@ -139,11 +169,39 @@ După rafinarea primei variante pe breakpoint-ul principal, utilizatorul poate c
 
 Tabelul~\ref{tab:comparatie-manual-ai} arată că AI-ul nu înlocuiește editorul, ci îi schimbă punctul de intrare. În practica actuală, valoarea lui principală este accelerarea primei versiuni, nu eliminarea muncii de rafinare. Pentru utilizator, diferența reală dintre cele două fluxuri este distribuția efortului: varianta manuală investește mai mult la început, iar varianta pornită din AI mută costul spre evaluare și corectare. Astfel, cele două moduri de lucru nu concurează direct, ci se completează.
 
+\section{Argumentarea deciziilor tehnice prin rezultate}
+
+O lucrare inginerească nu trebuie să răspundă doar la întrebarea ``ce funcționează'', ci și la ``de ce au fost luate anumite decizii și dacă ele se susțin în date''. Deciziile majore de proiectare din Favigon nu au fost luate izolat, ci au fost confirmate de comportamentul observat în evaluare. Tabelul~\ref{tab:decizii-rezultate} pune față în față fiecare decizie cu motivația ei și cu observația concretă care o susține.
+
+\begin{table}[H]
+  \centering
+  \caption{Decizii tehnice și susținerea lor în rezultatele evaluării}
+  \label{tab:decizii-rezultate}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.1cm}YY}
+    \toprule
+    \textbf{Decizie tehnică} & \textbf{Motivație} & \textbf{Susținere în rezultate} \\
+    \midrule
+    Reprezentare intermediară separată de codul final & decuplează editarea, validarea și exportul de o singură țintă de cod & export reușit în 100\% din cazuri, cu un cost de 0--31 ms, deci costul dominant nu este conversia \\
+    Pipeline AI în trei faze, nu generare directă & control separat pe intenție, structură și stilizare & conformitate structurală de 100\% din prima încercare și 0\% folosire a mecanismului de \textit{self-repair} pe prompturile clare \\
+    Ieșiri structurate validate cu JSON Schema & răspunsul modelului trebuie să poată fi consumat programatic & rată de validare a IR-ului pentru export de 100\% \\
+    Stilizarea tratată ca fază distinctă & stilul este o preocupare separată de structură & CSS-ul reprezintă cea mai mare parte a ieșirii, aproximativ 20000 față de 3700 de caractere \\
+    Convertor izolat într-un proiect dedicat & permite testare și măsurare reproductibilă & benchmark-ul rulează printr-un harness separat, fără atingerea API-ului public \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Prima decizie, separarea reprezentării intermediare de codul final, este confirmată de raportul dintre timpul de export și timpul total al pipeline-ului. Faptul că exportul a durat între 0 și 31 ms, în timp ce generarea a durat în medie aproximativ 107 s, arată că efortul de optimizare ar fi greșit direcționat dacă ar viza convertorul. IR-ul oferă în schimb un artefact stabil, editabil și validabil, exact zona în care produsul are nevoie de control.
+
+A doua și a treia decizie, pipeline-ul în trei faze și ieșirile structurate validate cu schemă, se susțin reciproc în date. Conformitatea de 100\% din prima încercare și absența completă a apelurilor de \textit{self-repair} pe acest eșantion sugerează că descompunerea pe faze, combinată cu validarea după o schemă explicită, reduce frecvența ieșirilor malformate. Această observație trebuie totuși citită cu prudența menționată în secțiunea de limitări: eșantionul este mic, iar prompturile au fost formulate clar.
+
+A patra decizie, tratarea stilizării ca fază separată, este susținută direct de structura ieșirii. Dominanța CSS-ului în volumul total de cod generat arată că stilul este componenta cea mai costisitoare a rezultatului, ceea ce justifică izolarea lui într-o etapă proprie, în loc să fie amestecat cu generarea structurii. În ansamblu, aceste corelații transformă deciziile de proiectare din simple opțiuni de implementare în alegeri verificabile prin comportamentul măsurat al sistemului.
+
 \section{Discuție asupra limitărilor observate}
 
 Rezultatele de mai sus trebuie citite cu precauție. În primul rând, benchmark-ul AI a fost rulat pe doar cinci prompturi și pe un singur model, \texttt{gpt-5.4-mini}. Valorile sunt utile pentru calibrare, dar nu constituie încă un studiu statistic amplu. În al doilea rând, succesul structural nu echivalează automat cu calitate vizuală perfectă. Faptul că un rezultat a fost valid și exportabil nu înseamnă că nu mai are nevoie de ajustări de text, spacing sau ierarhie vizuală.
 
-În al treilea rând, benchmark-ul măsoară doar rulări individuale, nu comportamentul sub sarcină și nici stabilitatea pe sesiuni lungi de utilizare. Nu au fost urmărite încă scenarii cu mai mulți utilizatori concurenți, nici efectul unor campanii de load testing asupra endpoint-urilor AI sau de conversie. În fine, evaluarea actuală nu include scoruri estetice formale sau studii cu utilizatori, ceea ce înseamnă că partea de ``calitate percepută'' rămâne doar parțial acoperită.
+În al treilea rând, benchmark-ul măsoară doar rulări individuale, nu comportamentul sub sarcină și nici stabilitatea pe sesiuni lungi de utilizare. Nu au fost urmărite încă scenarii cu mai mulți utilizatori concurenți, nici efectul unor campanii de load testing asupra endpoint-urilor AI sau de conversie. În fine, evaluarea actuală nu include scoruri estetice formale sau studii cu utilizatori, ceea ce înseamnă că partea de ``calitate percepută'' rămâne doar parțial acoperită. O direcție naturală de extindere ar fi aplicarea unor metode consacrate de evaluare a uzabilității, cum este evaluarea euristică \cite{nielsen1990heuristic}, care ar permite o apreciere mai structurată a calității interfețelor generate.
 
 Mai există și o limitare de interpretare care merită menționată explicit: valorile bune din benchmark nu trebuie confundate cu absența muncii manuale. Faptul că toate cele cinci cazuri au fost exportabile imediat arată robustețea tehnică a pipeline-ului, nu perfecțiunea designului obținut. În practică, cele mai frecvente corecții rămân cele de conținut și finisare vizuală: schimbarea unor titluri prea generice, reglarea densității informației într-o secțiune, simplificarea unor compoziții prea încărcate sau adaptarea unor blocuri pentru breakpoint-uri mai înguste. Cu alte cuvinte, benchmark-ul validează mai ales infrastructura de generare, nu și eliminarea completă a rolului uman.
 

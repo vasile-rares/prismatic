@@ -8,13 +8,13 @@ Aceste noțiuni sunt tratate împreună deoarece în proiect ele nu apar izolat.
 
 \section{Aplicații single-page și rolul frontend-ului modern}
 
-Favigon folosește pe partea de client o aplicație Angular 20 organizată sub forma unui SPA. Într-un SPA, browserul încarcă inițial o singură pagină, iar apoi navigarea între ecrane este gestionată în principal client-side, fără reîncărcarea completă a documentului \cite{angularRouting2026}. Acest model este potrivit pentru Favigon din două motive.
+Favigon folosește pe partea de client o aplicație Angular 20 organizată sub forma unui SPA. Într-un SPA, browserul încarcă inițial o singură pagină, iar apoi navigarea între ecrane este gestionată în principal client-side, fără reîncărcarea completă a documentului \cite{angularDocs2026}. Acest model este potrivit pentru Favigon din două motive.
 
 Primul motiv este experiența utilizatorului. Editorul canvas presupune interacțiuni dese, actualizări vizuale rapide și trecere fluidă între zone precum profil, explore, settings, proiect și preview. Dacă fiecare navigare ar depinde de reîncărcarea integrală a paginii, aplicația ar deveni mai greu de folosit și mai puțin apropiată de instrumentele moderne de design.
 
-Al doilea motiv este organizarea tehnică. Angular oferă rutare, componente, injecție de dependențe, gestiune a formularelor și integrare cu HTTP într-un ecosistem unitar. În plus, proiectul folosește componente standalone și `provideRouter`, ceea ce simplifică structura aplicației și reduce dependența de module tradiționale \cite{angularProvideRouter2026,angularStandalone2026}. Pentru un proiect în care cea mai mare complexitate se află în interfață, această coerență a framework-ului a contat mult.
+Al doilea motiv este organizarea tehnică. Angular oferă rutare, componente, injecție de dependențe, gestiune a formularelor și integrare cu HTTP într-un ecosistem unitar. În plus, proiectul folosește componente standalone și `provideRouter`, ceea ce simplifică structura aplicației și reduce dependența de module tradiționale \cite{angularDocs2026}. Pentru un proiect în care cea mai mare complexitate se află în interfață, această coerență a framework-ului a contat mult.
 
-Un element important în implementare este folosirea \textit{signals}. Documentația Angular prezintă signals ca mecanism reactiv granular pentru urmărirea și actualizarea stării \cite{angularSignals2026}. În editorul canvas, această abordare este utilă deoarece permite reacții mai fine la schimbarea selecției, a viewport-ului, a paginii curente sau a istoricului, fără a introduce un strat extern de management al stării. Pentru un feature foarte interactiv, această soluție oferă un raport bun între simplitate și control.
+Un element important în implementare este folosirea \textit{signals}. Documentația Angular prezintă signals ca mecanism reactiv granular pentru urmărirea și actualizarea stării \cite{angularDocs2026}. În editorul canvas, această abordare este utilă deoarece permite reacții mai fine la schimbarea selecției, a viewport-ului, a paginii curente sau a istoricului, fără a introduce un strat extern de management al stării. Pentru un feature foarte interactiv, această soluție oferă un raport bun între simplitate și control.
 
 \section{Arhitectura client-server și API-ul REST}
 

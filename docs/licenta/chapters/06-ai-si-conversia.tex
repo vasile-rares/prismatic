@@ -18,7 +18,7 @@ Soluția implementată în proiect împarte generarea în trei faze:
   \item \textbf{stilizare}: aplicarea deciziilor vizuale pe structura deja generată.
 \end{enumerate}
 
-Această împărțire pare simplă, dar în practică aduce mai multe avantaje. Fiecare etapă are un contract mai clar. Fiecare etapă poate fi testată sau inspectată separat. Fiecare etapă poate fi oprită anticipat dacă utilizatorul vrea doar o schiță. În plus, dacă rezultatul unei etape este invalid, eroarea este mai ușor de localizat. Fluxul general al acestei orchestrări este sintetizat în Figura~\ref{fig:pipeline-ai}.
+Această împărțire pare simplă, dar în practică aduce mai multe avantaje. Fiecare etapă are un contract mai clar. Fiecare etapă poate fi testată sau inspectată separat. Fiecare etapă poate fi oprită anticipat dacă utilizatorul vrea doar o schiță. În plus, dacă rezultatul unei etape este invalid, eroarea este mai ușor de localizat. Această abordare se aliniază cu observații din literatura de specialitate, unde descompunerea unei sarcini complexe în pași intermediari de raționament \cite{wei2022cot} sau în sub-sarcini modulare delegate unor prompturi dedicate \cite{khot2023decomposed} oferă un control și o fiabilitate mai bune decât o singură cerere directă. Fluxul general al acestei orchestrări este sintetizat în Figura~\ref{fig:pipeline-ai}.
 
 \begin{figure}[H]
   \centering
@@ -105,7 +105,7 @@ Din punct de vedere operațional, fluxul complet dintre utilizator, frontend, co
 
 OpenAI documentează explicit posibilitatea obținerii unor ieșiri structurate, conforme cu un anumit format sau cu o anumită schemă \cite{openaiStructuredOutputs2026}. În proiect, această capabilitate este foarte importantă. Dacă modelul ar întoarce doar text liber, parser-ul și validarea ar deveni mult mai fragile. În schimb, cu o schemă bine definită, aplicația poate detecta mai repede abaterile și poate decide dacă rezultatul este utilizabil sau nu.
 
-Literatura recentă despre \textit{structured outputs} și \textit{constrained decoding} confirmă că această problemă merită tratată separat. \textit{JSONSchemaBench} arată că generarea de ieșiri conforme cu o schemă este o dimensiune tehnică distinctă de calitatea semantică a conținutului și propune evaluarea separată a conformității, eficienței și calității rezultatului \cite{geng2025jsonschemabench}. Această observație se potrivește foarte bine cu nevoile Favigon: pentru platformă nu este suficient ca răspunsul să fie valid JSON, ci trebuie să fie și suficient de coerent încât să poată fi editat și exportat mai departe.
+Literatura recentă despre \textit{structured outputs} și \textit{constrained decoding} confirmă că această problemă merită tratată separat. Tehnicile de \textit{guided generation} demonstrează că ieșirea unui model poate fi constrânsă eficient să respecte o gramatică sau o schemă, garantând structura rezultatului cu un cost suplimentar redus \cite{willard2023guided}. La rândul său, \textit{JSONSchemaBench} arată că generarea de ieșiri conforme cu o schemă este o dimensiune tehnică distinctă de calitatea semantică a conținutului și propune evaluarea separată a conformității, eficienței și calității rezultatului \cite{geng2025jsonschemabench}. Această observație se potrivește foarte bine cu nevoile Favigon: pentru platformă nu este suficient ca răspunsul să fie valid JSON, ci trebuie să fie și suficient de coerent încât să poată fi editat și exportat mai departe.
 
 În implementare, această limită apare concret atunci când un răspuns trece schema, dar produce o ierarhie slabă sau o structură greu de exportat. Din acest motiv, `AiPipelineService` nu se oprește la validarea structurală, ci aplică și reguli semantice și un pas de auto-reparare când rezultatul nu este acceptabil.
 
@@ -170,7 +170,7 @@ Această capabilitate este importantă deoarece proiectul nu se reduce la o sing
 
 \subsection{Responsive output}
 
-O componentă mai tehnică și mai interesantă este exportul responsive. În loc să dublez pur și simplu tot arborele pentru fiecare breakpoint, motorul produce artefactele principale și apoi diferențe CSS pentru breakpoints suplimentare. În testele existente se vede că sunt tratate cazuri precum noduri prezente doar pe anumite breakpoint-uri, schimbări de ordine pentru copii flex și diferențe de pseudo-clase sau keyframes.
+O componentă mai tehnică și mai interesantă este exportul responsive. Abordarea urmează principiile design-ului responsive introduse de Marcotte, bazate pe grile fluide, imagini flexibile și \textit{media queries} \cite{marcotte2010responsive}. În loc să dublez pur și simplu tot arborele pentru fiecare breakpoint, motorul produce artefactele principale și apoi diferențe CSS pentru breakpoints suplimentare. În testele existente se vede că sunt tratate cazuri precum noduri prezente doar pe anumite breakpoint-uri, schimbări de ordine pentru copii flex și diferențe de pseudo-clase sau keyframes.
 
 Aceasta este una dintre funcțiile care arată cel mai clar că proiectul nu se oprește la un export superficial. Există o preocupare reală pentru cum este construit rezultatul final și pentru cât de mult poate fi controlat. Fluxul complet canvas $\rightarrow$ IR $\rightarrow$ artefacte de export este rezumat în Figura~\ref{fig:design-to-code}.
 
