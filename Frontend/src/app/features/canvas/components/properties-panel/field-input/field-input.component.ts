@@ -262,7 +262,6 @@ export class FieldInputComponent implements AfterViewInit, OnDestroy {
   get textShadowSwatchColor(): string {
     const val = this.textShadowValue();
     if (!val) return 'rgba(0,0,0,0.4)';
-    // Parse last token as color (text-shadow format: x y blur color)
     const parts = val.trim().split(/\s+/);
     return parts.slice(3).join(' ') || 'rgba(0,0,0,0.4)';
   }

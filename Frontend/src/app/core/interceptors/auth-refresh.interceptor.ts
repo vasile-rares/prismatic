@@ -8,12 +8,10 @@ import { environment } from '../../../environments/environment';
 const SKIP_REFRESH_PATHS = ['/account/refresh', '/account/login', '/account/oauth2'] as const;
 
 export const authRefreshInterceptor: HttpInterceptorFn = (request, next) => {
-  // Skip auth endpoints to avoid infinite loops
   if (SKIP_REFRESH_PATHS.some((path) => request.url.includes(path))) {
     return next(request);
   }
 
-  // Only intercept our own API
   if (!request.url.startsWith(environment.apiBaseUrl)) {
     return next(request);
   }

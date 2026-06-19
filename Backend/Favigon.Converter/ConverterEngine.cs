@@ -124,7 +124,6 @@ public sealed class ConverterEngine : IConverterEngine
 
     var fw = framework.ToLowerInvariant();
 
-    // Collect all font families used across all pages for Google Fonts import.
     var usedFonts = CollectFontFamilies(pageList.Select(p => p.Ir));
 
     if (fw == FrameworkNames.Html)
@@ -139,7 +138,7 @@ public sealed class ConverterEngine : IConverterEngine
     return files;
   }
 
-  // ── Multi-page file emitters ─────────────────────────────
+  // Multi-page file emitters
 
   private static void EmitHtmlFiles(
     List<(string slug, string pascal, string htmlFragment, string css)> entries,
@@ -171,7 +170,6 @@ public sealed class ConverterEngine : IConverterEngine
       files.Add(new GeneratedFile($"{slug}.css", css));
     }
 
-    // README
     var pageList = entries.Select(e => $"- `{e.slug}.html`").ToList();
     var readme = new StringBuilder();
     readme.AppendLine("# Generated HTML Project");
@@ -246,7 +244,6 @@ public sealed class ConverterEngine : IConverterEngine
 
     files.Add(new GeneratedFile("App.jsx", app.ToString()));
 
-    // index.html (Vite entry point)
     var indexHtml = new StringBuilder();
     indexHtml.AppendLine("<!DOCTYPE html>");
     indexHtml.AppendLine("<html lang=\"en\">");
@@ -262,7 +259,6 @@ public sealed class ConverterEngine : IConverterEngine
     indexHtml.AppendLine("</html>");
     files.Add(new GeneratedFile("index.html", indexHtml.ToString()));
 
-    // main.jsx
     var mainJsx = new StringBuilder();
     mainJsx.AppendLine("import { StrictMode } from 'react';");
     mainJsx.AppendLine("import { createRoot } from 'react-dom/client';");
@@ -276,7 +272,6 @@ public sealed class ConverterEngine : IConverterEngine
     mainJsx.AppendLine(");");
     files.Add(new GeneratedFile("main.jsx", mainJsx.ToString()));
 
-    // vite.config.js
     files.Add(new GeneratedFile("vite.config.js",
       "import { defineConfig } from 'vite';\n" +
       "import react from '@vitejs/plugin-react';\n\n" +
@@ -284,7 +279,6 @@ public sealed class ConverterEngine : IConverterEngine
       "  plugins: [react()],\n" +
       "});\n"));
 
-    // package.json
     files.Add(new GeneratedFile("package.json",
       "{\n" +
       "  \"name\": \"favigon-export\",\n" +
@@ -307,7 +301,6 @@ public sealed class ConverterEngine : IConverterEngine
       "  }\n" +
       "}\n"));
 
-    // README
     var readme = new StringBuilder();
     readme.AppendLine("# Generated React Project");
     readme.AppendLine();
@@ -389,7 +382,6 @@ public sealed class ConverterEngine : IConverterEngine
     files.Add(new GeneratedFile("src/app/app.routes.ts", routes.ToString()));
     files.Add(new GeneratedFile("src/app/app.ts", appComp.ToString()));
 
-    // src/main.ts
     var mainTs = new StringBuilder();
     mainTs.AppendLine("import { bootstrapApplication } from '@angular/platform-browser';");
     mainTs.AppendLine("import { provideRouter } from '@angular/router';");
@@ -401,7 +393,6 @@ public sealed class ConverterEngine : IConverterEngine
     mainTs.AppendLine("}).catch(console.error);");
     files.Add(new GeneratedFile("src/main.ts", mainTs.ToString()));
 
-    // src/index.html
     var indexHtml = new StringBuilder();
     indexHtml.AppendLine("<!DOCTYPE html>");
     indexHtml.AppendLine("<html lang=\"en\">");
@@ -417,7 +408,6 @@ public sealed class ConverterEngine : IConverterEngine
     indexHtml.AppendLine("</html>");
     files.Add(new GeneratedFile("src/index.html", indexHtml.ToString()));
 
-    // angular.json (minimal)
     files.Add(new GeneratedFile("angular.json",
       "{\n" +
       "  \"$schema\": \"./node_modules/@angular/cli/lib/config/schema.json\",\n" +
@@ -445,7 +435,6 @@ public sealed class ConverterEngine : IConverterEngine
       "  }\n" +
       "}\n"));
 
-    // tsconfig.json
     files.Add(new GeneratedFile("tsconfig.json",
       "{\n" +
       "  \"compilerOptions\": {\n" +
@@ -459,7 +448,6 @@ public sealed class ConverterEngine : IConverterEngine
       "  }\n" +
       "}\n"));
 
-    // package.json
     files.Add(new GeneratedFile("package.json",
       "{\n" +
       "  \"name\": \"favigon-export\",\n" +
@@ -486,7 +474,6 @@ public sealed class ConverterEngine : IConverterEngine
       "  }\n" +
       "}\n"));
 
-    // README
     var readme = new StringBuilder();
     readme.AppendLine("# Generated Angular Project");
     readme.AppendLine();
@@ -509,7 +496,7 @@ public sealed class ConverterEngine : IConverterEngine
     files.Add(new GeneratedFile("README.md", readme.ToString()));
   }
 
-  // ── Naming helpers ───────────────────────────────────────
+  // Naming helpers
 
   private static string ToKebabCase(string name)
   {
@@ -597,9 +584,6 @@ public sealed class ConverterEngine : IConverterEngine
       s.Margin = source.Margin;
     }
 
-    // Always override dimensions to responsive values.
-    // Use min-height (not height) so content taller than the viewport can scroll
-    // inside the iframe instead of overflowing the outer preview stage.
     s.Width = new IRLength { Value = 100, Unit = "%" };
     s.MinHeight = new IRLength { Value = 100, Unit = "vh" };
 
@@ -643,9 +627,8 @@ public sealed class ConverterEngine : IConverterEngine
       string.IsNullOrWhiteSpace(line) ? "" : indent + line));
   }
 
-  // ── Google Fonts ─────────────────────────────────────────
+  // Google fonts
 
-  // Fonts that are system-safe and don't need a Google Fonts import.
   private static readonly HashSet<string> SystemFonts = new(StringComparer.OrdinalIgnoreCase)
   {
     "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "Helvetica",
@@ -663,7 +646,6 @@ public sealed class ConverterEngine : IConverterEngine
       var node = queue.Dequeue();
       if (node.Style?.FontFamily is { } ff)
       {
-        // FontFamily may be a CSS stack like "Inter, sans-serif" — take the first token.
         var primary = ff.Split(',')[0].Trim().Trim('"').Trim('\'');
         if (!string.IsNullOrWhiteSpace(primary) && !SystemFonts.Contains(primary))
           families.Add(primary);
@@ -684,7 +666,6 @@ public sealed class ConverterEngine : IConverterEngine
   private static string BuildGoogleFontsUrl(IReadOnlySet<string> families)
   {
     if (families.Count == 0) return "";
-    // Standard weights used in Favigon.
     const string weights = "ital,wght@0,300;0,400;0,500;0,600;0,700;1,400";
     var familyParams = string.Join("&", families
       .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
@@ -744,7 +725,6 @@ public sealed class ConverterEngine : IConverterEngine
   {
     if (!frameworkMappers.TryGetValue(node.Type, out var mapper))
     {
-      // Unknown type: fall back to Container mapper to avoid crashing on future node types
       if (!frameworkMappers.TryGetValue("Container", out mapper))
         return $"{ctx.Indent}<!-- unknown type: {node.Type} -->\n";
     }
@@ -802,7 +782,7 @@ public sealed class ConverterEngine : IConverterEngine
     return BuildResponsiveArtifacts(primaryArtifacts, breakpoints, framework);
   }
 
-  // ── Responsive diff helpers ───────────────────────────────
+  // Responsive diff helpers
 
   private (string Html, string Css) BuildResponsiveArtifacts(
     GeneratedPageArtifacts primaryArtifacts,
@@ -827,7 +807,6 @@ public sealed class ConverterEngine : IConverterEngine
         framework,
         breakpointCssClassMap);
 
-      // Append exclusive breakpoint nodes to the HTML (hidden by default).
       var exclusiveRoots = CollectExclusiveRoots(bpArtifacts.ExportRoot, primaryIds, alreadyProcessedIds);
       foreach (var exclusiveRoot in exclusiveRoots)
       {
@@ -835,7 +814,6 @@ public sealed class ConverterEngine : IConverterEngine
         var exclusiveHtml = EmitSubtree(exclusiveRoot, bpArtifacts.CssClassMap, framework, exclusiveStyles);
         htmlSb.Append(exclusiveHtml);
 
-        // Hide the entire exclusive subtree in the base CSS.
         foreach (var (cssClass, _) in exclusiveStyles.GetBaseRulesSnapshot())
           baseCssSb.Append($"\n.{cssClass} {{ display: none; }}\n");
 
@@ -903,7 +881,7 @@ public sealed class ConverterEngine : IConverterEngine
     var primaryBaseRules = primaryStyles.GetBaseRulesSnapshot();
     var bpBaseRules = bpStyles.GetBaseRulesSnapshot();
 
-    // ── Base class diffs ──────────────────────────────────────
+    // Base class diffs
     var diffByClass = new Dictionary<string, List<KeyValuePair<string, string>>>(StringComparer.Ordinal);
 
     foreach (var (cssClass, bpProps) in bpBaseRules)
@@ -916,7 +894,6 @@ public sealed class ConverterEngine : IConverterEngine
           || primVal != kv.Value)
         .ToList();
 
-      // Exclusive-BP class: ensure display is present so the node is un-hidden.
       if (primProps is null && !diffProps.Exists(kv => kv.Key == "display"))
         diffProps.Insert(0, new KeyValuePair<string, string>("display", "block"));
 
@@ -924,14 +901,13 @@ public sealed class ConverterEngine : IConverterEngine
         diffByClass[cssClass] = diffProps;
     }
 
-    // Primary-only classes: hide them at this breakpoint.
     foreach (var cssClass in primaryBaseRules.Keys)
     {
       if (!bpBaseRules.ContainsKey(cssClass))
         diffByClass[cssClass] = [new KeyValuePair<string, string>("display", "none")];
     }
 
-    // ── Order diffs ───────────────────────────────────────────
+    // Order diffs
     foreach (var (cssClass, order) in orderDiffs)
     {
       if (!diffByClass.TryGetValue(cssClass, out var existing))
@@ -939,7 +915,7 @@ public sealed class ConverterEngine : IConverterEngine
       existing.Add(new KeyValuePair<string, string>("order", order.ToString()));
     }
 
-    // ── Pseudo-class diffs ────────────────────────────────────
+    // Pseudo-class diffs
     var primaryPseudoBySelector = primaryStyles.GetPseudoRulesSnapshot()
       .ToDictionary(r => r.Selector, r => r.Props, StringComparer.Ordinal);
 
@@ -956,7 +932,6 @@ public sealed class ConverterEngine : IConverterEngine
         pseudoDiffs.Add((selector, diffProps));
     }
 
-    // ── New keyframes (in breakpoint but not primary) ─────────
     var primaryKfNames = new HashSet<string>(
       primaryStyles.GetKeyframesSnapshot().Select(k => k.Name), StringComparer.Ordinal);
     var newKeyframes = bpStyles.GetKeyframesSnapshot()
@@ -969,7 +944,6 @@ public sealed class ConverterEngine : IConverterEngine
     var sb = new StringBuilder();
     sb.Append($"\n/* {label} */\n");
 
-    // New keyframes go BEFORE the @media block (they can't be inside it in all browsers).
     foreach (var (name, body) in newKeyframes)
       sb.Append($"@keyframes {name} {{\n{body}}}\n");
 
@@ -1001,7 +975,7 @@ public sealed class ConverterEngine : IConverterEngine
     return sb.ToString();
   }
 
-  // ── Responsive node helpers ───────────────────────────────
+  // Responsive node helpers
 
   private static HashSet<string> CollectNodeIds(IRNode root)
   {
@@ -1066,7 +1040,7 @@ public sealed class ConverterEngine : IConverterEngine
     return EmitNode(node, context, framework, frameworkMappers);
   }
 
-  // ── Responsive order helpers ──────────────────────────────
+  // Responsive order helpers
 
   private static List<(string CssClass, int Order)> BuildNodeOrderDiffs(
     IRNode primaryRoot,
@@ -1083,14 +1057,12 @@ public sealed class ConverterEngine : IConverterEngine
       if (!primaryParentChildren.TryGetValue(parentId, out var primChildren))
         continue;
 
-      // Compare order of only the shared children (ignoring exclusive nodes on either side).
       var primShared = primChildren.Where(id => bpChildren.Contains(id)).ToList();
       var bpShared = bpChildren.Where(id => primChildren.Contains(id)).ToList();
 
       if (primShared.SequenceEqual(bpShared))
         continue;
 
-      // Order differs — emit explicit `order` for every BP child so the reorder is applied.
       for (var i = 0; i < bpChildren.Count; i++)
       {
         if (primaryCssClassMap.TryGetValue(bpChildren[i], out var cssClasses))

@@ -68,7 +68,7 @@ public class UserRepository : IUserRepository
     await _context.SaveChangesAsync();
   }
 
-  // ── Follow ─────────────────────────────────────────────────────────────────
+  // Follow
 
   public Task<UserFollow?> GetFollowAsync(int followerId, int followeeId)
     => _context.UserFollows.FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FolloweeId == followeeId);
@@ -112,7 +112,7 @@ public class UserRepository : IUserRepository
       .ToListAsync();
   }
 
-  // ── Linked Accounts ────────────────────────────────────────────────────────
+  // Linked accounts
 
   public Task<LinkedAccount?> GetLinkedAccountByProviderAsync(string provider, string providerUserId)
     => _context.LinkedAccounts

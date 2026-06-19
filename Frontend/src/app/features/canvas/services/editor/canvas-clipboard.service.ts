@@ -16,7 +16,7 @@ export class CanvasClipboardService {
     return this.snapshot !== null;
   }
 
-  // ── Copy ──────────────────────────────────────────────────
+  // Copy
 
   copySelection(
     selectedIds: string[],
@@ -41,7 +41,7 @@ export class CanvasClipboardService {
     };
   }
 
-  // ── Paste ─────────────────────────────────────────────────
+  // Paste
 
   paste(
     currentElements: CanvasElement[],
@@ -123,7 +123,7 @@ export class CanvasClipboardService {
     };
   }
 
-  // ── Private ───────────────────────────────────────────────
+  // Private
 
   private createPastedElements(
     clipboard: CanvasClipboardSnapshot,

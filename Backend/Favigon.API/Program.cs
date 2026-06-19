@@ -29,11 +29,9 @@ try
 
     builder.Host.UseSerilog();
 
-    // Global request body limit: 1 MB for JSON endpoints.
-    // File upload endpoints override this individually via [RequestSizeLimit].
     builder.WebHost.ConfigureKestrel(kestrel =>
     {
-        kestrel.Limits.MaxRequestBodySize = 1 * 1024 * 1024; // 1 MB
+        kestrel.Limits.MaxRequestBodySize = 1 * 1024 * 1024;
     });
 
     builder.Services.AddApplication();
@@ -149,7 +147,6 @@ try
         options.Preload = true;
     });
 
-    // Swagger (development only — never exposed in production)
     if (builder.Environment.IsDevelopment())
     {
         builder.Services.AddOpenApi();

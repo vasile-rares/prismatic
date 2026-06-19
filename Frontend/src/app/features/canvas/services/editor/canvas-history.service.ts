@@ -3,14 +3,14 @@ import { HistorySnapshot } from '../../canvas.types';
 
 const MAX_HISTORY_STEPS = 50;
 
-// ── IndexedDB Persistence ─────────────────────────────────────────────────────
+// IndexedDB persistence
 
 const DB_NAME = 'favigon-canvas-history';
 const DB_VERSION = 1;
 const STORE_NAME = 'undo-stacks';
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 const DEBOUNCE_MS = 400;
-const MAX_PAYLOAD_CHARS = 10 * 1024 * 1024; // ~10 MB as char count
+const MAX_PAYLOAD_CHARS = 10 * 1024 * 1024;
 
 interface HistoryRecord {
   projectId: number;
@@ -54,7 +54,7 @@ export class CanvasHistoryService {
     }
   }
 
-  // ── Atomic History ────────────────────────────────────────
+  // Atomic history
 
   runWithHistory(createSnapshot: () => HistorySnapshot, action: () => void): void {
     if (this.isApplying) {
@@ -67,7 +67,6 @@ export class CanvasHistoryService {
     this.pushIfChanged(snapshot, createSnapshot());
   }
 
-  // ── Gesture History (drag / resize / rotate) ─────────────
 
   beginGestureHistory(createSnapshot: () => HistorySnapshot): void {
     if (this.isApplying || this.pendingGestureSnapshot) {
@@ -90,7 +89,7 @@ export class CanvasHistoryService {
     }
   }
 
-  // ── Text-Edit History ────────────────────────────────────
+  // Text-Edit history
 
   beginTextEditHistory(createSnapshot: () => HistorySnapshot): void {
     if (this.isApplying || this.pendingTextEditSnapshot) {
@@ -113,7 +112,7 @@ export class CanvasHistoryService {
     }
   }
 
-  // ── Undo / Redo ──────────────────────────────────────────
+  // Undo / redo
 
   undo(
     createSnapshot: () => HistorySnapshot,
@@ -158,7 +157,7 @@ export class CanvasHistoryService {
     }
   }
 
-  // ── Private History Helpers ───────────────────────────────
+  // Private history helpers
 
   private applySnapshot(
     snapshot: HistorySnapshot,
@@ -193,7 +192,7 @@ export class CanvasHistoryService {
     return JSON.stringify(left) === JSON.stringify(right);
   }
 
-  // ── IndexedDB Persistence ─────────────────────────────────
+  // IndexedDB persistence
 
   private persist(projectId: number, stack: HistorySnapshot[]): void {
     const existing = this.debounceTimers.get(projectId);
@@ -258,7 +257,7 @@ export class CanvasHistoryService {
       const record: HistoryRecord = { projectId, stack, savedAt: Date.now() };
       const json = JSON.stringify(record);
       if (json.length > MAX_PAYLOAD_CHARS) {
-        return; // Skip silently if design is too large to persist safely.
+        return;
       }
 
       const tx = db.transaction(STORE_NAME, 'readwrite');

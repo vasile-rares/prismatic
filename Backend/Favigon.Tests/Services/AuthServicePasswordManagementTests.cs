@@ -43,7 +43,6 @@ public class AuthServicePasswordManagementTests
   [Fact]
   public async Task SetPassword_ForPasswordlessAccount_StoresHashAndSendsConfirmationEmail()
   {
-    // Arrange
     var user = new User
     {
       Id = 7,
@@ -58,10 +57,8 @@ public class AuthServicePasswordManagementTests
     _userRepo.Setup(r => r.GetByIdAsync(7)).ReturnsAsync(user);
     _userRepo.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
 
-    // Act
     await _sut.SetPasswordAsync(7, new SetPasswordRequest { Password = "NewPassword123" });
 
-    // Assert
     Assert.True(user.HasPassword);
     Assert.True(BCrypt.Net.BCrypt.Verify("NewPassword123", user.PasswordHash));
     _email.Verify(r => r.SendPasswordSetConfirmationEmailAsync("oauth@example.com"), Times.Once);
@@ -70,7 +67,6 @@ public class AuthServicePasswordManagementTests
   [Fact]
   public async Task SetPassword_WhenPasswordAlreadyExists_ThrowsBusinessRuleException()
   {
-    // Arrange
     var user = new User
     {
       Id = 7,
@@ -84,18 +80,15 @@ public class AuthServicePasswordManagementTests
 
     _userRepo.Setup(r => r.GetByIdAsync(7)).ReturnsAsync(user);
 
-    // Act
     var exception = await Assert.ThrowsAsync<BusinessRuleException>(() =>
       _sut.SetPasswordAsync(7, new SetPasswordRequest { Password = "NewPassword123" }));
 
-    // Assert
     Assert.Equal("Password is already set for this account.", exception.Message);
   }
 
   [Fact]
   public async Task ChangePassword_WithCorrectCurrentPassword_UpdatesPasswordHash()
   {
-    // Arrange
     var user = new User
     {
       Id = 9,
@@ -112,14 +105,12 @@ public class AuthServicePasswordManagementTests
     _userRepo.Setup(r => r.GetByIdAsync(9)).ReturnsAsync(user);
     _userRepo.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
 
-    // Act
     await _sut.ChangePasswordAsync(9, new ChangePasswordRequest
     {
       CurrentPassword = "OldPassword123",
       NewPassword = "NewPassword123"
     });
 
-    // Assert
     Assert.NotEqual(originalHash, user.PasswordHash);
     Assert.True(BCrypt.Net.BCrypt.Verify("NewPassword123", user.PasswordHash));
   }
@@ -127,7 +118,6 @@ public class AuthServicePasswordManagementTests
   [Fact]
   public async Task ChangePassword_WithWrongCurrentPassword_ThrowsBusinessRuleException()
   {
-    // Arrange
     var user = new User
     {
       Id = 9,
@@ -141,7 +131,6 @@ public class AuthServicePasswordManagementTests
 
     _userRepo.Setup(r => r.GetByIdAsync(9)).ReturnsAsync(user);
 
-    // Act
     var exception = await Assert.ThrowsAsync<BusinessRuleException>(() =>
       _sut.ChangePasswordAsync(9, new ChangePasswordRequest
       {
@@ -149,7 +138,6 @@ public class AuthServicePasswordManagementTests
         NewPassword = "NewPassword123"
       }));
 
-    // Assert
     Assert.Equal("Current password is incorrect.", exception.Message);
   }
 }

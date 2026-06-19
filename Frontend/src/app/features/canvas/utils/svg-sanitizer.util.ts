@@ -1,31 +1,25 @@
 
 export function sanitizeSvg(svgString: string): string {
   const parser = new DOMParser();
-  // Use the HTML parser — much more lenient than 'image/svg+xml' and handles
-  // real-world SVGs from Inkscape, Illustrator, Figma exports, etc.
   const doc = parser.parseFromString(`<body>${svgString}</body>`, 'text/html');
 
   const rootSvg = doc.querySelector('svg');
   if (!rootSvg) return '';
 
-  // Remove dangerous elements
   const BLOCKED_TAGS = ['script', 'foreignObject'];
   for (const tag of BLOCKED_TAGS) {
     doc.querySelectorAll(tag).forEach((el) => el.remove());
   }
 
-  // Strip dangerous attributes on all elements
   const allElements = doc.querySelectorAll('*');
   for (const el of Array.from(allElements)) {
     const attrs = Array.from(el.attributes);
     for (const attr of attrs) {
       const name = attr.name.toLowerCase();
-      // Remove event handlers
       if (name.startsWith('on')) {
         el.removeAttribute(attr.name);
         continue;
       }
-      // Remove javascript: hrefs and xlink:hrefs
       if (
         (name === 'href' || name === 'xlink:href') &&
         attr.value.trim().toLowerCase().startsWith('javascript:')
@@ -35,7 +29,6 @@ export function sanitizeSvg(svgString: string): string {
     }
   }
 
-  // Make root SVG fill its container
   rootSvg.setAttribute('width', '100%');
   rootSvg.setAttribute('height', '100%');
   rootSvg.style.display = 'block';
@@ -54,7 +47,6 @@ export function parseSvgDimensions(svgString: string): { width: number; height: 
 
   if (!root) return DEFAULT;
 
-  // Try explicit width/height attributes first
   const wAttr = root.getAttribute('width');
   const hAttr = root.getAttribute('height');
 
@@ -69,7 +61,6 @@ export function parseSvgDimensions(svgString: string): { width: number; height: 
     }
   }
 
-  // Fall back to viewBox
   const viewBox = root.getAttribute('viewBox');
   if (viewBox) {
     const parts = viewBox.trim().split(/[\s,]+/);
@@ -77,7 +68,6 @@ export function parseSvgDimensions(svgString: string): { width: number; height: 
       const vw = parseFloat(parts[2]);
       const vh = parseFloat(parts[3]);
       if (!isNaN(vw) && !isNaN(vh) && vw > 0 && vh > 0) {
-        // Scale down proportionally if too large
         const scale = Math.min(1, MAX_W / vw, MAX_H / vh);
         return {
           width: Math.round(vw * scale),

@@ -392,7 +392,6 @@ public class AuthService : IAuthService
       ProviderEmail = normalizedEmail,
     });
 
-    // Set profile picture from OAuth provider if user doesn't already have one
     if (!string.IsNullOrWhiteSpace(profilePictureUrl))
     {
       var user = await _userRepository.GetByIdAsync(userId);
@@ -439,8 +438,6 @@ public class AuthService : IAuthService
         await _userRepository.UpdateLinkedAccountAsync(existingProvider);
       }
 
-      // Only set the profile picture if the user doesn't already have one
-      // (avoids overwriting a GitHub avatar when logging in via Google, or vice-versa)
       if (string.IsNullOrWhiteSpace(linkedUser.ProfilePictureUrl) && !string.IsNullOrWhiteSpace(profilePictureUrl))
       {
         linkedUser.ProfilePictureUrl = profilePictureUrl;
@@ -473,7 +470,6 @@ public class AuthService : IAuthService
     }
     else if (string.IsNullOrWhiteSpace(user.ProfilePictureUrl) && !string.IsNullOrWhiteSpace(profilePictureUrl))
     {
-      // Email-matched user had no picture — set it from the OAuth provider
       user.ProfilePictureUrl = profilePictureUrl;
       await _userRepository.UpdateAsync(user);
     }

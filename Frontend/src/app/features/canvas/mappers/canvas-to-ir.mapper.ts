@@ -126,9 +126,6 @@ export function buildCanvasIRPages(
 function createNodeIndex(elements: CanvasElement[]): Map<string, IRNode> {
   const nodesById = new Map<string, IRNode>();
 
-  // Build a fast parent lookup so buildNodePosition can compensate for
-  // parent border width (canvas coords are from the outer edge; CSS
-  // position:absolute is from the padding edge, i.e. inside the border).
   const parentById = new Map<string, CanvasElement>();
   for (const element of elements) {
     if (element.parentId) {
@@ -234,8 +231,6 @@ function buildNodeLayout(element: CanvasElement): IRLayout | undefined {
     if (element.flexDirection) layout.direction = mapFlexDirection(element.flexDirection);
     if (element.flexWrap !== undefined) layout.wrap = element.flexWrap === 'wrap';
     if (element.justifyContent) layout.justify = mapJustifyContent(element.justifyContent);
-    // Always emit align: canvas default is 'flex-start', CSS default is 'stretch'.
-    // Without this, exported HTML would use stretch instead of what the canvas shows.
     layout.align = mapAlignItems(element.alignItems ?? 'flex-start');
     if (typeof element.gap === 'number') layout.gap = px(element.gap);
   }
@@ -263,8 +258,6 @@ function buildNodeLayout(element: CanvasElement): IRLayout | undefined {
     }
   }
 
-  // Text vertical alignment: map onto flex align-items (cross-axis in row layout)
-  // Text horizontal alignment: map onto justify-content for flex context
   if (needsFlexForVA && textVA !== null) {
     layout.align ??= textVA === 'bottom' ? 'End' : 'Center';
     if (element.textAlign === 'center') layout.justify ??= 'Center';
@@ -275,15 +268,10 @@ function buildNodeLayout(element: CanvasElement): IRLayout | undefined {
 }
 
 function buildNodePosition(element: CanvasElement, parent?: CanvasElement): IRPosition {
-  // CSS `position: absolute` offsets from the padding edge (inside the border).
-  // Canvas x/y are from the outer bounding box edge.
-  // Subtract parent border widths so positions match visually.
   const parentBorderLeftWidth = resolveCanvasBorderSideWidth(parent, 'left');
   const parentBorderTopWidth = resolveCanvasBorderSideWidth(parent, 'top');
 
   if (!element.position) {
-    // If the parent is a layout container (flex/block/grid), this child is in-flow —
-    // use Flow mode (no position/left/top) so the converter emits proper CSS flow layout.
     if (parent?.display) {
       return { mode: 'Flow' };
     }
@@ -516,8 +504,6 @@ function buildNodeStyle(element: CanvasElement): IRStyle {
       style.textWrap = 'balance';
     }
 
-    // fit-content text expands to content width → no wrapping needed.
-    // fixed or fill text has a bounded width → must wrap, matching canvas renderer behaviour.
     const widthMode = element.widthMode ?? 'fixed';
     if (widthMode === 'fit-content') {
       style.whiteSpace = 'pre';
@@ -578,8 +564,6 @@ function applyNodeDimensionStyle(
   }
 
   if (mode === 'fixed' || mode === 'fit-image') {
-    // Canvas stores border-box (content + padding). CSS also uses border-box (with global
-    // box-sizing: border-box reset), so the border is inset — no adjustment needed.
     const base = axis === 'width' ? element.width : element.height;
     style[axis] = px(base);
     return;
@@ -614,8 +598,6 @@ function applyNodeConstraintStyle(
     return;
   }
 
-  // Fixed constraints are border-box (content + padding) on canvas; CSS also uses border-box,
-  // so no stroke adjustment is needed.
   style[field] = px(pixels as number);
 }
 

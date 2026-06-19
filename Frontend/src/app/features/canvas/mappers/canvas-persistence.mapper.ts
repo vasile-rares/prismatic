@@ -197,7 +197,6 @@ function normalizeCanvasCoordinate(value: unknown, fallback: number): number {
   return Math.round(value);
 }
 
-// ── Data Migration: v2 (content-box) → v3 (border-box) ─────────────────
 
 function migrateDocumentIfNeeded(doc: CanvasProjectDocument): CanvasProjectDocument {
   const version = parseFloat(doc.version) || 2.0;
@@ -205,7 +204,6 @@ function migrateDocumentIfNeeded(doc: CanvasProjectDocument): CanvasProjectDocum
     return doc;
   }
 
-  // v2 → v3: add padding to stored dimensions and constraints
   return {
     ...doc,
     version: CURRENT_DOCUMENT_VERSION,
@@ -229,7 +227,6 @@ function migrateElementContentBoxToBorderBox(element: CanvasElement): CanvasElem
   migrated.width = element.width + paddingH;
   migrated.height = element.height + paddingV;
 
-  // Migrate fixed constraints (only px-based; relative constraints are percentages)
   if (typeof element.minWidth === 'number' && element.minWidthMode !== 'relative') {
     migrated.minWidth = element.minWidth + paddingH;
   }

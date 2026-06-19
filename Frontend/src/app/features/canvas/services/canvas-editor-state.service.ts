@@ -86,7 +86,7 @@ export class CanvasEditorStateService {
     buildChildrenMap(this.elements()),
   );
 
-  // ── Mutation Helpers ──────────────────────────────────────
+  // Mutation helpers
 
   updateCurrentPageElements(updater: (elements: CanvasElement[]) => CanvasElement[]): void {
     const pageId = this.currentPageId();

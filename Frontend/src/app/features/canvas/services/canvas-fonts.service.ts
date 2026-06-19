@@ -7,7 +7,7 @@ export interface GoogleFont {
 }
 
 export const GOOGLE_FONTS: GoogleFont[] = [
-  // ── Sans-serif ────────────────────────────────────────
+  // Sans-serif
   { family: 'Inter', category: 'sans-serif' },
   { family: 'Roboto', category: 'sans-serif' },
   { family: 'Open Sans', category: 'sans-serif' },
@@ -57,7 +57,7 @@ export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Be Vietnam Pro', category: 'sans-serif' },
   { family: 'Schibsted Grotesk', category: 'sans-serif' },
   { family: 'Geist', category: 'sans-serif' },
-  // ── Serif ─────────────────────────────────────────────
+  // Serif
   { family: 'Playfair Display', category: 'serif' },
   { family: 'Merriweather', category: 'serif' },
   { family: 'PT Serif', category: 'serif' },
@@ -75,7 +75,7 @@ export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Zilla Slab', category: 'serif' },
   { family: 'Cardo', category: 'serif' },
   { family: 'Fraunces', category: 'serif' },
-  // ── Monospace ─────────────────────────────────────────
+  // Monospace
   { family: 'Fira Code', category: 'monospace' },
   { family: 'JetBrains Mono', category: 'monospace' },
   { family: 'Space Mono', category: 'monospace' },
@@ -85,7 +85,7 @@ export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Inconsolata', category: 'monospace' },
   { family: 'Cousine', category: 'monospace' },
   { family: 'Share Tech Mono', category: 'monospace' },
-  // ── Display ───────────────────────────────────────────
+  // Display
   { family: 'Bebas Neue', category: 'display' },
   { family: 'Anton', category: 'display' },
   { family: 'Righteous', category: 'display' },
@@ -96,7 +96,7 @@ export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Teko', category: 'display' },
   { family: 'Russo One', category: 'display' },
   { family: 'Permanent Marker', category: 'display' },
-  // ── Handwriting ───────────────────────────────────────
+  // Handwriting
   { family: 'Pacifico', category: 'handwriting' },
   { family: 'Lobster', category: 'handwriting' },
   { family: 'Dancing Script', category: 'handwriting' },
@@ -106,7 +106,6 @@ export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Satisfy', category: 'handwriting' },
   { family: 'Kaushan Script', category: 'handwriting' },
   { family: 'Allura', category: 'handwriting' },
-  // ── System (no Google Fonts load needed) ─────────────
   { family: 'Arial', category: 'system' },
   { family: 'Helvetica', category: 'system' },
   { family: 'Georgia', category: 'system' },

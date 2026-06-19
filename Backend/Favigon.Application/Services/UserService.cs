@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Favigon.Application.DTOs.Requests;
 using Favigon.Application.DTOs.Requests.Assets;
 using Favigon.Application.DTOs.Responses;
@@ -236,7 +236,6 @@ public class UserService : IUserService
     var user = await _userRepository.GetByIdAsync(userId);
     if (user == null) return false;
 
-    // Delete all project asset files before removing the user (cascade will remove DB rows)
     var projects = await _projectRepository.GetByUserIdAsync(userId);
     var deleteTasks = projects.Select(p =>
       _projectAssetStorage.DeleteProjectAssetsAsync(userId, p.Id, CancellationToken.None));
@@ -296,7 +295,7 @@ public class UserService : IUserService
     return $"{normalizedBaseUrl}{normalizedAssetPath}";
   }
 
-  // ── Follow ─────────────────────────────────────────────────────────────────
+  // Follow
 
   public async Task FollowAsync(int followerId, string followeeUsername)
   {
@@ -344,7 +343,7 @@ public class UserService : IUserService
   public Task<IReadOnlyList<User>> GetFollowingAsync(int userId)
     => _userRepository.GetFollowingAsync(userId);
 
-  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  // Bookmarks
 
   public async Task<IReadOnlyList<ProjectResponse>> GetMyBookmarksAsync(int userId)
   {

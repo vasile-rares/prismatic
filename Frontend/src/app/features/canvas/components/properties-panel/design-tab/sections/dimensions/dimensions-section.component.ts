@@ -142,7 +142,6 @@ export class DimensionsSectionComponent {
         heightMode: 'fit-content',
       });
     } else {
-      // 'fixed' — preserve current pixel sizes for both axes
       const wFixed = getCanvasFixedSize(element, 'width');
       const hFixed = getCanvasFixedSize(element, 'height');
       const wPixels = resolveCanvasPixelsFromMode(
@@ -606,7 +605,6 @@ export class DimensionsSectionComponent {
     if (!element.parentId) return null;
     const parent = this.currentPageModel()?.elements.find((c) => c.id === element.parentId) ?? null;
     if (!parent) return null;
-    // parent.width is already border-box (content + padding); no addition needed.
     const isFlowLayoutChild =
       !!parent.display &&
       (parent.type === 'frame' || parent.type === 'rectangle') &&

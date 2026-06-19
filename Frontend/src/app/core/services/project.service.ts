@@ -31,7 +31,7 @@ export class ProjectService {
     queueMicrotask(() => this.replayPendingFlushes());
   }
 
-  // ── Pending flush (crash recovery) ────────────────────────
+  // Pending flush (crash recovery)
 
   queueAndDispatchFlush(
     projectId: number,

@@ -1,4 +1,4 @@
-﻿using Favigon.Converter.Models;
+using Favigon.Converter.Models;
 
 namespace Favigon.Converter.Transformers;
 
@@ -23,8 +23,6 @@ public static class LayoutTransformer
       if (layout.Align is not null) css["align-items"] = MapAlignItems(layout.Align.Value);
       if (layout.Justify is not null) css["justify-content"] = MapJustifyContent(layout.Justify.Value);
       if (layout.Wrap is not null) css["flex-wrap"] = layout.Wrap.Value ? "wrap" : "nowrap";
-      // When wrapping, align-content controls how lines distribute — mirror align-items so
-      // that "center" alignment means centered in both single-line and multi-line scenarios.
       if (layout.Wrap == true && layout.Align is not null)
         css["align-content"] = MapAlignItems(layout.Align.Value);
     }

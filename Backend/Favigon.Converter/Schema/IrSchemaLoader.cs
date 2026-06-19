@@ -6,15 +6,9 @@ public static class IrSchemaLoader
 {
   private const string ResourceName = "Favigon.Converter.Schema.IrAiSchema.json";
 
-  // Cached for production — embedded resource never changes at runtime.
   private static string? _cachedEmbeddedSchema;
 
-  /// <param name="overridePath">
-  /// Optional file path (absolute or relative to the current working directory).
-  /// When set and the file exists, the schema is read from disk on every call,
-  /// enabling hot reload without restarting the application in development.
-  /// Falls back to the embedded resource if the path is null or the file is not found.
-  /// </param>
+  ///
   public static string GetAiSchema(string? overridePath = null)
   {
     if (!string.IsNullOrWhiteSpace(overridePath))
@@ -27,7 +21,6 @@ public static class IrSchemaLoader
         return File.ReadAllText(resolved);
     }
 
-    // Embedded resource (cached — loaded once per process lifetime).
     if (_cachedEmbeddedSchema is not null)
       return _cachedEmbeddedSchema;
 

@@ -36,7 +36,7 @@ export interface IRPosition {
 
 export interface IRGradientStop {
   color: string;
-  position: number; // 0–100
+  position: number;
 }
 
 export interface IRGradient {
@@ -126,7 +126,7 @@ export interface IRShadow {
 
 export interface IRLength {
   value: number;
-  unit: string; // "px" | "%" | "rem" | "em" | "vw" | "vh"
+  unit: string;
 }
 
 export interface IRSpacing {
@@ -160,7 +160,7 @@ export interface IRMeta {
 
 export interface IREffect {
   preset: string;
-  trigger: string; // 'onLoad' | 'hover' | 'click' | 'focus' | 'loop'
+  trigger: string;
   opacity?: number;
   scale?: number;
   rotate?: number;
@@ -173,7 +173,7 @@ export interface IREffect {
   shadow?: string;
   duration: number;
   delay: number;
-  iterations: string; // "1", "2", "infinite"
+  iterations: string;
   easing: string;
   direction: string;
   fillMode: string;
@@ -186,7 +186,6 @@ export interface IRVariant {
   props?: Record<string, unknown>;
 }
 
-// Must match C# enum names exactly (JsonStringEnumConverter uses PascalCase names)
 export type IRNodeType = 'Frame' | 'Container' | 'Text' | 'Image' | 'Svg';
 export type OverflowMode = 'Clip' | 'Visible' | 'Hidden' | 'Scroll';
 export type LayoutMode = 'Block' | 'Flex' | 'Grid';
@@ -202,7 +201,6 @@ export type JustifyContent =
   | 'SpaceEvenly';
 export type BorderStyle = 'Solid' | 'Dashed' | 'Dotted' | 'Double' | 'None';
 
-// Helper to create a pixel IRLength
 export function px(value: number): IRLength {
   return { value, unit: 'px' };
 }

@@ -11,7 +11,6 @@ public class ConverterService(IConverterEngine converterEngine) : IConverterServ
 {
   public ConverterResponse Generate(IRNode root, string framework)
   {
-    // Skip flex-row math check for user-initiated exports; it is only a gate for AI generation.
     var errors = converterEngine.GetValidationErrors(root, skipLayoutMath: true);
     if (errors.Count > 0)
       throw new BusinessRuleException($"IR validation failed:\n{string.Join("\n", errors)}");

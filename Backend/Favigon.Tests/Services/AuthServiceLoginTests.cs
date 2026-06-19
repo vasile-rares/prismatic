@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Favigon.Application.DTOs.Requests;
@@ -50,16 +50,13 @@ public class AuthServiceLoginTests
   [Fact]
   public async Task Login_WithValidCredentials_ReturnsAuthResponse()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(MakeUser());
 
     var request = new LoginRequest { Email = "test@example.com", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.NotNull(result);
     Assert.False(string.IsNullOrEmpty(result.Token));
     Assert.False(string.IsNullOrEmpty(result.RefreshToken));
@@ -68,23 +65,19 @@ public class AuthServiceLoginTests
   [Fact]
   public async Task Login_WithWrongPassword_ReturnsNull()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(MakeUser("CorrectPassword!"));
 
     var request = new LoginRequest { Email = "test@example.com", Password = "WrongPassword!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.Null(result);
   }
 
   [Fact]
   public async Task Login_WithoutLocalPassword_ReturnsNull()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(new User
         {
@@ -99,41 +92,33 @@ public class AuthServiceLoginTests
 
     var request = new LoginRequest { Email = "test@example.com", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.Null(result);
   }
 
   [Fact]
   public async Task Login_WithNonExistentEmail_ReturnsNull()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
 
     var request = new LoginRequest { Email = "nobody@example.com", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.Null(result);
   }
 
   [Fact]
   public async Task Login_TrimsEmailBeforeLookup()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(MakeUser());
 
     var request = new LoginRequest { Email = "  test@example.com  ", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.NotNull(result);
     _userRepo.Verify(r => r.GetByEmailAsync("test@example.com"), Times.Once);
   }
@@ -141,16 +126,13 @@ public class AuthServiceLoginTests
   [Fact]
   public async Task Login_AccessToken_HasCorrectClaims()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(MakeUser());
 
     var request = new LoginRequest { Email = "test@example.com", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert - decode token and verify claims
     Assert.NotNull(result);
     var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
     var jwt = handler.ReadJwtToken(result!.Token);
@@ -163,16 +145,13 @@ public class AuthServiceLoginTests
   [Fact]
   public async Task Login_RefreshToken_HasTokenTypeRefreshClaim()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(MakeUser());
 
     var request = new LoginRequest { Email = "test@example.com", Password = "Password123!" };
 
-    // Act
     var result = await _sut.LoginAsync(request);
 
-    // Assert
     Assert.NotNull(result);
     var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
     var jwt = handler.ReadJwtToken(result!.RefreshToken);

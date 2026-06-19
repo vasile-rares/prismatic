@@ -19,7 +19,7 @@ public class ConverterControllerTests
     _controller = new ConverterController(_converterServiceMock.Object);
   }
 
-  // ── Generate ────────────────────────────────────────────
+  // Generate
 
   [Fact]
   public void Generate_WithIr_ReturnsOk()
@@ -76,7 +76,7 @@ public class ConverterControllerTests
     Assert.IsType<BadRequestObjectResult>(result);
   }
 
-  // ── Validate ────────────────────────────────────────────
+  // Validate
 
   [Fact]
   public void Validate_WithIr_ReturnsOk()
@@ -103,7 +103,7 @@ public class ConverterControllerTests
     Assert.IsType<BadRequestObjectResult>(result);
   }
 
-  // ── GenerateFiles ───────────────────────────────────────
+  // GenerateFiles
 
   [Fact]
   public void GenerateFiles_WithPages_ReturnsOk()

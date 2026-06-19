@@ -15,7 +15,7 @@ public interface IUserRepository
   Task UpdateAsync(User user);
   Task DeleteAsync(User user);
 
-  // ── Follow ─────────────────────────────────────────────────────────────────
+  // Follow
   Task<UserFollow?> GetFollowAsync(int followerId, int followeeId);
   Task AddFollowAsync(UserFollow follow);
   Task DeleteFollowAsync(UserFollow follow);
@@ -25,7 +25,7 @@ public interface IUserRepository
   Task<IReadOnlyList<User>> GetFollowersAsync(int userId);
   Task<IReadOnlyList<User>> GetFollowingAsync(int userId);
 
-  // ── Linked Accounts ────────────────────────────────────────────────────────
+  // Linked accounts
   Task<LinkedAccount?> GetLinkedAccountByProviderAsync(string provider, string providerUserId);
   Task<IReadOnlyList<LinkedAccount>> GetLinkedAccountsByUserIdAsync(int userId);
   Task<LinkedAccount?> GetLinkedAccountByUserIdAndProviderAsync(int userId, string provider);

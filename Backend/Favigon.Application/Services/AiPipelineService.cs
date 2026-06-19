@@ -42,7 +42,7 @@ public sealed class AiPipelineService(
       return cached!;
     }
 
-    // ── Phase 1: Intent ────────────────────────────────────────────────────
+    // Phase 1: intent
     logger.LogInformation("[Pipeline] Phase 1 — analyzing intent for: {Prompt}", request.Prompt[..Math.Min(request.Prompt.Length, 80)]);
 
     var (blueprint, intentError) = await Phase1IntentAsync(request, ct);
@@ -56,7 +56,7 @@ public sealed class AiPipelineService(
       return r;
     }
 
-    // ── Phase 2: Structure ─────────────────────────────────────────────────
+    // Phase 2: structure
     logger.LogInformation("[Pipeline] Phase 2 — building structure ({Sections} sections)", blueprint.Sections.Count);
 
     var (structure, structureError) = await Phase2StructureAsync(request, blueprint, ct);
@@ -70,7 +70,7 @@ public sealed class AiPipelineService(
       return r;
     }
 
-    // ── Phase 3: Style ─────────────────────────────────────────────────────
+    // Phase 3: style
     logger.LogInformation("[Pipeline] Phase 3 — applying design system ({Mood} mood)", blueprint.ColorMood);
 
     var (styledIr, styleError) = await Phase3StyleAsync(request, blueprint, structure, ct);
@@ -159,7 +159,7 @@ public sealed class AiPipelineService(
   private static AiPipelineResponse Fail(string message) =>
       new() { Success = false, Message = message };
 
-  // ── Phase 1: Intent ───────────────────────────────────────────────────────────────
+  // Phase 1: intent
 
   private const string IntentSchema = """
     {
@@ -300,7 +300,7 @@ public sealed class AiPipelineService(
     return (null, "AI returned an empty intent blueprint.");
   }
 
-  // ── Phase 2: Structure ────────────────────────────────────────────────────────────
+  // Phase 2: structure
 
   private const string StructureSystemPrompt = $$"""
     You are a layout engineer for Favigon, a design-to-code platform.
@@ -467,7 +467,7 @@ public sealed class AiPipelineService(
     return count;
   }
 
-  // ── Phase 3: Style ─────────────────────────────────────────────────────────────
+  // Phase 3: style
 
   private const string StyleSystemPrompt = $$"""
     You are a design system engineer for Favigon, a design-to-code platform.

@@ -110,7 +110,7 @@ export class CanvasKeyboardService {
     }
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private isTypingContext(event: KeyboardEvent): boolean {
     return this.isTypingTarget(event.target);

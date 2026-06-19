@@ -351,7 +351,6 @@ export class ProfilePage implements OnInit {
 
     this.isTogglingFollow.set(true);
     const wasFollowing = this.isFollowing();
-    // Optimistic update
     this.isFollowing.set(!wasFollowing);
     this.followerCount.update((c) => (wasFollowing ? c - 1 : c + 1));
 
@@ -362,7 +361,6 @@ export class ProfilePage implements OnInit {
     request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this.isTogglingFollow.set(false),
       error: () => {
-        // Rollback on error
         this.isFollowing.set(wasFollowing);
         this.followerCount.update((c) => (wasFollowing ? c + 1 : c - 1));
         this.isTogglingFollow.set(false);
@@ -373,7 +371,6 @@ export class ProfilePage implements OnInit {
   toggleProjectStar(project: ProjectCardViewModel): void {
     const wasStarred = project.isStarredByCurrentUser;
 
-    // Optimistic update
     this.projects.update((list) =>
       list.map((p) =>
         p.id === project.id
@@ -392,7 +389,6 @@ export class ProfilePage implements OnInit {
 
     request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       error: () => {
-        // Rollback on error
         this.projects.update((list) =>
           list.map((p) =>
             p.id === project.id
@@ -411,7 +407,6 @@ export class ProfilePage implements OnInit {
   toggleProjectLike(project: ProjectCardViewModel): void {
     const wasLiked = project.isLikedByCurrentUser;
 
-    // Optimistic update
     this.projects.update((list) =>
       list.map((p) =>
         p.id === project.id
@@ -430,7 +425,6 @@ export class ProfilePage implements OnInit {
 
     request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       error: () => {
-        // Rollback on error
         this.projects.update((list) =>
           list.map((p) =>
             p.id === project.id

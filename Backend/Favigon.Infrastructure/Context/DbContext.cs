@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Favigon.Domain.Entities;
 
 namespace Favigon.Infrastructure.Context;
@@ -10,7 +10,6 @@ public class FavigonDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
     }
 
-    // DbSets
     public DbSet<User> Users { get; set; }
     public DbSet<LinkedAccount> LinkedAccounts { get; set; }
     public DbSet<Project> Projects { get; set; }

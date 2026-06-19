@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Favigon.Application.DTOs.Requests;
@@ -73,29 +73,23 @@ public class AuthServiceRefreshTests
   [Fact]
   public async Task Refresh_WithValidToken_ReturnsNewTokens()
   {
-    // Arrange
     var user = MakeUser();
     var refreshToken = BuildRefreshToken(user.Id);
     _userRepo.Setup(r => r.GetByIdAsync(user.Id)).ReturnsAsync(user);
 
-    // Act
     var result = await _sut.RefreshAsync(refreshToken);
 
-    // Assert
     Assert.NotNull(result);
     Assert.False(string.IsNullOrEmpty(result.Token));
     Assert.False(string.IsNullOrEmpty(result.RefreshToken));
-    // New refresh token should be different (new Jti)
     Assert.NotEqual(refreshToken, result.RefreshToken);
   }
 
   [Fact]
   public async Task Refresh_WithExpiredToken_ThrowsArgumentException()
   {
-    // Arrange
     var expiredToken = BuildRefreshToken(42, expiry: DateTime.UtcNow.AddDays(-1));
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ArgumentException>(() => _sut.RefreshAsync(expiredToken));
     Assert.Equal("Invalid or expired refresh token.", ex.Message);
   }
@@ -103,10 +97,8 @@ public class AuthServiceRefreshTests
   [Fact]
   public async Task Refresh_WithAccessTokenInsteadOfRefreshToken_ThrowsArgumentException()
   {
-    // Arrange — build a token with token_type: access (not refresh)
     var wrongTypeToken = BuildRefreshToken(42, tokenType: "access");
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ArgumentException>(() => _sut.RefreshAsync(wrongTypeToken));
     Assert.Equal("Invalid token type.", ex.Message);
   }
@@ -121,11 +113,9 @@ public class AuthServiceRefreshTests
   [Fact]
   public async Task Refresh_WhenUserNotFound_ThrowsArgumentException()
   {
-    // Arrange
     var refreshToken = BuildRefreshToken(999);
     _userRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((User?)null);
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ArgumentException>(() => _sut.RefreshAsync(refreshToken));
     Assert.Equal("User not found.", ex.Message);
   }

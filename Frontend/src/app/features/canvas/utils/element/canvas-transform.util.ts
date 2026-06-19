@@ -204,10 +204,6 @@ export function buildSquircleMaskImage(squircle: number): string {
   const s = Math.max(0, Math.min(100, squircle)) / 100;
   if (s <= 0) return '';
 
-  // In a 0-1 normalised viewBox:
-  // r = corner radius (0..0.45)
-  // p = how far along each edge the curve starts  (> r at high smoothing = squircle)
-  // c = cubic bezier handle distance
   const r = s * 0.45;
   const p = Math.min(r * (1 + s * 0.75), 0.499);
   const c = Math.min(r * (0.55 + s * 0.35), p);

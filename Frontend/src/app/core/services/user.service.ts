@@ -16,7 +16,7 @@ export class UserService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiBaseUrl;
 
-  // ── Current user cache ────────────────────────────────────
+  // Current user cache
 
   private readonly _currentUser = signal<UserMe | null | undefined>(undefined);
   readonly currentUser = this._currentUser.asReadonly();
@@ -42,7 +42,7 @@ export class UserService {
     this._currentUser.set(undefined);
   }
 
-  // ── HTTP ──────────────────────────────────────────────────
+  // HTTP
 
   getMe(): Observable<UserMe> {
     return this.http.get<UserMe>(`${this.baseUrl}/users/me`);

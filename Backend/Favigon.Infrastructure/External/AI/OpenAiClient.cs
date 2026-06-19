@@ -144,7 +144,6 @@ public class OpenAiClient : IAiClient
     };
   }
 
-  // --- internal DTOs for OpenAI API ---
 
   private class OpenAiChatRequest
   {

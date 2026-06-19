@@ -29,7 +29,7 @@ const CREDENTIAL_MAX_LENGTH = 100;
 function passwordStrengthValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) {
-      return null; // Let 'required' validator handle empty case
+      return null;
     }
     return PASSWORD_PATTERN.test(String(control.value)) ? null : { weakPassword: true };
   };
@@ -57,7 +57,6 @@ export class AuthPage implements OnInit {
 
   private static readonly REMEMBER_EMAIL_KEY = 'favigon.rememberedEmail';
 
-  // --- State Signals ---
   readonly mode = signal<'login' | 'register'>('login');
   readonly isSubmitting = signal(false);
   readonly showLoginPassword = signal(false);
@@ -79,7 +78,7 @@ export class AuthPage implements OnInit {
 
   private twoFactorToken: string | null = null;
 
-  // --- Forms ---
+  // Forms
   readonly loginForm = this.fb.nonNullable.group({
     email: [
       '',
@@ -138,15 +137,13 @@ export class AuthPage implements OnInit {
     );
   }
 
-  // --- Actions ---
+  // Actions
 
   switchMode(nextMode: 'login' | 'register') {
     this.mode.set(nextMode);
 
-    // Reset UI state
     this.statusMessage.set(null);
 
-    // Reset forms
     this.loginForm.reset();
     this.forgotPasswordForm.reset();
     this.registerForm.reset();
@@ -321,7 +318,6 @@ export class AuthPage implements OnInit {
         }),
       );
 
-      // Auto-switch to login and pre-fill email
       this.switchMode('login');
       this.loginForm.patchValue({ email: email.trim() });
     } catch (error: unknown) {
@@ -376,7 +372,6 @@ export class AuthPage implements OnInit {
     window.location.href = googleAuthorizeUrl;
   }
 
-  // --- Private Helpers ---
 
   private passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
     const password = group.get('password')?.value;
@@ -386,13 +381,11 @@ export class AuthPage implements OnInit {
 
     const confirmValue = confirmControl.value;
 
-    // Only set error if confirm field has content but doesn't match
     if (confirmValue && password !== confirmValue) {
       confirmControl.setErrors({ ...confirmControl.errors, passwordMismatch: true });
       return { passwordMismatch: true };
     }
 
-    // Remove error if they match now
     if (confirmControl.hasError('passwordMismatch')) {
       const { passwordMismatch, ...otherErrors } = confirmControl.errors || {};
       confirmControl.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
@@ -437,7 +430,6 @@ export class AuthPage implements OnInit {
         } else {
           await firstValueFrom(this.authService.linkWithGithub({ code }));
         }
-        // Refresh user data so the new profile picture becomes visible immediately
         const user = await firstValueFrom(this.userService.getMe());
         this.userService.setCurrentUser(user);
         await this.router.navigate(['/settings']);

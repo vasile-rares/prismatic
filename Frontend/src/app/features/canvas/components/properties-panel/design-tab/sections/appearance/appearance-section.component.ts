@@ -386,7 +386,7 @@ export class AppearanceSectionComponent {
     return normalizeCanvasShadowValue(element.shadow) ?? null;
   }
 
-  // --- Filters ---
+  // Filters
 
   hasFilters(element: CanvasElement): boolean {
     return (element.cssFilterOptions?.length ?? 0) > 0;

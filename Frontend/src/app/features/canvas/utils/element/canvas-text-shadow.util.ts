@@ -14,7 +14,6 @@ export const DEFAULT_EDITABLE_TEXT_SHADOW: EditableTextShadow = {
   color: 'rgba(0, 0, 0, 0.4)',
 };
 
-// Pattern: "<x>px <y>px <blur>px <color>"
 const TEXT_SHADOW_PATTERN =
   /^(-?(?:\d+|\d*\.\d+))px\s+(-?(?:\d+|\d*\.\d+))px\s+((?:\d+|\d*\.\d+))px\s+(.+)$/i;
 

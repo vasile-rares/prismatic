@@ -56,7 +56,7 @@ public class AiDesignController(IAiDesignService aiDesignService, IAiPipelineSer
         await Response.Body.FlushAsync(ct);
       }
     }
-    catch (OperationCanceledException) { /* client disconnected */ }
+    catch (OperationCanceledException) { }
     catch (Exception)
     {
       await Response.WriteAsync("event: error\ndata: AI service is temporarily unavailable.\n\n", ct);
@@ -64,7 +64,7 @@ public class AiDesignController(IAiDesignService aiDesignService, IAiPipelineSer
     }
   }
 
-  // ── 3-Phase Pipeline ────────────────────────────────────────────────────
+  // 3-Phase pipeline
 
   [HttpPost("design/pipeline")]
   public async Task<IActionResult> RunPipeline(
@@ -110,7 +110,7 @@ public class AiDesignController(IAiDesignService aiDesignService, IAiPipelineSer
         await Response.Body.FlushAsync(ct);
       }
     }
-    catch (OperationCanceledException) { /* client disconnected */ }
+    catch (OperationCanceledException) { }
     catch (Exception)
     {
       await Response.WriteAsync("event: error\ndata: AI service is temporarily unavailable.\n\n", ct);

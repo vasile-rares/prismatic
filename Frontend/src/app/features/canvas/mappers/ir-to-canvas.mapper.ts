@@ -71,7 +71,6 @@ export function buildCanvasElementsFromIR(root: IRNode | null | undefined): Canv
 
   const flattened: CanvasElement[] = [];
 
-  // Include the root Frame as a canvas element with no parent (it IS the artboard)
   const rootElement = mapIRNodeToCanvasElement(root);
   rootElement.parentId = null;
   flattened.push(rootElement);
@@ -109,7 +108,6 @@ function mapIRNodeToCanvasElement(node: IRNode): CanvasElement {
   const preservedProps = removeManagedProps(node.props);
   const transformFields = parseCanvasTransformStyle(node.style);
 
-  // Treat explicit zero width/height as fill (AI sometimes generates width:0 for flex children)
   const effectiveWidthMode =
     importedWidthMode === 'fixed' &&
     mappedType !== 'text' &&
@@ -133,7 +131,6 @@ function mapIRNodeToCanvasElement(node: IRNode): CanvasElement {
     minWidth: readOptionalLength(node.style?.minWidth),
     minWidthMode: readConstraintModeFromLength(node.style?.minWidth),
     minWidthSizingValue: readImportedConstraintValue(node.style?.minWidth),
-    // Drop fixed-px maxWidth on fill/relative elements — shows as unwanted "Fixed" constraint in UI
     maxWidth:
       node.style?.maxWidth?.unit === 'px' && importedWidthMode !== 'fixed'
         ? undefined
@@ -145,7 +142,7 @@ function mapIRNodeToCanvasElement(node: IRNode): CanvasElement {
     maxWidthSizingValue: readImportedConstraintValue(node.style?.maxWidth),
     height:
       mappedType === 'text'
-        ? defaults.height // text always fit-content — ignore any fixed px from AI
+        ? defaults.height
         : importedHeightMode === 'fixed'
           ? Math.max(
               1,
@@ -160,7 +157,7 @@ function mapIRNodeToCanvasElement(node: IRNode): CanvasElement {
           : defaults.height,
     heightMode:
       mappedType === 'text'
-        ? 'fit-content' // text always fit-content
+        ? 'fit-content'
         : importedHeightMode === 'fixed'
           ? undefined
           : importedHeightMode,
@@ -194,7 +191,6 @@ function mapIRNodeToCanvasElement(node: IRNode): CanvasElement {
       mappedType === 'frame' || mappedType === 'rectangle'
         ? (() => {
             const ov = readOverflow(node.style?.overflow, 'visible');
-            // Never clip a flat container (no borderRadius) — child shadows would be cut off
             if ((ov === 'clip' || ov === 'hidden') && !((cornerRadius ?? 0) > 0)) {
               return 'visible';
             }
@@ -295,7 +291,7 @@ function mapIRType(type: string): CanvasElement['type'] {
     case 'Link':
       return 'text';
     case 'Image':
-      return 'rectangle'; // Images are rectangles with fill-image background
+      return 'rectangle';
     case 'Svg':
       return 'svg';
     default:
@@ -312,9 +308,6 @@ function flattenIRNode(
   const mapped = mapIRNodeToCanvasElement(node);
   mapped.parentId = parentId;
 
-  // canvas-to-ir.mapper subtracts the parent's border widths from left/top so that
-  // CSS position:absolute (which measures from the padding-box) renders correctly.
-  // Add them back here so element.x/y remain outer-edge-based in the canvas model.
   if (parentNode?.style?.border) {
     mapped.x += readImportedBorderSideWidth(parentNode.style.border, 'left');
     mapped.y += readImportedBorderSideWidth(parentNode.style.border, 'top');
@@ -626,7 +619,7 @@ function readAlignItems(ai: unknown): CanvasAlignItems | undefined {
 
 function readPositionMode(mode: unknown): CanvasPositionMode | undefined {
   const v = normEnum(mode);
-  if (v === 'relative' || v === 'flow') return 'relative'; // 'flow' = normal flow = relative in canvas
+  if (v === 'relative' || v === 'flow') return 'relative';
   if (v === 'absolute') return 'absolute';
   if (v === 'fixed') return 'fixed';
   if (v === 'sticky') return 'sticky';

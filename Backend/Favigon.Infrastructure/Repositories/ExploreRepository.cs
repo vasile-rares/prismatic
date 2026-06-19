@@ -48,7 +48,6 @@ public class ExploreRepository : IExploreRepository
         return followedProjects;
     }
 
-    // Fallback: recently updated public projects
     return await _context.Projects
       .AsSplitQuery()
       .Where(p => p.IsPublic && p.ForkedFromProjectId == null && (viewerUserId == 0 || p.UserId != viewerUserId))

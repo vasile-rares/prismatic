@@ -18,7 +18,7 @@ public interface IProjectRepository
   Task<Project?> GetPublicByIdWithDesignAsync(int id);
   Task<Dictionary<int, string>> GetOwnerUsernamesByProjectIdsAsync(IEnumerable<int> projectIds);
 
-  // ── Likes ──────────────────────────────────────────────────────────────────
+  // Likes
   Task<ProjectLike?> GetLikeAsync(int userId, int projectId);
   Task AddLikeAsync(ProjectLike like);
   Task DeleteLikeAsync(ProjectLike like);
@@ -26,7 +26,7 @@ public interface IProjectRepository
   Task<bool> IsLikedAsync(int userId, int projectId);
   Task<HashSet<int>> GetLikedProjectIdsAsync(int userId, IEnumerable<int> projectIds);
 
-  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  // Bookmarks
   Task<ProjectBookmark?> GetBookmarkAsync(int userId, int projectId);
   Task AddBookmarkAsync(ProjectBookmark bookmark);
   Task DeleteBookmarkAsync(ProjectBookmark bookmark);

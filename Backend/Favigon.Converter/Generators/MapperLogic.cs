@@ -16,8 +16,6 @@ internal static class MapperLogic
     var inline = IrProps.GetBool(node, "inline");
     var tag = IrProps.ResolveTag(node, inline ? "span" : "p", "div", "p", "span", "label");
 
-    // Wrap content in an inner <span> so background-color only covers text width,
-    // not the full block width of the outer element.
     var bgColor = node.Style?.BackgroundColor;
     if (!string.IsNullOrEmpty(bgColor))
       content = $"<span style=\"background-color: {bgColor}\">{content}</span>";
@@ -98,8 +96,6 @@ internal static class MapperLogic
   {
     var svgContent = IrProps.GetString(node, "svgContent");
     var attrs = nodeClass(node);
-    // Inline the raw SVG markup as the element's content.
-    // The wrapper div carries the sizing/positioning CSS class.
     return FrameworkMapperBase.Paired("div", attrs, svgContent, ctx.Indent, inlineContent: true);
   }
 }

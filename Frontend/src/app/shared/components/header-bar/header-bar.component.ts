@@ -82,7 +82,6 @@ export class HeaderBarComponent implements OnInit {
   isMobileAccountMenuOpen = false;
   showMobileAccountMenu = false;
 
-  // Create project dialog
   isCreateDialogOpen = signal(false);
 
   readonly userMenuContainer = viewChild<ElementRef<HTMLElement>>('userMenuContainer');
@@ -167,7 +166,7 @@ export class HeaderBarComponent implements OnInit {
       });
   }
 
-  // ── Project Menu Delegates ────────────────────────────────
+  // Project menu delegates
 
   toggleProjectMenu(): void {
     this.projectMenu()?.toggle();
@@ -181,7 +180,7 @@ export class HeaderBarComponent implements OnInit {
     this.currentProjectIsPublic = isPublic;
   }
 
-  // ── Create Project Dialog ─────────────────────────────────
+  // Create project dialog
 
   navigateToNewProject(): void {
     this.openCreateProjectDialog();
@@ -191,7 +190,7 @@ export class HeaderBarComponent implements OnInit {
     this.isCreateDialogOpen.set(true);
   }
 
-  // ── User Menu ─────────────────────────────────────────────
+  // User menu
 
   onLogout() {
     this.isUserMenuOpen = false;
@@ -459,7 +458,7 @@ export class HeaderBarComponent implements OnInit {
     return typeof window !== 'undefined' && window.innerWidth <= this.mobileBreakpoint;
   }
 
-  // ── Private ───────────────────────────────────────────────
+  // Private
 
   private applyProfile(profile: HeaderUserProfile): void {
     this.displayName = profile.displayName;

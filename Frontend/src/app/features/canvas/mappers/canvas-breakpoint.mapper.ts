@@ -37,9 +37,6 @@ export function syncBreakpointElements(
     primaryById.set(el.id, el);
   }
 
-  // Build a complete ID remap (mobile element ID -> primary element ID) so that
-  // parentId references are remapped consistently for the entire subtree, not
-  // just direct children of the frame root.
   const idRemap = new Map<string, string>();
   idRemap.set(breakpointFrameId, primaryFrame.id);
   for (const el of breakpointElements) {
@@ -49,11 +46,6 @@ export function syncBreakpointElements(
     }
   }
 
-  // Build sibling-order maps for position-based matching.
-  // Older detached breakpoint overrides may not carry an explicit link to the
-  // primary counterpart yet. Re-establish it by matching on parent +
-  // sibling-index so they get the same CSS class name and generate only a diff
-  // instead of appearing as a fully-exclusive (hidden) node.
   const primaryChildrenByParent = new Map<string, string[]>();
   for (const el of primaryElements) {
     if (el.parentId) {
@@ -78,8 +70,6 @@ export function syncBreakpointElements(
     }
   }
 
-  // Iteratively remap detached elements (no primarySyncId) by tree position.
-  // Repeat until stable so deeply-nested detached elements are covered too.
   let changed = true;
   while (changed) {
     changed = false;
@@ -88,7 +78,7 @@ export function syncBreakpointElements(
         continue;
       }
       const remappedParentId = idRemap.get(el.parentId);
-      if (!remappedParentId) continue; // parent not yet resolved -> retry next iteration
+      if (!remappedParentId) continue;
 
       const bpSiblings = bpChildrenByParent.get(el.parentId) ?? [];
       const siblingIndex = bpSiblings.indexOf(el.id);
@@ -115,9 +105,6 @@ export function syncBreakpointElements(
     }
 
     if (el.id === breakpointFrameId) {
-      // The breakpoint root frame must share the primary frame's ID/class so the
-      // converter emits responsive diffs, but it must keep its own layout/style
-      // overrides (for example mobile flex-direction, alignment, colors, etc.).
       return [{ ...el, id: primaryFrame.id, parentId: el.parentId }];
     }
 
@@ -125,16 +112,11 @@ export function syncBreakpointElements(
     if (el.primarySyncId) {
       const primaryEl = primaryById.get(el.primarySyncId);
       if (primaryEl) {
-        // Element is an unmodified synced copy -> use the primary element's exact
-        // properties so code generation produces no diff for it.
         return [{ ...primaryEl, parentId: remappedParentId }];
       }
       return [{ ...el, id: el.primarySyncId, parentId: remappedParentId }];
     }
 
-    // Position-matched detached element: keep breakpoint properties but use the
-    // primary element's ID so both share the same CSS class and only the diff
-    // (e.g. flex-direction change) is emitted inside the @media block.
     const remappedId = idRemap.get(el.id);
     if (remappedId) {
       return [{ ...el, id: remappedId, parentId: remappedParentId }];

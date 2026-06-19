@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Favigon.Application.DTOs.Requests;
@@ -41,7 +41,6 @@ public class AuthServiceRegisterTests
   [Fact]
   public async Task Register_WithValidRequest_ReturnsAuthResponseWithToken()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.AddAsync(It.IsAny<User>()))
@@ -55,10 +54,8 @@ public class AuthServiceRegisterTests
       Password = "Password123!"
     };
 
-    // Act
     var result = await _sut.RegisterAsync(request);
 
-    // Assert
     Assert.NotNull(result);
     Assert.False(string.IsNullOrEmpty(result.Token));
     Assert.False(string.IsNullOrEmpty(result.RefreshToken));
@@ -70,7 +67,6 @@ public class AuthServiceRegisterTests
   [Fact]
   public async Task Register_NormalizesUsernameToLowercase()
   {
-    // Arrange
     User? capturedUser = null;
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
@@ -86,17 +82,14 @@ public class AuthServiceRegisterTests
       Password = "Password123!"
     };
 
-    // Act
     await _sut.RegisterAsync(request);
 
-    // Assert
     Assert.Equal("testuser", capturedUser!.Username);
   }
 
   [Fact]
   public async Task Register_WhenUsernameExists_ThrowsConflictException()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync("testuser"))
         .ReturnsAsync(new User { Id = 99, Username = "testuser", Email = "other@example.com" });
 
@@ -108,7 +101,6 @@ public class AuthServiceRegisterTests
       Password = "Password123!"
     };
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.RegisterAsync(request));
     Assert.Equal("Username already exists.", ex.Message);
   }
@@ -116,7 +108,6 @@ public class AuthServiceRegisterTests
   [Fact]
   public async Task Register_WhenEmailExists_ThrowsConflictException()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com"))
         .ReturnsAsync(new User { Id = 99, Username = "other", Email = "test@example.com" });
@@ -129,7 +120,6 @@ public class AuthServiceRegisterTests
       Password = "Password123!"
     };
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.RegisterAsync(request));
     Assert.Equal("Email already exists.", ex.Message);
   }
@@ -137,7 +127,6 @@ public class AuthServiceRegisterTests
   [Fact]
   public async Task Register_PasswordIsHashed_NotStoredAsPlainText()
   {
-    // Arrange
     User? capturedUser = null;
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
@@ -153,10 +142,8 @@ public class AuthServiceRegisterTests
       Password = "MySecret123!"
     };
 
-    // Act
     await _sut.RegisterAsync(request);
 
-    // Assert
     Assert.NotNull(capturedUser);
     Assert.NotEqual("MySecret123!", capturedUser!.PasswordHash);
     Assert.True(BCrypt.Net.BCrypt.Verify("MySecret123!", capturedUser.PasswordHash));

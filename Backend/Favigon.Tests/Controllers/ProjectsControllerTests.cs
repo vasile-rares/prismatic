@@ -32,7 +32,7 @@ public class ProjectsControllerTests
     };
   }
 
-  // ── GetAll ───────────────────────────────────────────────
+  // GetAll
 
   [Fact]
   public async Task GetAll_ReturnsOkWithProjects()
@@ -50,7 +50,7 @@ public class ProjectsControllerTests
     Assert.Equal(projects, ok.Value);
   }
 
-  // ── GetById ──────────────────────────────────────────────
+  // GetById
 
   [Fact]
   public async Task GetById_WhenFound_ReturnsOk()
@@ -74,7 +74,7 @@ public class ProjectsControllerTests
     Assert.IsType<NotFoundResult>(result);
   }
 
-  // ── Create ───────────────────────────────────────────────
+  // Create
 
   [Fact]
   public async Task Create_ReturnsCreatedAtAction()
@@ -91,7 +91,7 @@ public class ProjectsControllerTests
     Assert.Equal(created, createdAt.Value);
   }
 
-  // ── Update ───────────────────────────────────────────────
+  // Update
 
   [Fact]
   public async Task Update_WhenFound_ReturnsOk()
@@ -117,7 +117,7 @@ public class ProjectsControllerTests
     Assert.IsType<NotFoundResult>(result);
   }
 
-  // ── Delete ───────────────────────────────────────────────
+  // Delete
 
   [Fact]
   public async Task Delete_WhenFound_ReturnsNoContent()
@@ -143,7 +143,7 @@ public class ProjectsControllerTests
     Assert.IsType<NotFoundResult>(result);
   }
 
-  // ── SaveDesign ───────────────────────────────────────────
+  // SaveDesign
 
   [Fact]
   public async Task SaveDesign_WhenFound_ReturnsOk()

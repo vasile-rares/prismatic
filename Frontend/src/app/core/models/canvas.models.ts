@@ -14,12 +14,12 @@ export type CanvasTextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed'
 
 export interface GradientStop {
   color: string;
-  position: number; // 0–100
+  position: number;
 }
 
 export interface LinearGradientFill {
   type: 'linear';
-  angle: number; // 0–360
+  angle: number;
   stops: GradientStop[];
 }
 
@@ -30,7 +30,7 @@ export interface RadialGradientFill {
 
 export interface ConicGradientFill {
   type: 'conic';
-  angle: number; // 0–360
+  angle: number;
   stops: GradientStop[];
 }
 
@@ -122,8 +122,8 @@ export interface CanvasEffect {
   offsetY: number;
   fill?: string;
   shadow?: string;
-  duration: number; // ms
-  delay: number; // ms
+  duration: number;
+  delay: number;
   iterations: number | 'infinite';
   easing: CanvasEffectEasing;
   direction: CanvasEffectDirection;
@@ -313,7 +313,6 @@ export interface CanvasElement {
   linkUrl?: string;
   tag?: CanvasSemanticTag;
   ariaLabel?: string;
-  // Layout (frame + rectangle)
   display?: CanvasDisplayMode;
   flexDirection?: CanvasFlexDirection;
   flexWrap?: CanvasFlexWrap;
@@ -326,7 +325,6 @@ export interface CanvasElement {
   gridTemplateRows?: string;
   padding?: CanvasSpacing;
   paddingPerSide?: boolean;
-  // Position (not for frame)
   position?: CanvasPositionMode;
   margin?: CanvasSpacing;
   cursor?: CanvasCursorType;

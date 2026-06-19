@@ -25,8 +25,6 @@ public abstract class FrameworkMapperBase : IComponentMapper
 
     EffectProcessor.Apply(node, ctx, cssProps, cssClasses.TargetClass);
 
-    // For text nodes, background-color is applied on an inner <span> (scoped to text width),
-    // so remove it from the outer element's CSS class to avoid full-width highlight.
     if (node.Type == "Text")
       cssProps.Remove("background-color");
 

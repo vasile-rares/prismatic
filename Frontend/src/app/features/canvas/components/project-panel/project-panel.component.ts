@@ -71,7 +71,7 @@ const DEVICE_FRAME_PRESET_OPTIONS = VIEWPORT_PRESET_OPTIONS.filter(
   styleUrl: './project-panel.component.css',
 })
 export class ProjectPanelComponent implements OnInit, OnDestroy {
-  // ── Inputs ────────────────────────────────────────────────
+  // Inputs
 
   @HostBinding('style.width.px') panelWidth = DEFAULT_PANEL_WIDTH;
   @HostBinding('class.is-resizing') isResizingPanel = false;
@@ -87,7 +87,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   readonly currentIr = input<IRNode | null>(null);
   readonly viewportWidth = input(1280);
 
-  // ── Outputs ───────────────────────────────────────────────
+  // Outputs
 
   readonly panelWidthChanged = output<number>();
   readonly designApplied = output<IRNode>();
@@ -117,7 +117,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   }>();
   readonly layerHovered = output<string | null>();
 
-  // ── AI Chat State ─────────────────────────────────────────
+  // AI chat state
 
   private readonly aiChat = inject(ProjectPanelAiChatService);
   private readonly pageActions = inject(ProjectPanelPageActionsService);
@@ -133,7 +133,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   readonly AI_MODELS = this.aiChat.AI_MODELS;
   readonly AI_PROMPT_SUGGESTIONS = this.aiChat.AI_PROMPT_SUGGESTIONS;
 
-  // ── Private State ─────────────────────────────────────────
+  // Private state
 
   private cachedLayerEntriesByPage = new Map<string, LayerEntry[]>();
   private draggedLayerId: string | null = null;
@@ -145,7 +145,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   private collapsedLayers = new Set<string>();
   private collapsedPageLayers = new Set<string>();
 
-  // ── Public State ──────────────────────────────────────────
+  // Public state
 
   editingLayerId: string | null = null;
   editingLayerName = '';
@@ -188,7 +188,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     this.startRename(layerId);
   };
 
-  // ── Getters ───────────────────────────────────────────────
+  // Getters
 
   get layerEntries(): LayerEntry[] {
     const focusedPageId = this.focusedPageId();
@@ -205,7 +205,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
   }
 
 
-  // ── Lifecycle ─────────────────────────────────────────────
+  // Lifecycle
 
   constructor() {
     this.aiChat.connect({
@@ -251,7 +251,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     });
 
     effect(() => {
-      this.elements(); // track elements changes
+      this.elements();
       this.rebuildLayerEntriesByPage();
     });
 
@@ -260,11 +260,9 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
       const elements = this.elements();
       if (!selectedId || elements.length === 0) return;
 
-      // Build a quick parentId lookup
       const parentMap = new Map<string, string | null>();
       for (const el of elements) parentMap.set(el.id, el.parentId ?? null);
 
-      // Walk up the ancestor chain and expand any collapsed ancestor
       let expanded = false;
       let current = parentMap.get(selectedId) ?? null;
       while (current !== null) {
@@ -298,7 +296,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     this.stopPanelResize();
   }
 
-  // ── Panel ───────────────────────────────────────────────────
+  // Panel
 
   onTabValueChange(value: string | number | boolean): void {
     if (value === 'navigator' || value === 'ai-chat') {
@@ -308,7 +306,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ── AI Chat ───────────────────────────────────────────────
+  // AI chat
 
   private aiStreamAbort: AbortController | null = null;
 
@@ -673,7 +671,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     document.body.style.userSelect = 'none';
   }
 
-  // ── Page Operations ──────────────────────────────────────
+  // Page operations
 
   startPageRename(pageId: string, event?: MouseEvent, source: PageRenameSource = 'pages'): void {
     this.pageActions.startPageRename(pageId, event, source);
@@ -731,7 +729,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     this.pageActions.onPageDelete(pageId, event);
   }
 
-  // ── Layer Operations ─────────────────────────────────────
+  // Layer operations
 
   onLayerMouseEnter(layer: LayerEntry): void {
     this.layerHovered.emit(layer.isEffectivelyHidden ? null : layer.id);
@@ -848,7 +846,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  // ── Layer Drag ───────────────────────────────────────────────
+  // Layer drag
 
   onLayerDragStart(pageId: string, id: string, event: DragEvent): void {
     this.draggedLayerId = id;
@@ -971,7 +969,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     this.clearDragState();
   }
 
-  // ── Layer View ───────────────────────────────────────────────
+  // Layer view
 
   isLayerCollapsed(id: string): boolean {
     return this.collapsedLayers.has(id);
@@ -1038,7 +1036,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     return this.cachedLayerEntriesByPage.get(pageId) ?? [];
   }
 
-  // ── Type Checks & Utils ───────────────────────────────────
+  // Type checks & utils
 
   isFrame(type: CanvasElementType): boolean {
     return type === 'frame';
@@ -1095,7 +1093,7 @@ export class ProjectPanelComponent implements OnInit, OnDestroy {
     return this.pages().length > 1;
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private rebuildLayerEntriesByPage(): void {
     this.cachedLayerEntriesByPage = new Map(

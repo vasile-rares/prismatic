@@ -365,19 +365,12 @@ export class GenerationTabComponent implements OnDestroy {
     this.downloadBlob(blob, `${slug}-${fw}.zip`, 'application/zip');
   }
 
-  /**
-   * Finds every server-hosted image URL (under /project-assets/) in the
-   * generated file contents, fetches the binary data, stores each image
-   * under `assets/` in the ZIP, and rewrites the URLs accordingly.
-   */
   private async bundleImageAssets(files: GeneratedFile[]): Promise<{
     rewrittenFiles: GeneratedFile[];
     assetEntries: { zipPath: string; blob: Blob }[];
   }> {
-    // Matches absolute URLs and root-relative paths for project assets.
     const urlPattern = /(?:https?:\/\/[^\s"')]+)?\/project-assets\/[^\s"')]+/g;
 
-    // Collect unique URLs across all files.
     const urlSet = new Set<string>();
     for (const file of files) {
       for (const match of file.content.matchAll(urlPattern)) {
@@ -389,7 +382,6 @@ export class GenerationTabComponent implements OnDestroy {
       return { rewrittenFiles: files, assetEntries: [] };
     }
 
-    // Pre-compute unique asset filenames (synchronous, no races).
     const urlToAssetPath = new Map<string, string>();
     const usedNames = new Set<string>();
     for (const url of urlSet) {
@@ -406,7 +398,6 @@ export class GenerationTabComponent implements OnDestroy {
       urlToAssetPath.set(url, `assets/${name}`);
     }
 
-    // Fetch all images in parallel; skip any that fail.
     const assetEntries: { zipPath: string; blob: Blob }[] = [];
     await Promise.all(
       [...urlToAssetPath.entries()].map(async ([url, zipPath]) => {
@@ -415,13 +406,11 @@ export class GenerationTabComponent implements OnDestroy {
           if (!response.ok) return;
           assetEntries.push({ zipPath, blob: await response.blob() });
         } catch {
-          // Leave the URL as-is if unreachable (e.g. offline export).
           urlToAssetPath.delete(url);
         }
       }),
     );
 
-    // Rewrite URLs in every file, using a depth-relative path to assets/.
     const rewrittenFiles = files.map((file) => {
       let content = file.content;
       for (const [originalUrl, assetPath] of urlToAssetPath) {

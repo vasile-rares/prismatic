@@ -33,7 +33,6 @@ public class UserServiceTests
   [Fact]
   public async Task Create_WithValidRequest_AddsUser()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
     _userRepo.Setup(r => r.AddAsync(It.IsAny<User>()))
@@ -47,10 +46,8 @@ public class UserServiceTests
       Password = "Password123!"
     };
 
-    // Act
     var result = await _sut.CreateAsync(request);
 
-    // Assert
     Assert.NotNull(result);
     Assert.Equal("newuser", result.Username);
     _userRepo.Verify(r => r.AddAsync(It.IsAny<User>()), Times.Once);
@@ -59,7 +56,6 @@ public class UserServiceTests
   [Fact]
   public async Task Create_WhenUsernameExists_ThrowsConflictException()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByUsernameAsync("existing"))
         .ReturnsAsync(new User { Id = 1, Username = "existing", Email = "x@x.com" });
 
@@ -71,7 +67,6 @@ public class UserServiceTests
       Password = "Password123!"
     };
 
-    // Act & Assert
     var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.CreateAsync(request));
     Assert.Equal("Username already exists.", ex.Message);
   }
@@ -79,7 +74,6 @@ public class UserServiceTests
   [Fact]
   public async Task Update_WhenUserNotFound_ReturnsNull()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((User?)null);
 
     var request = new UserUpdateRequest
@@ -89,17 +83,14 @@ public class UserServiceTests
       Email = "test@test.com"
     };
 
-    // Act
     var result = await _sut.UpdateAsync(99, request);
 
-    // Assert
     Assert.Null(result);
   }
 
   [Fact]
   public async Task Update_WithNewPassword_HashesPassword()
   {
-    // Arrange
     var existingUser = new User
     {
       Id = 1,
@@ -121,10 +112,8 @@ public class UserServiceTests
       Password = "NewPass123!"
     };
 
-    // Act
     var result = await _sut.UpdateAsync(1, request);
 
-    // Assert
     Assert.NotNull(result);
     Assert.NotEqual("NewPass123!", result!.PasswordHash);
     Assert.True(BCrypt.Net.BCrypt.Verify("NewPass123!", result.PasswordHash));
@@ -133,14 +122,11 @@ public class UserServiceTests
   [Fact]
   public async Task Delete_WhenUserExists_ReturnsTrueAndCallsDelete()
   {
-    // Arrange
     var user = new User { Id = 5, Username = "del", Email = "del@test.com" };
     _userRepo.Setup(r => r.GetByIdAsync(5)).ReturnsAsync(user);
 
-    // Act
     var result = await _sut.DeleteAsync(5);
 
-    // Assert
     Assert.True(result);
     _userRepo.Verify(r => r.DeleteAsync(user), Times.Once);
   }
@@ -148,13 +134,10 @@ public class UserServiceTests
   [Fact]
   public async Task Delete_WhenUserNotFound_ReturnsFalse()
   {
-    // Arrange
     _userRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((User?)null);
 
-    // Act
     var result = await _sut.DeleteAsync(99);
 
-    // Assert
     Assert.False(result);
     _userRepo.Verify(r => r.DeleteAsync(It.IsAny<User>()), Times.Never);
   }
@@ -162,7 +145,6 @@ public class UserServiceTests
   [Fact]
   public async Task UpdateMyProfileImage_WhenUploadSucceeds_StoresAbsoluteUrlAndDeletesPreviousLocalImage()
   {
-    // Arrange
     var user = new User
     {
       Id = 7,
@@ -202,14 +184,12 @@ public class UserServiceTests
       Length = 3,
     };
 
-    // Act
     var result = await _sut.UpdateMyProfileImageAsync(
       7,
       request,
       "https://api.favigon.test",
       CancellationToken.None);
 
-    // Assert
     Assert.NotNull(result);
     Assert.Equal("https://api.favigon.test/user-profile-assets/7/new-image.png", result!.ProfilePictureUrl);
     _userRepo.Verify(
@@ -223,15 +203,12 @@ public class UserServiceTests
   [Fact]
   public async Task DeleteMyAccount_WhenUserExists_DeletesStoredProfileAssets()
   {
-    // Arrange
     var user = new User { Id = 5, Username = "delme", Email = "delme@test.com" };
     _userRepo.Setup(r => r.GetByIdAsync(5)).ReturnsAsync(user);
     _projectRepo.Setup(r => r.GetByUserIdAsync(5, null)).ReturnsAsync(new List<Project>());
 
-    // Act
     var result = await _sut.DeleteMyAccountAsync(5);
 
-    // Assert
     Assert.True(result);
     _userRepo.Verify(r => r.DeleteAsync(user), Times.Once);
     _profileImageStorage.Verify(s => s.DeleteUserAssetsAsync(5, It.IsAny<CancellationToken>()), Times.Once);

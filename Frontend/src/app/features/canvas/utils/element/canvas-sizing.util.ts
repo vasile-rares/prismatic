@@ -62,8 +62,6 @@ export function supportsCanvasSizeMode(
   hasChildren = true,
   axis?: CanvasSizeAxis,
 ): boolean {
-  // Frames only support fixed sizing on width (they are artboards with explicit width).
-  // On height, frames additionally support fit-content so they can grow with their content.
   if (element.type === 'frame') {
     if (mode === 'fixed') return true;
     if (mode === 'fit-content') return axis === 'height' && hasChildren;

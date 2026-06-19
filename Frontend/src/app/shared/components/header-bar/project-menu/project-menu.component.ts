@@ -46,7 +46,6 @@ export class ProjectMenuComponent {
   readonly visibilityDraft = signal(false);
   readonly updateError = signal<string | null>(null);
 
-  // kept for aria-expanded in host template
   isOpen(): boolean {
     return this.showMenu();
   }

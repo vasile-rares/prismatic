@@ -18,7 +18,6 @@ internal static class EffectProcessor
     var stateTransforms = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
     var stateTransitionSources = new Dictionary<string, IREffect>(StringComparer.OrdinalIgnoreCase);
 
-    // Group keyframe animations by trigger so multiple on the same pseudo-class are combined
     var byTrigger = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
     foreach (var effect in effects)
@@ -99,7 +98,7 @@ internal static class EffectProcessor
         "hover" => "hover",
         "click" => "active",
         "focus" => "focus",
-        _ => null // onLoad + loop go on the base rule
+        _ => null
       };
 
       if (pseudoClass is not null)

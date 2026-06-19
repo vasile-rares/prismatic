@@ -34,7 +34,6 @@ export class ProjectSearchComponent {
   readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('inputEl');
 
   constructor() {
-    // Expand/collapse pill animation
     effect(() => {
       const expanded = this.isExpanded();
       if (expanded) {
@@ -68,7 +67,6 @@ export class ProjectSearchComponent {
       }
     });
 
-    // Dropdown open/close animation
     effect(() => {
       const open = this.isSearchOpen();
       if (open) {

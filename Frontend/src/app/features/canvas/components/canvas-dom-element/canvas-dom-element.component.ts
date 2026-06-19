@@ -41,7 +41,6 @@ export class CanvasDomElementComponent {
   readonly sanitizedSvgContent = computed<SafeHtml | null>(() => {
     const el = this.element();
     if (el.type !== 'svg' || !el.svgContent) return null;
-    // svgContent is already sanitized at import time; just mark it trusted.
     return this.sanitizer.bypassSecurityTrustHtml(el.svgContent);
   });
 

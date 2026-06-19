@@ -4,18 +4,12 @@ namespace Favigon.Converter.Validation;
 
 public static class DesignTokenNormalizer
 {
-  // Typography scale (px). Matches system prompt: 12 | 14 | 16 | 24 | 32 | 48 | 64
   private static readonly int[] FontSizesPx = [12, 14, 16, 24, 32, 48, 64];
 
-  // Spacing scale — multiples of 8 (incl. 0). Matches system prompt: 0 | 8 | 16 | ... | 120
   private static readonly int[] SpacingPx = [0, 8, 16, 24, 32, 40, 48, 64, 80, 96, 120];
 
-  // Border-radius token set. 9999 stays as-is (pill/circle), guard with exact-match first.
   private static readonly int[] BorderRadiiPx = [0, 4, 8, 12, 20, 9999];
 
-  // Max overflow auto-correctable without going to AI repair.
-  // Snapping spacing values introduces up to ~4px rounding error per value,
-  // so anything under 64px is safely a snap artifact, not a real layout bug.
   private const double AutoFixOverflowThreshold = 64.0;
 
   public static void Normalize(IRNode root)
@@ -85,7 +79,6 @@ public static class DesignTokenNormalizer
   {
     if (len is null || len.Unit != "px") return len;
     var rounded = (int)Math.Round(len.Value);
-    // Large values (≥ 500) always map to pill
     if (rounded >= 500) return new IRLength { Value = 9999, Unit = "px" };
     return new IRLength { Value = SnapToNearest(BorderRadiiPx, rounded), Unit = "px" };
   }
@@ -130,7 +123,6 @@ public static class DesignTokenNormalizer
       var parentWidth = node.Style?.Width;
       if (parentWidth?.Unit == "px" && node.Children.Count > 1)
       {
-        // Only act when every child has an explicit px width — ambiguous otherwise
         if (node.Children.All(c => c.Style?.Width?.Unit == "px"))
         {
           var paddingLeft = node.Style?.Padding?.Left?.Unit == "px" ? node.Style.Padding.Left.Value : 0;
@@ -145,7 +137,6 @@ public static class DesignTokenNormalizer
 
           if (overflow > 0.5 && overflow <= AutoFixOverflowThreshold)
           {
-            // Shrink the widest child by exactly the overflow amount
             var widest = node.Children.MaxBy(c => c.Style!.Width!.Value)!;
             widest.Style!.Width = new IRLength { Value = widest.Style.Width!.Value - overflow, Unit = "px" };
           }

@@ -9,35 +9,27 @@ public class IRNode
   public string Id { get; set; } = "";
   public string Type { get; set; } = "";
 
-  // HTML / component props
   public Dictionary<string, object?> Props { get; set; } = new();
 
-  // Layout inside parent
   public IRLayout? Layout { get; set; }
 
-  // Visual styling
   public IRStyle? Style { get; set; }
 
-  // Absolute / relative positioning
   public IRPosition? Position { get; set; }
 
-  // Responsive overrides (mobile, tablet, etc)
   public Dictionary<string, IRVariant> Variants { get; set; } = new();
 
-  // Children
   public List<IRNode> Children { get; set; } = new();
 
-  // Editor-only metadata
   public IRMeta Meta { get; set; } = new();
 
-  // CSS animation effect
   public List<IREffect>? Effects { get; set; }
 }
 
 public class IREffect
 {
   public string Preset { get; set; } = "";
-  public string Trigger { get; set; } = "onLoad"; // onLoad | hover | click | focus | loop
+  public string Trigger { get; set; } = "onLoad";
   public double? Opacity { get; set; }
   public double? Scale { get; set; }
   public double? Rotate { get; set; }
@@ -61,7 +53,6 @@ public class IRLayout
 {
   public LayoutMode Mode { get; set; } = LayoutMode.Flex;
 
-  // Flex
   public FlexDirection? Direction { get; set; }
   public AlignItems? Align { get; set; }
   public JustifyContent? Justify { get; set; }
@@ -70,7 +61,6 @@ public class IRLayout
   public IRLength? ColumnGap { get; set; }
   public bool? Wrap { get; set; }
 
-  // Grid
   public int? Columns { get; set; }
   public int? Rows { get; set; }
   public string? GridTemplateColumns { get; set; }
@@ -190,7 +180,6 @@ public class IRBorder
   public IRLength? BottomWidth { get; set; }
   public IRLength? LeftWidth { get; set; }
 
-  // Selective sides — if all are null the border applies to all four sides
   public bool? Top { get; set; }
   public bool? Right { get; set; }
   public bool? Bottom { get; set; }
@@ -203,7 +192,6 @@ public class IRLength
   public double Value { get; set; }
   public string Unit { get; set; } = "px";
 
-  // CSS keyword values that have no numeric component.
   internal static readonly HashSet<string> CssKeywordUnits =
     new(StringComparer.OrdinalIgnoreCase) { "fit-content", "auto", "max-content", "min-content" };
 
@@ -219,7 +207,6 @@ internal sealed class IRLengthConverter : JsonConverter<IRLength>
 
   public override IRLength Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
   {
-    // Format 3: plain CSS string e.g. "16px"
     if (reader.TokenType == JsonTokenType.String)
     {
       return ParseCssString(reader.GetString() ?? "0px");
@@ -245,7 +232,6 @@ internal sealed class IRLengthConverter : JsonConverter<IRLength>
         }
         else if (reader.TokenType == JsonTokenType.String)
         {
-          // Format 2: "value" is a string — parse as CSS or bare number
           var raw = reader.GetString() ?? "0";
           var parsed = ParseCssString(raw);
           value = parsed.Value;
@@ -278,7 +264,6 @@ internal sealed class IRLengthConverter : JsonConverter<IRLength>
   {
     raw = raw.Trim();
 
-    // CSS keyword with no numeric component (e.g. "fit-content", "auto")
     if (IRLength.CssKeywordUnits.Contains(raw))
       return new IRLength { Value = 0, Unit = raw.ToLowerInvariant() };
 
@@ -289,7 +274,6 @@ internal sealed class IRLengthConverter : JsonConverter<IRLength>
       return new IRLength { Value = num, Unit = match.Groups[2].Value.ToLowerInvariant() };
     }
 
-    // Bare number string e.g. "16"
     if (double.TryParse(raw, System.Globalization.NumberStyles.Any,
         System.Globalization.CultureInfo.InvariantCulture, out var bare))
     {

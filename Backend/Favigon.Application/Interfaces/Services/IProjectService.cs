@@ -21,16 +21,16 @@ public interface IProjectService
     CancellationToken cancellationToken = default);
   Task<ProjectResponse?> ForkAsync(int sourceProjectId, int userId);
 
-  // ── Likes ──────────────────────────────────────────────────
+  // Likes
   Task LikeAsync(int userId, int projectId);
   Task UnlikeAsync(int userId, int projectId);
 
-  // ── Bookmarks ───────────────────────────────────────────────
+  // Bookmarks
   Task BookmarkAsync(int userId, int projectId);
   Task UnbookmarkAsync(int userId, int projectId);
   Task<IReadOnlyList<ProjectResponse>> GetMyBookmarksAsync(int userId);
 
-  // ── Assets ──────────────────────────────────────────────────
+  // Assets
   Task<string?> UploadImageAsync(
     int projectId,
     int userId,

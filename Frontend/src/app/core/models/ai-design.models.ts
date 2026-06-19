@@ -13,14 +13,13 @@ export interface AiDesignResponse {
   message?: string;
 }
 
-// ── 3-Phase Pipeline ──────────────────────────────────────────────────────
+// 3-Phase pipeline
 
 export interface AiPipelineRequest {
   prompt: string;
   existingIr?: IRNode;
   viewportWidth?: number;
   model?: string;
-  /** 1 = intent only, 2 = intent + structure, 3 = full pipeline (default) */
   stopAfterPhase?: 1 | 2 | 3;
 }
 
@@ -43,11 +42,8 @@ export interface IntentBlueprint {
 export interface AiPipelineResponse {
   success: boolean;
   message?: string;
-  /** Phase 1 output — always present on success. */
   intent?: IntentBlueprint;
-  /** Phase 2 output — structural wireframe, no decoration. Present when stopAfterPhase >= 2. */
   structure?: IRNode;
-  /** Phase 3 output — fully styled IRNode. Present when stopAfterPhase == 3. */
   ir?: IRNode;
 }
 

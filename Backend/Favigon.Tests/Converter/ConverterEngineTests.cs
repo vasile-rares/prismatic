@@ -34,7 +34,6 @@ public class ConverterEngineTests
         {
           Id = "frame-home",
           Type = "Frame",
-          // Canvas-level position that must NOT appear in exported CSS for .page
           Position = new IRPosition
           {
             Mode = PositionMode.Absolute,
@@ -71,7 +70,6 @@ public class ConverterEngineTests
     Assert.DoesNotContain(".desktop", homeCss.Content, StringComparison.OrdinalIgnoreCase);
     Assert.DoesNotContain(".container-project-123", homeCss.Content, StringComparison.OrdinalIgnoreCase);
 
-    // .page must be position: relative (containing block) with no canvas coordinates
     Assert.Contains("position: relative", homeCss.Content);
     Assert.DoesNotContain("position: absolute", homeCss.Content);
     Assert.DoesNotContain("left:", homeCss.Content);
@@ -196,11 +194,9 @@ public class ConverterEngineTests
 
     var css = Assert.Single(files, f => f.Path == "page.css");
 
-    // Default values must NOT appear
     Assert.DoesNotContain("opacity: 1", css.Content);
     Assert.DoesNotContain("border-radius: 0", css.Content);
 
-    // Non-default values MUST appear
     Assert.Contains("opacity: 0.5", css.Content);
     Assert.Contains("border-radius: 8px", css.Content);
   }
@@ -291,14 +287,13 @@ public class ConverterEngineTests
     Assert.Contains("overflow: scroll;", css.Content);
   }
 
-  // ── Responsive output ────────────────────────────────────
+  // Responsive output
 
   [Fact]
   public void GenerateResponsiveOutput_ExclusiveBpNode_AppearsInHtmlHiddenByDefaultAndVisibleInMedia()
   {
     var sut = new ConverterEngine();
 
-    // Primary (Desktop): one child element
     var desktopRoot = new IRNode
     {
       Id = "canvas-project-resp",
@@ -335,7 +330,6 @@ public class ConverterEngineTests
       ]
     };
 
-    // Mobile (375px): shared Hero (remapped to same ID) + exclusive MobileMenu node
     var mobileRoot = new IRNode
     {
       Id = "canvas-project-resp",
@@ -345,7 +339,7 @@ public class ConverterEngineTests
       [
         new IRNode
         {
-          Id = "frame-desktop",            // same as primary — this is the synced root
+          Id = "frame-desktop",
           Type = "Frame",
           Meta = new IRMeta { Name = "Desktop" },
           Style = new IRStyle
@@ -357,7 +351,7 @@ public class ConverterEngineTests
           [
             new IRNode
             {
-              Id = "hero-shared",           // shared — same ID as in primary
+              Id = "hero-shared",
               Type = "Container",
               Meta = new IRMeta { Name = "Hero" },
               Style = new IRStyle
@@ -369,9 +363,9 @@ public class ConverterEngineTests
             },
             new IRNode
             {
-              Id = "mobile-menu",           // exclusive to Mobile — not in primary
+              Id = "mobile-menu",
               Type = "Container",
-              Meta = new IRMeta { Name = "Mobile Menu" },  // slugifies to "mobile-menu"
+              Meta = new IRMeta { Name = "Mobile Menu" },
               Style = new IRStyle
               {
                 Width = new IRLength { Value = 375, Unit = "px" },
@@ -388,20 +382,16 @@ public class ConverterEngineTests
       [(desktopRoot, 1280, "Desktop – 1280px"), (mobileRoot, 375, "Mobile – 375px")],
       "html");
 
-    // 1. The exclusive mobile node must appear in the HTML
     Assert.Contains("mobile-menu", html);
 
-    // 2. The exclusive node's CSS class must be hidden in the base CSS
     Assert.Matches(@"\.mobile-menu\s*\{\s*display:\s*none", css);
 
-    // 3. The @media block must un-hide it (display: block or explicit display value)
     Assert.Matches(@"@media\s*\(max-width:\s*375px\)", css);
     var mediaIndex = css.IndexOf("@media", StringComparison.Ordinal);
     var mediaBlock = css[mediaIndex..];
     Assert.Contains("mobile-menu", mediaBlock);
     Assert.Contains("display:", mediaBlock);
 
-    // 4. The Hero shared node must NOT get display:none in the base CSS
     var baseRegion = css[..mediaIndex];
     Assert.DoesNotMatch(@"\.hero\s*\{\s*display:\s*none", baseRegion);
   }
@@ -438,7 +428,6 @@ public class ConverterEngineTests
       ]
     };
 
-    // Mobile: no Sidebar (it's desktop-only)
     var mobileRoot = new IRNode
     {
       Id = "canvas-resp2",
@@ -464,7 +453,6 @@ public class ConverterEngineTests
     Assert.True(mediaIndex >= 0, "Expected a @media block in the CSS");
     var mediaBlock = css[mediaIndex..];
 
-    // Sidebar is primary-only → must be hidden at mobile
     Assert.Contains("sidebar", mediaBlock);
     Assert.Contains("display: none", mediaBlock);
   }
@@ -515,7 +503,6 @@ public class ConverterEngineTests
     Assert.True(mediaIndex >= 0, "Expected @media block");
     var mediaBlock = css[mediaIndex..];
 
-    // Hover pseudo-class diff must appear inside the @media block
     Assert.Contains(":hover", mediaBlock);
     Assert.Contains("opacity:", mediaBlock);
   }
@@ -546,7 +533,6 @@ public class ConverterEngineTests
               Type = "Container",
               Meta = new IRMeta { Name = "Banner" },
               Style = new IRStyle { Width = new IRLength { Value = 1200, Unit = "px" }, Height = new IRLength { Value = 300, Unit = "px" } }
-              // No animation on desktop
             }
           ]
         }
@@ -585,10 +571,8 @@ public class ConverterEngineTests
       [(primaryRoot, 1280, "Desktop – 1280px"), (mobileRoot, 375, "Mobile – 375px")],
       "html");
 
-    // New keyframe must appear in the CSS
     Assert.Contains("@keyframes", css);
 
-    // Keyframe must appear BEFORE the @media block
     var kfIndex = css.IndexOf("@keyframes", StringComparison.Ordinal);
     var mediaIndex = css.IndexOf("@media", StringComparison.Ordinal);
     Assert.True(kfIndex >= 0 && mediaIndex >= 0 && kfIndex < mediaIndex,
@@ -633,7 +617,6 @@ public class ConverterEngineTests
       ]
     };
 
-    // Mobile: same structure but children reversed [beta, alpha]
     var mobileRoot = new IRNode
     {
       Id = "canvas-order",
@@ -675,7 +658,6 @@ public class ConverterEngineTests
     Assert.True(mediaIndex >= 0, "Expected @media block");
     var mediaBlock = css[mediaIndex..];
 
-    // Both alpha and beta must have explicit order values in the @media block
     Assert.Matches(@"\.alpha\s*\{[^}]*order:\s*1", mediaBlock);
     Assert.Matches(@"\.beta\s*\{[^}]*order:\s*0", mediaBlock);
   }

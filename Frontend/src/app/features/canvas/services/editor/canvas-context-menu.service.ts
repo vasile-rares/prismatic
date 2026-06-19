@@ -36,7 +36,7 @@ export class CanvasContextMenuService {
     this.items.set([]);
   }
 
-  // ── Private Item Building ────────────────────────────────
+  // Private item building
 
   private buildItems(callbacks: ContextMenuActionCallbacks): ContextMenuItem[] {
     const element = this.editorState.selectedElement();
@@ -57,7 +57,6 @@ export class CanvasContextMenuService {
     };
 
     return [
-      // Clipboard group
       {
         id: 'copy',
         label: 'Copy',
@@ -80,7 +79,6 @@ export class CanvasContextMenuService {
         action: guardAction((id) => callbacks.delete(id)),
       },
 
-      // Order group
       {
         id: 'bring-front',
         label: 'Bring to Front',
@@ -107,7 +105,6 @@ export class CanvasContextMenuService {
         })),
       },
 
-      // Element group
       {
         id: 'rename',
         label: 'Rename',
@@ -124,7 +121,6 @@ export class CanvasContextMenuService {
         action: guardAction((id) => callbacks.toggleVisibility(id)),
       },
 
-      // Primary frame group
       {
         id: 'set-primary',
         label: element?.isPrimary ? 'Primary Frame ✓' : 'Set as Primary Frame',

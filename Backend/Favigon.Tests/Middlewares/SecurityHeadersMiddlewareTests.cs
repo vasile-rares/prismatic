@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Favigon.API.Middlewares;
 
 namespace Favigon.Tests.Middlewares;
@@ -8,7 +8,6 @@ public class SecurityHeadersMiddlewareTests
   private static DefaultHttpContext BuildContext()
   {
     var ctx = new DefaultHttpContext();
-    // Use an in-memory response body to satisfy the middleware pipeline
     ctx.Response.Body = new MemoryStream();
     return ctx;
   }
@@ -16,14 +15,11 @@ public class SecurityHeadersMiddlewareTests
   [Fact]
   public async Task InvokeAsync_SetsXContentTypeOptionsHeader()
   {
-    // Arrange
     var ctx = BuildContext();
     var middleware = new SecurityHeadersMiddleware(_ => Task.CompletedTask);
 
-    // Act
     await middleware.InvokeAsync(ctx);
 
-    // Assert
     Assert.Equal("nosniff", ctx.Response.Headers["X-Content-Type-Options"].ToString());
   }
 
@@ -74,7 +70,6 @@ public class SecurityHeadersMiddlewareTests
   [Fact]
   public async Task InvokeAsync_CallsNextMiddleware()
   {
-    // Arrange
     var nextCalled = false;
     var ctx = BuildContext();
     var middleware = new SecurityHeadersMiddleware(_ =>
@@ -83,10 +78,8 @@ public class SecurityHeadersMiddlewareTests
       return Task.CompletedTask;
     });
 
-    // Act
     await middleware.InvokeAsync(ctx);
 
-    // Assert
     Assert.True(nextCalled);
   }
 }

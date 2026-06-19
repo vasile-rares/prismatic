@@ -7,7 +7,7 @@ const THUMB_W = 300;
 const THUMB_H = 168;
 const PADDING = 16;
 const THUMBNAIL_BACKGROUND = '#111213';
-const THUMBNAIL_SCALE = 2; // physical pixels per logical pixel (retina/high-DPI)
+const THUMBNAIL_SCALE = 2;
 
 export function generateThumbnailFromCanvas(
   sourceCanvas: HTMLCanvasElement | null,
@@ -199,7 +199,6 @@ function getElementPos(
 ): { x: number; y: number } {
   const dom = domBounds?.get(el.id);
   if (dom) {
-    // DOM scene-space → canvas space (subtract page layout offset)
     return { x: dom.x - pageLayoutX, y: dom.y - pageLayoutY };
   }
   return getAbsolutePos(el, allElements);
@@ -220,7 +219,6 @@ function drawElement(
 ): void {
   const absPos = getElementPos(el, allElements, domBounds, pageLayoutX, pageLayoutY);
   const dom = domBounds?.get(el.id);
-  // For flow children the DOM width/height reflects fill/relative sizing; use it when available.
   const elW = dom?.width ?? el.width;
   const elH = dom?.height ?? el.height;
   const x = (absPos.x - originX) * scale + offsetX;
@@ -328,7 +326,6 @@ function drawText(
   const fitContent = (el.widthMode ?? 'fixed') === 'fit-content';
   const textX = el.textAlign === 'center' ? x + w / 2 : el.textAlign === 'right' ? x + w : x;
 
-  // Split on explicit newlines then word-wrap each paragraph
   const lines: string[] = [];
   for (const para of el.text.split('\n')) {
     if (fitContent || w <= 0) {
@@ -388,14 +385,12 @@ function drawImageElement(
   buildRoundedRectPath(ctx, x, y, w, h, radii);
   ctx.clip();
 
-  // Try to draw the actual image already loaded in the DOM
   const domImg = document.querySelector<HTMLImageElement>(
     `.canvas-scene [data-element-id="${el.id}"] img`,
   );
   if (domImg && domImg.complete && domImg.naturalWidth > 0) {
     ctx.drawImage(domImg, x, y, w, h);
   } else {
-    // Fallback: subtle placeholder
     ctx.fillStyle = '#2a2b2e';
     ctx.fillRect(x, y, w, h);
     const iconSize = Math.min(w, h) * 0.25;
@@ -467,11 +462,6 @@ function buildRoundedRectPath(
   ctx.closePath();
 }
 
-/**
- * Captures the primary frame directly from the DOM using html2canvas.
- * Returns a pixel-accurate JPEG thumbnail data URL, or null if capture fails.
- * Falls back gracefully so the caller can use the custom renderer as a backup.
- */
 export async function generateThumbnailHtml2Canvas(page: CanvasPageModel): Promise<string | null> {
   const primaryFrame = getPrimaryRootFrame(page);
   if (!primaryFrame) return null;
@@ -481,10 +471,6 @@ export async function generateThumbnailHtml2Canvas(page: CanvasPageModel): Promi
   );
   if (!frameEl) return null;
 
-  // Clamp the captured height to the thumbnail's aspect ratio ("above the fold").
-  // A SaaS landing page can be 5000px+ tall; rendering it all at scale:1 would
-  // cost 6M+ pixels. By capping to the 16:9 viewport slice we cut pixel count
-  // by ~7× and then halving scale cuts it another 4× → ~28× faster total.
   const captureW = frameEl.offsetWidth || THUMB_W;
   const captureH = Math.min(
     frameEl.offsetHeight || THUMB_H,
@@ -493,7 +479,6 @@ export async function generateThumbnailHtml2Canvas(page: CanvasPageModel): Promi
 
   let captured: HTMLCanvasElement;
   try {
-    // Dynamic import keeps html2canvas out of the main bundle.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mod = await import('html2canvas' as any);
     const html2canvas = (mod.default ?? mod) as (
@@ -508,10 +493,6 @@ export async function generateThumbnailHtml2Canvas(page: CanvasPageModel): Promi
       allowTaint: false,
       logging: false,
       backgroundColor: null,
-      // html2canvas v1.4 cannot correctly handle CSS transform:scale() on ancestor
-      // elements (the canvas-scene applies transform:scale(zoomLevel)).
-      // Fix: in the cloned document, detach the frame from the canvas hierarchy
-      // and render it in isolation directly on body — no transforms, no overflow clips.
       onclone: (clonedDoc: Document, cloned: HTMLElement) => {
         const body = clonedDoc.body;
         body.style.cssText = 'margin:0;padding:0;overflow:visible;background:transparent;';
@@ -536,8 +517,6 @@ export async function generateThumbnailHtml2Canvas(page: CanvasPageModel): Promi
 
   ctx.scale(THUMBNAIL_SCALE, THUMBNAIL_SCALE);
 
-  // Cover: scale so the captured image fills the entire card, then center-crop.
-  // This eliminates black bars — the design always fills the thumbnail edge-to-edge.
   const coverScale = Math.max(THUMB_W / captured.width, THUMB_H / captured.height);
   const drawW = captured.width * coverScale;
   const drawH = captured.height * coverScale;

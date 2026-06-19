@@ -1,9 +1,8 @@
-﻿using Favigon.Converter.Models;
+using Favigon.Converter.Models;
 using Favigon.Converter.Utils;
 
 namespace Favigon.Converter.Generators.React;
 
-// React uses className="..." instead of class="..." (via ReactMapperBase.ClassAttributeName)
 
 public sealed class ReactTextMapper : ReactMapperBase
 {

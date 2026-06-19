@@ -172,7 +172,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
   readonly editingTextElementId = this.editorState.editingTextElementId;
   readonly currentTool = this.editorState.currentTool;
 
-  // ── Computed Signals ──────────────────────────────────────
+  // Computed signals
 
   readonly currentPage = this.editorState.currentPage;
   readonly elements = this.editorState.elements;
@@ -194,7 +194,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
   readonly currentPageName = computed(() => this.currentPage()?.name ?? 'Untitled page');
 
-  /** Pages visible in the canvas — always exactly the current page. */
   readonly canvasVisiblePages = computed(() => {
     const id = this.currentPageId();
     if (!id) return [];
@@ -212,7 +211,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return result;
   });
 
-  /** O(1) element-id → page-id index. Rebuilt only when pages/elements change. */
   private readonly elementPageIdMap = computed<ReadonlyMap<string, string>>(() => {
     const map = new Map<string, string>();
     for (const pg of this.pages()) {
@@ -225,7 +223,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
   readonly emptyChildrenMap = new Map<string | null, CanvasElement[]>();
 
-  // ── DOM Overlay Computed Signals ──────────────────────────
+  // DOM overlay computed signals
 
   readonly flowDragState = computed<FlowDragRenderState | null>(() => {
     const isDragging = this.gesture.isDraggingEl();
@@ -251,34 +249,16 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       this.editingTextElementId()
     )
       return null;
-    void this.gesture.flowCacheVersion(); // register reactive dependency
+    void this.gesture.flowCacheVersion();
 
-    // Use stable bounds (captured after ngAfterViewChecked when DOM is fully settled) whenever
-    // they belong to the currently selected element. This covers two cases:
-    //
-    // • resize/rotate: model is updated every pointer-move frame. Live-DOM read during CD
-    //   is stale (child components haven't painted yet), causing the dirty/clean oscillation
-    //   that made the outline flicker/teleport for all element types.
-    //
-    // • dirty phase (e.g. property change from Design Tab): invalidateFlowBoundsCache fires,
-    //   dirty=true, getCachedOverlaySceneBounds uses model-based getAbsoluteBounds (wrong for
-    //   flow children where x=0). stableSelectionBounds still holds the last settled position,
-    //   so we use it to avoid the 1-frame teleport before markFlowBoundsCacheClean fires.
-    //
-    // The element ID guard prevents using stale bounds from a previously selected element.
     const stable = this.gesture.stableSelectionBounds();
     const stableBounds = stable?.elementId === selected.id ? stable.bounds : null;
 
     if (this.gesture.isRotating()) {
-      // Rotate: keep the pre-gesture AABB stable so the outline doesn't jump while the
-      // element visually spins (the CSS transform handles the visible rotation).
       return stableBounds ?? this.gesture.getCachedOverlaySceneBounds(selected);
     }
 
     if (this.gesture.isResizing()) {
-      // Resize: use the flow-bounds cache directly. With getCachedOverlaySceneBounds now
-      // always preferring real DOM cache over the model-based fallback (x=0 for flow
-      // children), this gives accurate bounds every frame without teleporting.
       return this.gesture.getCachedOverlaySceneBounds(selected);
     }
 
@@ -297,11 +277,8 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     aabb: Bounds | null,
   ): Bounds | null {
     if (!aabb) return null;
-    // CSS transforms keep the transform-origin fixed; with default 50%/50%, AABB center
-    // equals the element center regardless of rotation, skew, or 3D transform.
     const centerX = aabb.x + aabb.width / 2;
     const centerY = aabb.y + aabb.height / 2;
-    // Model dimensions are correct (getAbsoluteBounds handles fill/relative sizing).
     const absolute = this.element.getAbsoluteBounds(
       element,
       elements,
@@ -369,18 +346,13 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     if (!this.isCanvasElementEffectivelyVisible(selected, elements)) return null;
 
     if (!this.hasNonTrivialTransform(selected)) {
-      // No visual transform – use live-DOM-tracking bounds (accurate for flow/flex children).
       return this.selectionOverlayBounds();
     }
 
-    // Transformed element: skip live DOM (gives AABB), derive center from AABB then place
-    // model dimensions around it. This is correct even for flow children (x/y = 0).
     if (this.gesture.isDraggingEl() || this.editingTextElementId()) return null;
 
-    // Register reactive dependency so bounds update while isRotating() / isResizing().
     void this.gesture.flowCacheVersion();
 
-    // Use the same stable/cached/live strategy as selectionOverlayBounds.
     const stable = this.gesture.stableSelectionBounds();
     const stableBounds = stable?.elementId === selected.id ? stable.bounds : null;
 
@@ -388,10 +360,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     if (this.gesture.isRotating() || this.gesture.isFlowBoundsDirty()) {
       aabb = stableBounds ?? this.gesture.getCachedOverlaySceneBounds(selected);
     } else if (this.gesture.isResizing()) {
-      // Transformed elements: DOM AABB cache lags 1 RAF behind each model write → teleport.
-      // Model-based bounds are always synchronised with the current model state.
-      // • Pure rotation: model center = CSS transform-origin center (50%/50%) → exact.
-      // • Skew / scale / 3D: un-skewed rect at the correct model position → no teleport.
       aabb = this.gesture.getModelBasedOverlaySceneBounds(selected);
     } else {
       aabb =
@@ -399,8 +367,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
         this.gesture.getCachedOverlaySceneBounds(selected);
     }
 
-    // For pure 2D rotation: show model-sized rotated box (outline is rotated via CSS).
-    // For skew / 3D / scale: use the AABB directly so handles are never stretched/distorted.
     if (this.hasOnlyRotation(selected)) {
       return this.getRotatedElementOverlayBounds(selected, this.editorState.elements(), aabb);
     }
@@ -416,15 +382,12 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       const hMode = s.heightMode ?? 'fixed';
       if (wMode === 'fill' && hMode === 'fill') return 'none';
       if (wMode === 'fit-content' && hMode === 'fit-content') return 'text-fit-fit';
-      // mixed fill + fit → no free axis to resize
       if (
         (wMode === 'fill' && hMode === 'fit-content') ||
         (wMode === 'fit-content' && hMode === 'fill')
       )
         return 'none';
-      // width is fit-content or fill → only height is manually sized
       if (wMode === 'fit-content' || wMode === 'fill') return 'ns';
-      // height is fit-content or fill → only width is manually sized
       if (hMode === 'fit-content' || hMode === 'fill') return 'ew';
       return 'all';
     }
@@ -457,7 +420,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     ) {
       return null;
     }
-    void this.gesture.flowCacheVersion(); // register reactive dependency
+    void this.gesture.flowCacheVersion();
     const pageId = this.findPageIdByElementId(hoveredId);
     if (!pageId) return null;
     const elements = this.getPageElementsById(pageId);
@@ -465,14 +428,8 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     if (!this.isCanvasElementEffectivelyVisible(hovered, elements) || hovered.type === 'frame')
       return null;
 
-    // Suppress hover outline on direct parent containers of any selected element.
-    // Without this, the parent layout container (type 'rectangle') renders its hover
-    // outline on top of the selected child — visible as a ghost rectangle after rotate.
     if (this.selectedElements().some((sel) => sel.parentId === hoveredId)) return null;
 
-    // For transformed elements, live DOM gives the AABB.
-    // Pure 2D rotation: derive model-sized rotated box (outline rotated via CSS).
-    // Skew / 3D / scale: use AABB directly so the hover outline is never distorted.
     if (this.hasNonTrivialTransform(hovered)) {
       const aabb = this.gesture.isFlowBoundsDirty()
         ? this.gesture.getCachedOverlaySceneBounds(hovered)
@@ -484,8 +441,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       return aabb;
     }
 
-    // Same two-pass strategy as selectionOverlayBounds:
-    // dirty → cached bounds (avoids stale DOM); clean → live DOM (accurate after render).
     if (this.gesture.isFlowBoundsDirty()) {
       return this.gesture.getCachedOverlaySceneBounds(hovered);
     }
@@ -578,10 +533,10 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return { bounds, transform, transformOrigin };
   });
 
-  // ── Exported template helpers ─────────────────────────────
+  // Exported template helpers
   readonly getFrameTitle = getFrameTitle;
 
-  // ── API / Generation State ────────────────────────────────
+  // API / generation state
 
   readonly apiError = this.page.apiError;
   readonly isLoadingDesign = this.canvasPersistenceService.isLoadingDesign;
@@ -602,7 +557,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
   readonly projectSlug = this.route.snapshot.paramMap.get('slug') ?? 'new-project';
 
-  // ── Persistence State ─────────────────────────────────────
+  // Persistence state
 
   private suppressNextWindowMenuClose = false;
   private _lastPointerEventTime = 0;
@@ -610,27 +565,19 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
   constructor() {
     this.canvasPersistenceService.initialize(this.projectSlug);
 
-    // Wire gesture service to canvas DOM
     this.gesture.setCanvasElementGetter(
       () => document.querySelector('.canvas-container') as HTMLElement | null,
     );
 
-    // Invalidate gesture service flow bounds cache whenever elements change.
     effect(() => {
       this.elements();
       this.gesture.invalidateFlowBoundsCache();
     });
 
-    // Wire viewport CSS vars — this callback runs outside Angular's reactive
-    // graph so signal writes during pan/zoom don't schedule CD cycles.
     this.viewport.onUpdate = () => this.applyViewportCssVars();
-    this.applyViewportCssVars(); // populate initial values
+    this.applyViewportCssVars();
 
-    // Sync dot-grid CSS vars so the glow mask can align with the dots.
-    // (Moved to applyViewportCssVars so it runs alongside transform updates,
-    //  avoiding the reactive effect that was triggered on every pan frame.)
 
-    // Animate custom frame modal with settings-page pattern.
     effect(() => {
       if (this.page.isCustomFrameDialogOpen()) {
         this.showCustomFrameDialog.set(true);
@@ -651,7 +598,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       }
     });
 
-    // Animate toast in with GSAP when it first appears.
     effect(() => {
       const toast = this.fileImportToast();
       if (toast && this.wasToastNull) {
@@ -677,12 +623,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.page.setCanvasElement(this.getCanvasElement());
     this.canvasPersistenceService.restorePendingInitialPageFocus();
 
-    // Populate the inline text editor with the element's existing text on the
-    // first CD cycle after the @if block creates the contenteditable div.
-    // textContent is set synchronously so the browser paints it on the first frame.
-    // focus + caret are deferred to setTimeout(0) so they don't run inside the
-    // Angular CD cycle — calling focus() synchronously here can trigger Zone.js
-    // focus events mid-cycle, causing an extra CD pass that resets the editor view.
     const editingId = this.editingTextElementId();
     if (editingId && editingId !== this.textEditorInitializedId) {
       const editor = document.querySelector(
@@ -725,7 +665,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return this.canvasPersistenceService.flushPendingPersistence();
   }
 
-  // ── Tool Selection ────────────────────────────────────────
+  // Tool selection
 
   onToolbarToolSelected(tool: CanvasElementType | 'select'): void {
     if (tool === 'frame') {
@@ -736,7 +676,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.selectTool(tool);
   }
 
-  // ── File drag-and-drop ────────────────────────────────────
+  // File drag-and-drop
 
   private readonly SUPPORTED_IMAGE_TYPES = new Set([
     'image/png',
@@ -867,7 +807,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       return;
     }
 
-    // kind === 'image'
     if (!Number.isInteger(this.canvasPersistenceService.projectIdAsNumber)) {
       this.showFileToast('error', 'Save the project first');
       return;
@@ -908,7 +847,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     }
   }
 
-  // ── Page Management (gesture-coupled handlers stay here) ──
 
   onActivePageShellClick(pageId: string): void {
     if (this.gesture.consumePageShellClickSuppression()) {
@@ -1005,7 +943,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.gesture.beginPageDrag(event, pageId, layout);
   }
 
-  // ── Canvas Events ─────────────────────────────────────────
+  // Canvas events
 
   onCanvasPointerDown(event: MouseEvent): void {
     this.canvasPersistenceService.isPointerDown = true;
@@ -1040,7 +978,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     if (tool === 'select') {
       const target = event.target as HTMLElement;
       if (this.isCanvasBackgroundTarget(target)) {
-        // commit text editing if active
         const editingId = this.editingTextElementId();
         if (editingId) {
           this.gesture.finalizeTextEditing(editingId);
@@ -1065,7 +1002,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     }
   }
 
-  // ── Element Events ────────────────────────────────────────
+  // Element events
 
   onElementPointerDown(event: MouseEvent, id: string): void {
     const target = event.target as HTMLElement;
@@ -1094,7 +1031,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       return;
     }
 
-    // Exit text editing if clicking a different element
     const editingId = this.editingTextElementId();
     if (editingId && editingId !== id) {
       this.gesture.finalizeTextEditing(editingId);
@@ -1157,16 +1093,12 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       return;
     }
 
-    // Prefer live DOM bounds — getAbsoluteBounds is incorrect for elements whose ancestors
-    // are flow children (model x=0,y=0). Live DOM bounds are always correct regardless of
-    // nesting depth. Fallback covers off-screen elements where DOM read is unavailable.
     let bounds =
       this.gesture.getLiveElementCanvasBounds(element) ??
       this.element.getAbsoluteBounds(element, this.elements(), this.currentPage());
     this.gesture.captureDragSelection(id);
     const isGroupDrag = this.gesture.getDragSelectionCount() > 1;
 
-    // Detect flow child inside layout container — use visual position from cache
     const parent = this.element.findElementById(element.parentId ?? null, this.elements());
     if (
       !isGroupDrag &&
@@ -1222,7 +1154,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     (event.target as HTMLElement | null)?.blur();
   }
 
-  // ── Resize / Rotate / Corner Radius Handles ──────────────
 
   onSelectionOutlinePointerDown(event: MouseEvent, id: string): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -1230,7 +1161,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     const y = event.clientY - rect.top;
     const w = rect.width;
     const h = rect.height;
-    const t = 10; // border hit threshold in screen pixels
+    const t = 10;
 
     const nearTop = y < t;
     const nearBottom = y > h - t;
@@ -1288,7 +1219,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.gesture.beginCornerRadius(event, id);
   }
 
-  // ── Panel Event Handlers ──────────────────────────────────
+  // Panel event handlers
 
   onSelectedElementPatch(patch: Partial<CanvasElement>): void {
     const selectedId = this.selectedElementId();
@@ -1450,20 +1381,17 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       this.updatePageElements(change.pageId, (elements) => {
         if (change.draggedIds.length === 0) return elements;
 
-        // Keep only root-level dragged elements; children of dragged parents move with their subtree
         const draggedSet = new Set(change.draggedIds);
         const rootDraggedIds = change.draggedIds.filter((id) => {
           const el = this.element.findElementById(id, elements);
           return !el?.parentId || !draggedSet.has(el.parentId);
         });
 
-        // Sort by document order so relative ordering is preserved
         const sorted = rootDraggedIds.sort(
           (a, b) => elements.findIndex((e) => e.id === a) - elements.findIndex((e) => e.id === b),
         );
         if (sorted.length === 0) return elements;
 
-        // Capture bounds for all dragged elements before any moves happen
         const boundsMap = new Map(
           sorted.map((id) => {
             const el = this.element.findElementById(id, elements);
@@ -1475,7 +1403,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
           }),
         );
 
-        // Move first element to the drop target position
         let current = elements;
         const firstId = sorted[0];
         const prevFirst = current;
@@ -1495,7 +1422,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
           );
         }
 
-        // Place remaining elements after the previous one, preserving relative order
         let prevId = firstId;
         for (let i = 1; i < sorted.length; i++) {
           const id = sorted[i];
@@ -1557,7 +1483,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.generation.setFramework(framework);
   }
 
-  // ── Context Menu ──────────────────────────────────────────
+  // Context menu
 
   onCanvasContextMenu(event: MouseEvent): void {
     event.preventDefault();
@@ -1604,11 +1530,10 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.contextMenu.close();
   }
 
-  // ── Global Pointer Events ─────────────────────────────────
+  // Global pointer events
 
   @HostListener('document:dragleave', ['$event'])
   onDocumentDragLeave(event: DragEvent): void {
-    // relatedTarget is null when cursor leaves the browser viewport
     if (event.relatedTarget === null) {
       this.isFileDragOver.set(false);
     }
@@ -1621,10 +1546,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     s.setProperty('--cursor-x', `${event.clientX}px`);
     s.setProperty('--cursor-y', `${event.clientY}px`);
 
-    // Run the entire hover-detection and gesture handling outside Angular's zone so
-    // Zone.js does not trigger a full change-detection cycle on every pointermove event
-    // (60+ times/sec during pan/resize). Angular signals used inside still propagate
-    // correctly — they are zone-independent.
     this.ngZone.runOutsideAngular(() => {
       const isOverPanel = !!(event.target as Element | null)?.closest('app-project-panel');
       const isInGesture =
@@ -1680,7 +1601,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.gesture.handlePointerUp(event);
   }
 
-  // ── Wheel ─────────────────────────────────────────────────
+  // Wheel
 
   onCanvasWheel(event: WheelEvent): void {
     const canvas = event.currentTarget as HTMLElement | null;
@@ -1688,15 +1609,12 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       return;
     }
     event.preventDefault();
-    // Run outside Angular zone so wheel-triggered signal writes don't schedule
-    // a full change-detection cycle. The CSS vars callback (onUpdate) handles
-    // the visual update synchronously.
     this.ngZone.runOutsideAngular(() => {
       this.viewport.handleWheel(event, canvas.getBoundingClientRect());
     });
   }
 
-  // ── Touch / Pinch ─────────────────────────────────────────
+  // Touch / pinch
 
   private pinchActive = false;
   private pinchStartDist = 0;
@@ -1740,11 +1658,9 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
 
         if (this.pinchStartDist > 0) {
           const scale = dist / this.pinchStartDist;
-          // setZoom already calls notifyUpdate()
           this.viewport.setZoom(this.pinchStartZoom * scale, this.pinchCenter);
         }
 
-        // Pan: translate by the delta of the midpoint
         const dx = center.x - this.pinchLastCenter.x;
         const dy = center.y - this.pinchLastCenter.y;
         if (dx !== 0 || dy !== 0) {
@@ -1766,13 +1682,12 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     }
   }
 
-  // ── Zoom Toolbar Delegates ────────────────────────────────
+  // Zoom toolbar delegates
 
   onAiDesignApplied(ir: IRNode): void {
     const newElements = buildCanvasElementsFromIR(ir);
     if (newElements.length === 0) return;
 
-    // Remap IDs to guarantee uniqueness
     const idMap = new Map(newElements.map((el) => [el.id, crypto.randomUUID()]));
     const remapped = newElements.map((el) => ({
       ...el,
@@ -1780,10 +1695,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
       parentId: el.parentId ? (idMap.get(el.parentId) ?? el.parentId) : el.parentId,
     }));
 
-    // Normalize every element so fill/relative sizes are resolved to pixels,
-    // sizing modes are validated, and text properties are sanitized.
-    // Must iterate in document order (parents before children) so parent sizes
-    // are already resolved when children run.
     for (const el of remapped) {
       mutateNormalizeElement(el, remapped);
     }
@@ -1812,11 +1723,10 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.viewport.resetZoom(this.getCanvasElement());
   }
 
-  // ── Delete Page Dialog ────────────────────────────────────
+  // Delete page dialog
 
   deletePageRequest(pageId: string): void {
     this.page.deletePage(pageId);
-    // Animate card in after the @if block renders it
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const card = this.deletePageCardRef()?.nativeElement;
@@ -1843,13 +1753,13 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return this.viewport.zoomPercentage();
   }
 
-  // ── Template Delegates (viewport) ─────────────────────────
+  // Template delegates (viewport)
 
   isPanReady(): boolean {
     return this.currentTool() === 'select' || this.viewport.isSpacePressed();
   }
 
-  // ── DOM Scene Template Helpers ────────────────────────────
+  // DOM scene template helpers
 
   scaledScenePx(value: number): string {
     return `calc(${roundToTwoDecimals(value)}px * ${this.zoomCssFactor})`;
@@ -1942,7 +1852,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     };
   }
 
-  // ── Page header event handlers ────────────────────────────
+  // Page header event handlers
 
   onPageHeaderPointerDown(event: MouseEvent, pageId: string): void {
     if (event.button !== 0) return;
@@ -1981,7 +1891,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.selectOnlyElement(frameId);
   }
 
-  // ── Page name editor positioning ──────────────────────────
+  // Page name editor positioning
 
   getPageNameEditorLeftStyle(pageId: string): string {
     const layouts = this.page.pageLayouts();
@@ -2161,7 +2071,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return `${p.top}px ${p.right}px ${p.bottom}px ${p.left}px`;
   }
 
-  // ── Keyboard ──────────────────────────────────────────────
+  // Keyboard
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {
@@ -2188,7 +2098,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.lifecycle.handlePageHide(event);
   }
 
-  // ── Code Generation ───────────────────────────────────────
+  // Code generation
 
   validateIR(): void {
     this.apiError.set(null);
@@ -2201,7 +2111,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.generation.generate(this.irPages());
   }
 
-  // ── Private: Helpers ──────────────────────────────────────
+  // Private: helpers
 
   get projectIdAsNumber(): number {
     return this.canvasPersistenceService.projectIdAsNumber;
@@ -2259,9 +2169,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return document.querySelector('.canvas-container') as HTMLElement | null;
   }
 
-  /** Write viewport-derived CSS custom properties directly to the host element.
-   *  Called via viewport.onUpdate — runs outside Angular's reactive graph so
-   *  changing the viewport never schedules a change-detection cycle. */
   private applyViewportCssVars(): void {
     const offset = this.viewport.viewportOffset();
     const zoom = this.viewport.zoomLevel();
@@ -2274,7 +2181,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     s.setProperty('--page-shell-header-top-offset', `${-PAGE_SHELL_HEADER_HEIGHT - headerGap}px`);
     const bgSize = this.viewport.canvasBackgroundSize();
     s.setProperty('--vp-bg-size', bgSize);
-    // Keep dot-grid vars in sync (used by the glow-mask overlay in CSS).
     s.setProperty('--dot-size', bgSize);
     s.setProperty('--dot-pos', this.viewport.canvasBackgroundPosition());
     host.dataset.frameTitlesHidden = zoom < FRAME_TITLE_ZOOM_THRESHOLD ? '1' : '0';
@@ -2308,7 +2214,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     return bestId;
   }
 
-  // ── Private: History Shortcuts ────────────────────────────
+  // Private: history shortcuts
 
   private runWithHistory(action: () => void): void {
     this.history.runWithHistory(() => this.createHistorySnapshot(), action);
@@ -2331,7 +2237,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     this.gesture.editingTextDraft.set('');
   }
 
-  // ── Private: Clipboard ────────────────────────────────────
+  // Private: clipboard
 
   private copySelectedElement(): void {
     const selectedIds = this.selectedElementIds();
@@ -2393,10 +2299,6 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
           this.gesture.isRootFrame(elements.find((element) => element.id === selectedId) ?? null),
         );
 
-        // Before removing, record the current rendered height of any parent frame that has
-        // heightMode:'fit-content' and whose last child is about to be deleted. When the
-        // deletion leaves the frame empty, CSS fit-content collapses to 0px; we freeze the
-        // frame at its pre-deletion rendered height instead.
         const page = this.currentPage();
         const fitContentFrameHeights = new Map<string, number>();
         for (const selectedId of selectedIds) {
@@ -2439,7 +2341,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     });
   }
 
-  // ── Private: Context Menu Actions ─────────────────────────
+  // Private: context menu actions
 
   private bringToFront(elementId: string): void {
     this.runWithHistory(() => {
@@ -2504,7 +2406,7 @@ export class CanvasPage implements OnDestroy, AfterViewChecked {
     });
   }
 
-  // ── Private: Callback Builders ────────────────────────────
+  // Private: callback builders
 
   private buildKeyboardCallbacks(): KeyboardActionCallbacks {
     return {

@@ -21,7 +21,6 @@ export class TextInputComponent implements ControlValueAccessor {
   readonly enablePasswordToggle = input(false);
   readonly readonly = input(false);
 
-  // Multiline specific
   readonly multiline = input(false);
   readonly rows = input(3);
 

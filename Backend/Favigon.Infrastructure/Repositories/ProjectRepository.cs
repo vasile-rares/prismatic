@@ -102,7 +102,7 @@ public class ProjectRepository : IProjectRepository
       .ToDictionaryAsync(x => x.Id, x => x.Username);
   }
 
-  // ── Likes ──────────────────────────────────────────────────────────────────
+  // Likes
 
   public Task<ProjectLike?> GetLikeAsync(int userId, int projectId)
     => _context.ProjectLikes.FirstOrDefaultAsync(l => l.UserId == userId && l.ProjectId == projectId);
@@ -135,7 +135,7 @@ public class ProjectRepository : IProjectRepository
     return liked.ToHashSet();
   }
 
-  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  // Bookmarks
 
   public Task<ProjectBookmark?> GetBookmarkAsync(int userId, int projectId)
     => _context.ProjectBookmarks.FirstOrDefaultAsync(b => b.UserId == userId && b.ProjectId == projectId);

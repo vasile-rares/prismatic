@@ -19,13 +19,9 @@ export interface AiStreamCallbacks {
 }
 
 export interface AiPipelineCallbacks {
-  /** Called at the start of each phase with the phase number and a human-readable label. */
   onPhaseStart?: (phase: number, label: string) => void;
-  /** Called when Phase 1 finishes and the blueprint is ready. */
   onIntentReady?: (blueprint: IntentBlueprint) => void;
-  /** Called when Phase 2 finishes and the structural IRNode is ready. */
   onStructureReady?: (structure: IRNode) => void;
-  /** Called when the full pipeline finishes with the final result. */
   onResult: (response: AiPipelineResponse) => void;
   onError: (message: string) => void;
   onDone: () => void;
@@ -91,7 +87,7 @@ export class AiDesignService {
     }
   }
 
-  // ── 3-Phase Pipeline ──────────────────────────────────────────────────────
+  // 3-Phase pipeline
 
   generatePipeline(request: AiPipelineRequest): Observable<AiPipelineResponse> {
     return this.http.post<AiPipelineResponse>(`${this.baseUrl}/ai/design/pipeline`, request);

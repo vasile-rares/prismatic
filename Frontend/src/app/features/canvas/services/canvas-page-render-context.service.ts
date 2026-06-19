@@ -19,7 +19,7 @@ export class CanvasPageRenderContextService {
   private readonly el = inject(CanvasElementService);
   private readonly viewport = inject(CanvasViewportService);
 
-  // ── Page Shell Geometry ───────────────────────────────────
+  // Page shell geometry
 
   getPageShellLeft(pageId: string, layouts: CanvasPageLayout[]): number {
     const layout = layouts.find((l) => l.pageId === pageId) ?? null;
@@ -109,7 +109,6 @@ export class CanvasPageRenderContextService {
     return roundToTwoDecimals(this.getPageShellHeight(pageId, layouts) * this.viewport.zoomLevel());
   }
 
-  // ── Rendered Element Properties (per-page) ────────────────
 
   getRenderedXForPage(element: CanvasElement, pageId: string, layouts: CanvasPageLayout[]): number {
     const page = this.getPageById(pageId);
@@ -221,7 +220,7 @@ export class CanvasPageRenderContextService {
     return this.el.isElementClippedOut(element, page.elements);
   }
 
-  // ── Preview Nested Helpers ────────────────────────────────
+  // Preview nested helpers
 
   getPreviewNestedX(element: CanvasElement): number | null {
     return this.isChildInFlow(element) ? null : element.x;
@@ -238,7 +237,7 @@ export class CanvasPageRenderContextService {
     return element.position ?? 'absolute';
   }
 
-  // ── Page Queries ──────────────────────────────────────────
+  // Page queries
 
   getVisibleElementsForPage(pageId: string): CanvasElement[] {
     const page = this.getPageById(pageId);
@@ -260,7 +259,7 @@ export class CanvasPageRenderContextService {
     return this.getVisibleElementsForPage(pageId).filter((el) => el.parentId === element.id);
   }
 
-  // ── Snap Line Helpers ─────────────────────────────────────
+  // Snap line helpers
 
   getSnapLineX(position: number, activeLayout: CanvasPageLayout | null): number {
     return position + (activeLayout?.x ?? 0);
@@ -270,7 +269,7 @@ export class CanvasPageRenderContextService {
     return position + (activeLayout?.y ?? 0);
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private getPageById(pageId: string): CanvasPageModel | null {
     return this.editorState.pages().find((page) => page.id === pageId) ?? null;

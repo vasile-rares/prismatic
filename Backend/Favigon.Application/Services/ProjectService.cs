@@ -244,7 +244,7 @@ public class ProjectService : IProjectService
     return slug.Length > 100 ? slug[..100] : slug;
   }
 
-  // ── Likes ──────────────────────────────────────────────────────────────────
+  // Likes
 
   public async Task LikeAsync(int userId, int projectId)
   {
@@ -277,7 +277,7 @@ public class ProjectService : IProjectService
     await _projectRepository.DeleteLikeAsync(like);
   }
 
-  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  // Bookmarks
 
   public async Task BookmarkAsync(int userId, int projectId)
   {
@@ -342,7 +342,7 @@ public class ProjectService : IProjectService
     return responses;
   }
 
-  // ── Assets ─────────────────────────────────────────────────────────────────
+  // Assets
 
   public async Task<string?> UploadImageAsync(
     int projectId,

@@ -77,7 +77,7 @@ type EyeDropperConstructor = new () => EyeDropperInstance;
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownMenuComponent implements OnDestroy {
-  // ── Inputs ────────────────────────────────────────────────
+  // Inputs
 
   readonly projectId = input<number | null>(null);
   readonly kind = input<StylePopupFieldKind>('fill');
@@ -107,13 +107,13 @@ export class DropdownMenuComponent implements OnDestroy {
   readonly textDecorationThickness = input<number | null>(null);
   readonly textDecorationThicknessUnit = input<'px' | 'em'>('px');
 
-  // ── Outputs ───────────────────────────────────────────────
+  // Outputs
 
   readonly patchRequested = output<Partial<CanvasElement>>();
   readonly numberGestureStarted = output<void>();
   readonly numberGestureCommitted = output<void>();
 
-  // ── Public State ──────────────────────────────────────────
+  // Public state
 
   pickerHue = 0;
   pickerSaturation = 0;
@@ -128,11 +128,9 @@ export class DropdownMenuComponent implements OnDestroy {
   shadowY = DEFAULT_EDITABLE_CANVAS_SHADOW.y;
   shadowBlur = DEFAULT_EDITABLE_CANVAS_SHADOW.blur;
   shadowSpread = DEFAULT_EDITABLE_CANVAS_SHADOW.spread;
-  // Text shadow state
   textShadowX = DEFAULT_EDITABLE_TEXT_SHADOW.x;
   textShadowY = DEFAULT_EDITABLE_TEXT_SHADOW.y;
   textShadowBlur = DEFAULT_EDITABLE_TEXT_SHADOW.blur;
-  // Text decoration state
   selectedDecorationLine: CanvasTextDecorationLine = 'underline';
   selectedDecorationStyle: CanvasTextDecorationStyle = 'solid';
   decorationThicknessValue: number | null = null;
@@ -141,7 +139,6 @@ export class DropdownMenuComponent implements OnDestroy {
   isScreenPickerActive = false;
   isUploadingImage = false;
   imageUploadError = '';
-  // Gradient state
   gradientStops: GradientStop[] = [
     { color: '#FFFFFF', position: 0 },
     { color: '#000000', position: 100 },
@@ -149,7 +146,7 @@ export class DropdownMenuComponent implements OnDestroy {
   gradientAngle = 90;
   selectedStopIndex = 0;
 
-  // ── Options ───────────────────────────────────────────────
+  // Options
 
   readonly colorFormatOptions: DropdownSelectOption[] = [
     { label: 'HEX', value: 'hex' },
@@ -229,14 +226,14 @@ export class DropdownMenuComponent implements OnDestroy {
   ];
   imagePreviewUrl: string | null = null;
 
-  // ── Private State ─────────────────────────────────────────
+  // Private state
 
   private readonly projectService = inject(ProjectService);
   private colorPickerDragTarget: ColorPickerDragTarget = null;
   private isColorGestureActive = false;
   private gradientDragStopIndex = -1;
 
-  // ── Lifecycle ─────────────────────────────────────────────
+  // Lifecycle
 
   constructor(private readonly hostRef: ElementRef<HTMLElement>) {
     effect(() => {
@@ -325,14 +322,13 @@ export class DropdownMenuComponent implements OnDestroy {
   ngOnDestroy(): void {
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
-    // Finalize any pending gesture when destroyed (e.g., popup forcibly closed)
     if (this.isColorGestureActive) {
       this.isColorGestureActive = false;
       this.numberGestureCommitted.emit();
     }
   }
 
-  // ── Event Handlers ────────────────────────────────────────
+  // Event handlers
 
   @HostListener('document:pointermove', ['$event'])
   onDocumentPointerMove(event: PointerEvent): void {
@@ -442,7 +438,6 @@ export class DropdownMenuComponent implements OnDestroy {
         });
       } else if (isGradientMode(value)) {
         const prevMode = this.selectedColorMode;
-        // Preserve existing stops when switching between gradient types
         const existingStops = isGradientMode(prevMode) ? this.gradientStops : null;
         const baseColor = this.pickerColorValue();
         let gradient: GradientFill;
@@ -465,7 +460,6 @@ export class DropdownMenuComponent implements OnDestroy {
         this.selectedStopIndex = Math.min(this.selectedStopIndex, this.gradientStops.length - 1);
         this.patchRequested.emit({ fillMode: 'gradient', gradient, fill: undefined });
       } else {
-        // solid
         const solidColor = this.gradientStops[0]?.color ?? this.pickerColorValue();
         this.patchRequested.emit({ fillMode: 'color', fill: solidColor, gradient: undefined });
       }
@@ -747,7 +741,7 @@ export class DropdownMenuComponent implements OnDestroy {
     this.numberGestureCommitted.emit();
   }
 
-  // ── Gradient Editor ───────────────────────────────────────
+  // Gradient editor
 
   isGradientMode(): boolean {
     return isGradientMode(this.selectedColorMode);
@@ -759,7 +753,6 @@ export class DropdownMenuComponent implements OnDestroy {
       .sort((a, b) => a.position - b.position)
       .map((s) => `${s.color} ${s.position}%`)
       .join(', ');
-    // Checkerboard beneath the gradient so semi-transparent stops reveal transparency
     return [
       `linear-gradient(90deg, ${stops})`,
       'linear-gradient(45deg, #4d4d4d 25%, transparent 25%) 0 0 / 8px 8px',
@@ -852,7 +845,7 @@ export class DropdownMenuComponent implements OnDestroy {
     this.patchRequested.emit({ fillMode: 'gradient', gradient });
   }
 
-  // ── Color Picker Computed ──────────────────────────────────
+  // Color picker computed
 
   pickerHueColor(): string {
     const { r, g, b } = hsvToRgb(this.pickerHue, 1, 1);
@@ -895,7 +888,7 @@ export class DropdownMenuComponent implements OnDestroy {
     return `linear-gradient(90deg, rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, 0) 0%, rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, 1) 100%)`;
   }
 
-  // ── Getters ───────────────────────────────────────────────
+  // Getters
 
   get strokeStyleDropdownOptions(): DropdownSelectOption[] {
     return this.borderStyleOptions().map((option) => ({ label: option, value: option }));
@@ -913,7 +906,7 @@ export class DropdownMenuComponent implements OnDestroy {
     return this.isScreenPickerSupported ? 'Pick From Screen' : 'Screen Picker Unavailable';
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private isColorKind(): boolean {
     return (
@@ -1113,7 +1106,7 @@ export class DropdownMenuComponent implements OnDestroy {
     });
   }
 
-  // ── Text Shadow handlers ──────────────────────────────────
+  // Text shadow handlers
 
   onTextShadowNumberChange(field: 'x' | 'y' | 'blur', value: number): void {
     if (!Number.isFinite(value)) return;
@@ -1154,7 +1147,7 @@ export class DropdownMenuComponent implements OnDestroy {
     });
   }
 
-  // ── Text Decoration handlers ──────────────────────────────
+  // Text decoration handlers
 
   onDecorationLineChange(value: string | number | boolean | null): void {
     if (typeof value !== 'string') return;
@@ -1192,7 +1185,7 @@ export class DropdownMenuComponent implements OnDestroy {
   }
 }
 
-// ── Color math utilities ───────────────────────────────────────────────────
+// Color math utilities
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));

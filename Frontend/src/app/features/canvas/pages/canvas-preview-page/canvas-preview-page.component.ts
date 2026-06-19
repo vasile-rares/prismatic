@@ -135,9 +135,7 @@ export class CanvasPreviewPage {
     const elements = page?.elements ?? [];
     const rootFrames = elements.filter((el) => el.type === 'frame' && !el.parentId);
     for (const frame of rootFrames) {
-      // frame.width is already border-box (content + padding)
       const w = Math.round(frame.width);
-      // fit-content frames store a placeholder height — default to 720 so preview starts at a usable size
       const h = frame.heightMode === 'fit-content' ? 720 : Math.round(frame.height);
       options.push({ label: frame.name || `Frame ${w}×${h}`, width: w, height: h });
     }
@@ -228,7 +226,6 @@ document.addEventListener('click', function(e) {
   constructor() {
     this.loadPreview(this.route.snapshot.queryParamMap.get('pageId'));
 
-    // Re-generate whenever the current page changes
     effect(() => {
       const page = this.currentPage();
       if (page && !this.isLoading()) {
@@ -236,7 +233,6 @@ document.addEventListener('click', function(e) {
       }
     });
 
-    // Handle in-iframe page navigation (page links send postMessage)
     const onMessage = (event: MessageEvent): void => {
       if (
         event.data &&
@@ -337,9 +333,7 @@ document.addEventListener('click', function(e) {
       const stageEl = this.stageRef()?.nativeElement;
       if (stageEl) {
         const stageRect = stageEl.getBoundingClientRect();
-        // Stage is center-aligned; max viewport height = stage height minus padding on both sides.
-        // The 2× factor in onResizePointerMove means the limit is symmetric around the center.
-        const stagePadding = 24; // matches .preview-stage padding (1.5rem)
+        const stagePadding = 24;
         this.resizeMaxHeight = Math.max(120, stageRect.height - stagePadding * 2);
       } else {
         this.resizeMaxHeight = Infinity;
@@ -452,7 +446,6 @@ document.addEventListener('click', function(e) {
       pages: irPages,
     };
 
-    // Use generate for responsive HTML+CSS (single response)
     if (irPages.length > 1) {
       this.converterService
         .generate(request)

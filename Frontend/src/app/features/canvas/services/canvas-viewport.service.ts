@@ -18,7 +18,6 @@ export class CanvasViewportService {
   readonly isSpacePressed = signal(false);
   readonly frameTemplate = signal({ width: 390, height: 844 });
 
-  // Escape hatch: component registers callback to write CSS vars directly, bypassing CD.
   onUpdate?: () => void;
 
   notifyUpdate(): void {
@@ -33,7 +32,7 @@ export class CanvasViewportService {
     return this._panMoved;
   }
 
-  // ── Zoom ──────────────────────────────────────────────────
+  // Zoom
 
   zoomIn(canvasElement: HTMLElement | null): void {
     this.setZoom(this.zoomLevel() * ZOOM_FACTOR, this.getCanvasScreenCenter(canvasElement));
@@ -76,7 +75,7 @@ export class CanvasViewportService {
     this.notifyUpdate();
   }
 
-  // ── Pan ───────────────────────────────────────────────────
+  // Pan
 
   startPanning(event: MouseEvent): void {
     this.isPanning.set(true);
@@ -114,7 +113,7 @@ export class CanvasViewportService {
     }, 350);
   }
 
-  // ── Scroll / Wheel ────────────────────────────────────────
+  // Scroll / wheel
 
   handleWheel(event: WheelEvent, canvasRect: DOMRect): void {
     if (this.isPanning()) {
@@ -123,7 +122,6 @@ export class CanvasViewportService {
 
     if (event.ctrlKey) {
       const factor = event.deltaY < 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR;
-      // setZoom already calls notifyUpdate()
       this.setZoom(this.zoomLevel() * factor, {
         x: event.clientX - canvasRect.left,
         y: event.clientY - canvasRect.top,
@@ -138,7 +136,7 @@ export class CanvasViewportService {
     this.notifyUpdate();
   }
 
-  // ── Coordinate Transforms ────────────────────────────────
+  // Coordinate transforms
 
   getCanvasPoint(event: MouseEvent, canvasElement: HTMLElement | null): Point | null {
     if (!canvasElement) {
@@ -170,7 +168,7 @@ export class CanvasViewportService {
     return roundToTwoDecimals(size / this.zoomLevel());
   }
 
-  // ── Template Helpers ──────────────────────────────────────
+  // Template helpers
 
   canvasViewportTransform(): string {
     const offset = this.viewportOffset();
@@ -183,9 +181,6 @@ export class CanvasViewportService {
 
   canvasBackgroundSize(): string {
     const zoom = this.zoomLevel();
-    // Normalise the visual dot spacing to ~GRID_SIZE screen-pixels regardless of
-    // zoom by dividing out the nearest power-of-2 level.  This keeps the spacing
-    // in the range [GRID_SIZE/√2, GRID_SIZE*√2] ≈ 14-28 px for GRID_SIZE=20.
     const rawScreen = GRID_SIZE * zoom;
     const level = Math.round(Math.log2(rawScreen / GRID_SIZE));
     const size = roundToTwoDecimals(rawScreen / Math.pow(2, level));
@@ -197,7 +192,7 @@ export class CanvasViewportService {
     return `${offset.x}px ${offset.y}px`;
   }
 
-  // ── Focus Element ─────────────────────────────────────────
+  // Focus element
 
   focusElement(element: CanvasElement, bounds: Bounds, canvasElement: HTMLElement | null): void {
     if (!canvasElement) {
@@ -222,7 +217,7 @@ export class CanvasViewportService {
     this.notifyUpdate();
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private getCanvasScreenCenter(canvasElement: HTMLElement | null): Point {
     if (!canvasElement) {

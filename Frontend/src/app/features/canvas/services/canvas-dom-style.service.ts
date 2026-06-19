@@ -24,8 +24,6 @@ export type DomStyleMap = Record<string, string | null | undefined>;
 export class CanvasDomStyleService {
   private readonly elService = inject(CanvasElementService);
 
-  // WeakMap keyed on element ref — invalidated automatically when element/parent gets new reference.
-  // Page cached by scalar dimensions, not reference, to survive the page-object spread on every mutation.
   private readonly _styleCache = new WeakMap<
     CanvasElement,
     {
@@ -70,7 +68,7 @@ export class CanvasDomStyleService {
   ): DomStyleMap {
     const style: DomStyleMap = {};
 
-    // ── Sizing ────────────────────────────────────────────
+    // Sizing
     style['width'] = this.elService.getRenderedWidthStyle(element, allElements, page);
     style['height'] = this.elService.getRenderedHeightStyle(element, allElements, page);
     style['box-sizing'] = 'border-box';
@@ -84,7 +82,7 @@ export class CanvasDomStyleService {
     if (minH) style['min-height'] = minH;
     if (maxH) style['max-height'] = maxH;
 
-    // ── Fill / Background ────────────────────────────────
+    // Fill / background
     if (element.type !== 'text' && element.type !== 'image') {
       if (element.fillMode === 'image' && element.backgroundImage) {
         style['background-image'] = `url("${element.backgroundImage}")`;
@@ -103,7 +101,7 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Corner Radius ─────────────────────────────────────
+    // Corner radius
     {
       const effectiveRadius =
         (element.cornerRadius ?? 0) > 0 || hasPerCornerRadius(element) || element.type === 'image';
@@ -122,29 +120,29 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Overflow ──────────────────────────────────────────
+    // Overflow
     if (element.type === 'frame' || element.type === 'rectangle') {
       const ov = element.overflow ?? 'clip';
       style['overflow'] =
         ov === 'clip' || ov === 'hidden' ? 'hidden' : ov === 'scroll' ? 'auto' : 'visible';
     }
 
-    // ── Opacity ───────────────────────────────────────────
+    // Opacity
     if (typeof element.opacity === 'number' && element.opacity !== 1) {
       style['opacity'] = String(element.opacity);
     }
 
-    // ── Z-Index ───────────────────────────────────────────
+    // Z-Index
     if (typeof element.zIndex === 'number') {
       style['z-index'] = String(element.zIndex);
     }
 
-    // ── Blend Mode ────────────────────────────────────────
+    // Blend mode
     if (element.blendMode && element.blendMode !== 'normal') {
       style['mix-blend-mode'] = element.blendMode;
     }
 
-    // ── Box Shadow ────────────────────────────────────────
+    // Box shadow
     if (element.shadow) {
       const shadowCss = getCanvasShadowCss(element.shadow);
       if (shadowCss !== 'none') {
@@ -152,7 +150,7 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Stroke / Border ──────────────────────────────────
+    // Stroke / border
     if (element.type !== 'text' && element.stroke) {
       const strokeStyleCss = (element.strokeStyle ?? 'Solid').toLowerCase();
       if (hasPerSideStrokeWidths(element)) {
@@ -169,7 +167,7 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Layout (flex / grid / block) ──────────────────────
+    // Layout (flex / grid / block)
     if (element.display === 'flex') {
       style['display'] = 'flex';
       style['flex-direction'] = element.flexDirection ?? 'row';
@@ -206,19 +204,19 @@ export class CanvasDomStyleService {
       style['display'] = 'block';
     }
 
-    // ── Padding ───────────────────────────────────────────
+    // Padding
     if (element.padding) {
       const p = element.padding;
       style['padding'] = `${p.top}px ${p.right}px ${p.bottom}px ${p.left}px`;
     }
 
-    // ── Margin ────────────────────────────────────────────
+    // Margin
     if (element.margin) {
       const m = element.margin;
       style['margin'] = `${m.top}px ${m.right}px ${m.bottom}px ${m.left}px`;
     }
 
-    // ── Transform ─────────────────────────────────────────
+    // Transform
     const transform = buildCanvasElementTransform(element);
     if (transform) style['transform'] = transform;
     const transformOrigin = buildCanvasElementTransformOrigin(element);
@@ -228,7 +226,7 @@ export class CanvasDomStyleService {
     const transformStyle = buildCanvasElementTransformStyle(element);
     if (transformStyle) style['transform-style'] = transformStyle;
 
-    // ── CSS Filters ───────────────────────────────────────
+    // CSS filters
     const filterOptions = element.cssFilterOptions;
     if (filterOptions && filterOptions.length > 0) {
       const filterParts: string[] = [];
@@ -256,27 +254,27 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Text color ────────────────────────────────────────
+    // Text color
     if (element.type === 'text' && element.fillMode !== 'gradient' && element.fill) {
       style['color'] = element.fill;
     }
 
-    // ── Text shadow ───────────────────────────────────────
+    // Text shadow
     if (element.type === 'text' && element.textShadow) {
       style['text-shadow'] = element.textShadow;
     }
 
-    // ── Text transform ────────────────────────────────────
+    // Text transform
     if (element.type === 'text' && element.textTransform) {
       style['text-transform'] = element.textTransform;
     }
 
-    // ── Text balance ──────────────────────────────────────
+    // Text balance
     if (element.type === 'text' && element.textBalance) {
       style['text-wrap'] = 'balance';
     }
 
-    // ── Text decoration ───────────────────────────────────
+    // Text decoration
     if (element.type === 'text' && element.textDecorationLine) {
       style['text-decoration-line'] = element.textDecorationLine;
       if (element.textDecorationColor) {
@@ -291,7 +289,7 @@ export class CanvasDomStyleService {
       }
     }
 
-    // ── Squircle mask ─────────────────────────────────────
+    // Squircle mask
     if (element.type === 'text' && element.squircle != null && element.squircle > 0) {
       const maskImage = buildSquircleMaskImage(element.squircle);
       if (maskImage) {
@@ -320,13 +318,11 @@ export class CanvasDomStyleService {
     const crossFill = mainIsWidth ? element.heightMode === 'fill' : element.widthMode === 'fill';
 
     if (mainFill) {
-      // flex-basis:0 so all fill siblings share space equally regardless of content size.
       if (mainIsWidth) {
         style['width'] = null;
         style['flex-grow'] = '1';
         style['flex-shrink'] = '1';
         style['flex-basis'] = '0px';
-        // min-width:0 allows shrink below content width; skip if explicit minWidth is set.
         if (element.minWidth == null) {
           style['min-width'] = '0';
         }
@@ -340,13 +336,11 @@ export class CanvasDomStyleService {
         }
       }
     } else {
-      // Fixed or fit-content on main axis — must NOT be shrunk or grown by flex layout.
       style['flex-grow'] = '0';
       style['flex-shrink'] = '0';
     }
 
     if (crossFill) {
-      // Remove explicit cross-axis size so align-self:stretch takes effect for fill children.
       if (mainIsWidth) style['height'] = null;
       else style['width'] = null;
       style['align-self'] = 'stretch';
@@ -376,7 +370,6 @@ export class CanvasDomStyleService {
     const pos = element.position;
     const isFlowPosition = !pos || pos === 'static' || pos === 'relative' || pos === 'sticky';
 
-    // Only flow children; root elements and non-layout container children use absolute x/y.
     if (isFlowPosition && parent?.display) {
       return { position: 'relative' };
     }
@@ -384,7 +377,6 @@ export class CanvasDomStyleService {
     const effectivePos = pos === 'fixed' ? 'fixed' : 'absolute';
     const style: DomStyleMap = { position: effectivePos };
 
-    // x/y stored from outer edge; CSS left/top from padding-box — subtract parent border.
     const parentWidths = parent ? getStrokeWidths(parent) : null;
     style['left'] = `${element.x - (parentWidths?.left ?? 0)}px`;
     style['top'] = `${element.y - (parentWidths?.top ?? 0)}px`;
@@ -415,12 +407,9 @@ export class CanvasDomStyleService {
       'text-align': element.textAlign ?? 'left',
       'line-height': lineHeightValue,
       'letter-spacing': letterSpacingValue,
-      // pre for fit-content (never wrap); pre-wrap for fixed/fill (break at bounds).
       'white-space': (element.widthMode ?? 'fixed') === 'fit-content' ? 'pre' : 'pre-wrap',
       'word-break': (element.widthMode ?? 'fixed') === 'fit-content' ? null : 'break-word',
-      // max-width on span prevents flex-start from expanding past container width.
       'max-width': (element.widthMode ?? 'fixed') === 'fit-content' ? null : '100%',
-      // Background fill applied here so it covers only the text content area.
       ...(element.fillMode === 'gradient' && element.gradient
         ? {
             'background-color': 'transparent',
@@ -446,9 +435,6 @@ export class CanvasDomStyleService {
   buildTextVerticalAlignStyle(element: CanvasElement): DomStyleMap {
     const va = element.textVerticalAlign ?? 'top';
     const justifyContent = va === 'middle' ? 'center' : va === 'bottom' ? 'flex-end' : 'flex-start';
-    // Map textAlign → cross-axis alignment so the span shrinks to its content width
-    // instead of stretching full-width. This lets background-color on the span cover
-    // only the actual text characters rather than the whole element box.
     const ta = element.textAlign ?? 'left';
     const alignItems = ta === 'center' ? 'center' : ta === 'right' ? 'flex-end' : 'flex-start';
     return {

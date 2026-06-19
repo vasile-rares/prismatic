@@ -37,7 +37,7 @@ export class CanvasPersistenceService {
   private readonly aiChatPersistence = inject(CanvasAiChatPersistenceService, { optional: true });
   private readonly page = inject(CanvasPageManagerService, { optional: true });
 
-  // ── Public signals ────────────────────────────────────────
+  // Public signals
   readonly isLoadingDesign = signal(true);
   readonly loadingMessage = signal('Preparing the editor...');
   readonly loadingPercent = signal(5);
@@ -45,11 +45,11 @@ export class CanvasPersistenceService {
   readonly isSavingDesign = signal(false);
   readonly lastSavedAt = signal<string | null>(null);
 
-  // ── Public state ──────────────────────────────────────────
+  // Public state
   projectIdAsNumber = NaN;
   isPointerDown = false;
 
-  // ── Private state ─────────────────────────────────────────
+  // Private state
   private projectSlug = '';
   private canPersistDesign = false;
   private saveTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -76,7 +76,7 @@ export class CanvasPersistenceService {
     }
   }
 
-  // ── Public orchestration ──────────────────────────────────
+  // Public orchestration
 
   initialize(projectSlug: string): void {
     this.projectSlug = projectSlug;
@@ -88,7 +88,6 @@ export class CanvasPersistenceService {
       return;
     }
 
-    // A user-driven change resets any retry backoff and cancels any pending retry.
     this.saveRetryCount = 0;
     if (this.saveRetryTimeoutId) {
       clearTimeout(this.saveRetryTimeoutId);
@@ -172,13 +171,11 @@ export class CanvasPersistenceService {
       });
     }
 
-    // Cancel any pending entry thumbnail — it already saved on entry or hasn't run yet.
     this.cancelIdleThumbnail();
 
     return true;
   }
 
-  // ── Public API (used by canvas-preview-page too) ──────────
 
   loadProjectDesign(projectId: number): Observable<{
     pages: CanvasPageModel[];
@@ -217,7 +214,7 @@ export class CanvasPersistenceService {
     return this.projectService.saveThumbnail(projectId, thumbnailFile);
   }
 
-  // ── Private persistence ───────────────────────────────────
+  // Private persistence
 
   private loadProject(): void {
     if (!this.projectSlug || this.projectSlug === 'new-project') {
@@ -245,7 +242,6 @@ export class CanvasPersistenceService {
       }
       const elapsed = Date.now() - loadingStartedAt;
       const remaining = Math.max(0, 1000 - elapsed);
-      // Wait for minimum display time, capture thumbnail while overlay is visible, then fade.
       setTimeout(() => {
         requestAnimationFrame(() => {
           this.captureAndPersistThumbnailThenHide();
@@ -367,9 +363,6 @@ export class CanvasPersistenceService {
     this.persistDesign();
   }
 
-  /**
-   * Capture thumbnail while overlay is fully opaque, then start fade.
-   */
   private captureAndPersistThumbnailThenHide(): void {
     const startFade = () => {
       this.loadingFadingOut.set(true);
@@ -423,7 +416,6 @@ export class CanvasPersistenceService {
     );
   }
 
-  /** On exit: no thumbnail operation — thumbnail is saved on entry. */
   private persistThumbnailAsync(): void {}
 
   private persistThumbnailIfDue(precomputedThumbnail?: string | null): void {

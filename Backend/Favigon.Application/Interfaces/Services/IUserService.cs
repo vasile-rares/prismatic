@@ -23,7 +23,7 @@ public interface IUserService
   Task<bool> DeleteMyAccountAsync(int userId);
   Task<bool> UnlinkProviderAsync(int userId, string provider);
 
-  // ── Follow ─────────────────────────────────────────────────
+  // Follow
   Task FollowAsync(int followerId, string followeeUsername);
   Task UnfollowAsync(int followerId, string followeeUsername);
   Task<bool> IsFollowingAsync(int followerId, int followeeId);
@@ -32,6 +32,6 @@ public interface IUserService
   Task<IReadOnlyList<User>> GetFollowersAsync(int userId);
   Task<IReadOnlyList<User>> GetFollowingAsync(int userId);
 
-  // ── Bookmarks ──────────────────────────────────────────────
+  // Bookmarks
   Task<IReadOnlyList<ProjectResponse>> GetMyBookmarksAsync(int userId);
 }

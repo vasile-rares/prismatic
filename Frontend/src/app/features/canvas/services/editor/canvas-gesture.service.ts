@@ -91,7 +91,6 @@ export class CanvasGestureService {
   private readonly element = inject(CanvasElementService);
   private readonly editorState = inject(CanvasEditorStateService);
   private readonly page = inject(CanvasPageManagerService);
-  // ── Canvas element access (set by component) ────────────
 
   private canvasElementGetter: (() => HTMLElement | null) | null = null;
 
@@ -103,7 +102,6 @@ export class CanvasGestureService {
     return this.canvasElementGetter?.() ?? null;
   }
 
-  // ── Public signals (used in template via gesture.*) ───────
 
   readonly isDraggingEl = signal(false);
   readonly hoveredElementId = signal<string | null>(null);
@@ -124,7 +122,7 @@ export class CanvasGestureService {
 
   private textEditorCapturedBounds: Bounds | null = null;
 
-  // ── Private gesture state ─────────────────────────────────
+  // Private gesture state
 
   private flowBoundsCache = new Map<string, Bounds>();
   private flowBoundsDirty = true;
@@ -205,7 +203,7 @@ export class CanvasGestureService {
 
   private isPropertyNumberGestureActive = false;
 
-  // ── Suppress-flag public API ──────────────────────────────
+  // Suppress-flag public API
 
   consumeCanvasClickSuppression(): boolean {
     if (this.suppressNextCanvasClick) {
@@ -236,7 +234,7 @@ export class CanvasGestureService {
     this.isResizing.set(false);
   }
 
-  // ── Gesture starters ──────────────────────────────────────
+  // Gesture starters
 
   beginResize(event: MouseEvent, id: string, handle: HandlePosition): void {
     event.stopPropagation();
@@ -249,7 +247,6 @@ export class CanvasGestureService {
     const pointer = this.getActivePageCanvasPoint(event);
     if (!pointer) return;
 
-    // getLiveElementCanvasBounds gives AABB for rotated elements; use model-based bounds for resize.
     const rotation = el.rotation ?? 0;
     const bounds =
       rotation !== 0
@@ -273,7 +270,6 @@ export class CanvasGestureService {
           this.editorState.currentPage(),
         ))
       : null;
-    // Fit-content parent expands to fit children; clamping to its old size is wrong.
     const parentAbsoluteBounds: typeof rawParentBounds =
       rawParentBounds && parentEl
         ? {
@@ -294,7 +290,6 @@ export class CanvasGestureService {
     this.beginGestureHistory();
     this.isDragging = false;
     this.isResizing.set(true);
-    // Seed stable bounds immediately so outline is correct on the first CD cycle.
     const resizeSnapshot = this.snapshotOverlaySceneBounds(el);
     this.stableSelectionBounds.set(
       resizeSnapshot ? { elementId: id, bounds: resizeSnapshot } : null,
@@ -331,7 +326,6 @@ export class CanvasGestureService {
     this.beginGestureHistory();
     this.isDragging = false;
     this.isResizing.set(true);
-    // Do not freeze stable bounds — the element's rendered size changes as font size updates.
     this.stableSelectionBounds.set(null);
 
     this.resizeStart = {
@@ -380,8 +374,6 @@ export class CanvasGestureService {
     this.isDragging = false;
     this.isResizing.set(false);
     this.isRotating.set(true);
-    // Seed stable bounds immediately so selectionOverlayBounds is correct on the very first
-    // CD cycle of the gesture (before markFlowBoundsCacheClean fires after ngAfterViewChecked).
     const rotateSnapshot = this.snapshotOverlaySceneBounds(el);
     this.stableSelectionBounds.set(
       rotateSnapshot ? { elementId: id, bounds: rotateSnapshot } : null,
@@ -470,7 +462,6 @@ export class CanvasGestureService {
         .map((id) => {
           const el = this.element.findElementById(id, elements);
           if (!el) return [id, null] as [string, Bounds | null];
-          // Prefer live DOM bounds for flow children whose stored x/y may differ from rendered position.
           const bounds =
             this.getLiveElementCanvasBounds(el) ??
             this.element.getAbsoluteBounds(el, elements, this.editorState.currentPage());
@@ -500,7 +491,7 @@ export class CanvasGestureService {
     return liveCanvasBounds ?? absoluteBounds;
   }
 
-  // ── Main pointer event handlers ───────────────────────────
+  // Main pointer event handlers
 
   handlePointerMove(event: MouseEvent): void {
     const hasActivePointerGesture =
@@ -651,14 +642,11 @@ export class CanvasGestureService {
       return;
     }
 
-    // ── Flow child drag (reorder within layout container) ──
     if (this.draggingFlowChildId()) {
       this.handleFlowChildDragMove(dragged, absoluteX, absoluteY, elements);
       return;
     }
 
-    // Snap from cached bounds (O(1) per element) instead of live DOM reads (O(n) per pointer-move);
-    // fall back to getAbsoluteBounds for uncached elements (e.g. off-screen).
     const snapLayout = this.page.activePageLayout();
     const snapLayoutX = snapLayout?.x ?? 0;
     const snapLayoutY = snapLayout?.y ?? 0;
@@ -830,7 +818,7 @@ export class CanvasGestureService {
     }
   }
 
-  // ── Rectangle draw ────────────────────────────────────────
+  // Rectangle draw
 
   beginRectangleDraw(event: MouseEvent, suppressPageShellClick = false): boolean {
     const tool = this.editorState.currentTool();
@@ -929,7 +917,7 @@ export class CanvasGestureService {
     }, 0);
   }
 
-  // ── Private gesture handlers ──────────────────────────────
+  // Private gesture handlers
 
   private handleRotatePointerMove(event: MouseEvent): void {
     const start = this.rotateStart;
@@ -992,10 +980,8 @@ export class CanvasGestureService {
       const resizedElements = els.map((el) => {
         if (el.id !== start.elementId) return el;
 
-        // Use gesture-start parent bounds: flow children have x/y=0, so getAbsoluteBounds gives wrong origin.
         const parentBounds = start.parentAbsoluteBounds;
 
-        // Read live DOM bounds each frame: flex reflow shifts the element's position during resize.
         let effectiveStart = this.resizeStart;
         if (!start.rotation && parentBounds !== null) {
           const parentEl = els.find((e) => e.id === el.parentId);
@@ -1011,8 +997,6 @@ export class CanvasGestureService {
                 height: liveBounds.height,
                 centerX: liveBounds.x + liveBounds.width / 2,
                 centerY: liveBounds.y + liveBounds.height / 2,
-                // Anchor pointerX/Y to the current handle edge so deltaX/Y reflects
-                // the distance from the current rendered edge to the cursor each frame.
                 pointerX:
                   liveBounds.x +
                   (handle.includes('e')
@@ -1043,10 +1027,6 @@ export class CanvasGestureService {
         const storedWidth = this.getStoredAxisSizeFromRendered(el, 'width', bounds.width);
         const storedHeight = this.getStoredAxisSizeFromRendered(el, 'height', bounds.height);
 
-        // Re-anchor position to the fixed edge after storing width/height.
-        // getStoredAxisSizeFromRendered applies Math.round and Math.max(24,...), so the
-        // stored size can differ from bounds.width/height. Without re-anchoring, the edge
-        // that should stay fixed (right edge for 'w' handles, bottom for 'n' handles) drifts.
         const parentOriginX = parentBounds ? parentBounds.x : 0;
         const parentOriginY = parentBounds ? parentBounds.y : 0;
 
@@ -1055,12 +1035,10 @@ export class CanvasGestureService {
 
         if (!effectiveStart.rotation) {
           if (effectiveStart.handle.includes('w')) {
-            // Right edge is fixed; re-derive x so that x + storedWidth = fixedRight.
             const fixedAbsRight = effectiveStart.absoluteX + effectiveStart.width;
             localX = fixedAbsRight - parentOriginX - storedWidth;
           }
           if (effectiveStart.handle.includes('n')) {
-            // Bottom edge is fixed; re-derive y so that y + storedHeight = fixedBottom.
             const fixedAbsBottom = effectiveStart.absoluteY + effectiveStart.height;
             localY = fixedAbsBottom - parentOriginY - storedHeight;
           }
@@ -1271,7 +1249,7 @@ export class CanvasGestureService {
     return nextElements;
   }
 
-  // ── Flow child drag ───────────────────────────────────────
+  // Flow child drag
 
   private updateFlowBoundsCache(): void {
     const sceneEl = this.getCanvasElement()?.querySelector<HTMLElement>('.canvas-scene') ?? null;
@@ -1296,11 +1274,7 @@ export class CanvasGestureService {
 
   invalidateFlowBoundsCache(): void {
     this.flowBoundsDirty = true;
-    // Keep the version bump immediate so computed signals (selectionOverlayBounds etc.)
-    // switch to dirty-phase logic in the same CD cycle.
     this._flowCacheVersion.update((v) => v + 1);
-    // Throttle the expensive DOM work (querySelectorAll + N×getBoundingClientRect) to at
-    // most once per animation frame — regardless of how many pointermove events arrive.
     if (this._flowBoundsRafId !== null) return;
     this._flowBoundsRafId = requestAnimationFrame(() => {
       this._flowBoundsRafId = null;
@@ -1315,11 +1289,6 @@ export class CanvasGestureService {
 
   private markFlowBoundsCacheClean(): void {
     this.flowBoundsDirty = false;
-    // Skip stableSelectionBounds update while a gesture is active. Each gesture seeds the
-    // stable snapshot at gesture-start (beginResize / beginRotate) and owns it for the
-    // gesture lifetime. Overwriting it here with a RAF snapshot taken between a model write
-    // and Angular's next paint causes a 1-frame teleport: the outline jumps to an intermediate
-    // DOM state → the "ghost" flicker the user reported.
     if (!this.isResizing() && !this.isRotating()) {
       const selectedId = this.editorState.selectedElementId();
       if (selectedId) {
@@ -1332,7 +1301,6 @@ export class CanvasGestureService {
         this.stableSelectionBounds.set(null);
       }
     }
-    // Bump the version so overlay computeds re-evaluate after DOM has settled.
     this._flowCacheVersion.update((v) => v + 1);
   }
 
@@ -1547,7 +1515,7 @@ export class CanvasGestureService {
     this.editorState.updateCurrentPageElements((els) => this.reflowRootFrames(els));
   }
 
-  // ── Live bounds ───────────────────────────────────────────
+  // Live bounds
 
   private snapshotOverlaySceneBounds(el: CanvasElement): Bounds | null {
     const sceneEl = this.getCanvasElement()?.querySelector<HTMLElement>('.canvas-scene') ?? null;
@@ -1597,7 +1565,7 @@ export class CanvasGestureService {
   }
 
   getLiveOverlaySceneBounds(el: CanvasElement): Bounds | null {
-    void this._flowCacheVersion(); // track for overlay reactivity
+    void this._flowCacheVersion();
 
     const sceneEl = this.getCanvasElement()?.querySelector<HTMLElement>('.canvas-scene') ?? null;
     if (sceneEl) {
@@ -1619,28 +1587,14 @@ export class CanvasGestureService {
   }
 
   getCachedOverlaySceneBounds(el: CanvasElement): Bounds {
-    void this._flowCacheVersion(); // track for overlay reactivity
+    void this._flowCacheVersion();
 
-    // Prefer stale DOM cache over model-based getAbsoluteBounds fallback — stale real DOM
-    // coordinates are far more accurate than the model for flow/flex children (which store
-    // x=0, y=0 and are actually positioned by CSS). This is safe because the cache is seeded
-    // from real DOM on load and after every RAF update.
     const cached = this.flowBoundsCache.get(el.id);
     if (cached) return cached;
 
     return this.getModelBasedOverlaySceneBounds(el);
   }
 
-  /**
-   * Computes scene-space overlay bounds purely from the element model (no DOM, no cache).
-   *
-   * Use this for elements with CSS transforms (rotate / skew / scale / 3D) during resize:
-   * the DOM AABB cache lags 1 RAF behind each model update, so using it causes the outline
-   * to teleport once per frame. Model bounds are always synchronised with the model write.
-   *
-   * For pure rotation the element center equals the CSS transform-origin center (50%/50%),
-   * so positioning the outline with these bounds + `transform: rotate(Ndeg)` is exact.
-   */
   getModelBasedOverlaySceneBounds(el: CanvasElement): Bounds {
     const layout = this.page.activePageLayout();
     const absolute = this.element.getAbsoluteBounds(
@@ -1669,7 +1623,7 @@ export class CanvasGestureService {
     };
   }
 
-  // ── Text editor screen coordinates ───────────────────────
+  // Text editor screen coordinates
 
   getTextEditorElement(): CanvasElement | null {
     const id = this.editorState.editingTextElementId();
@@ -1681,17 +1635,11 @@ export class CanvasGestureService {
     const el = this.getTextEditorElement();
     if (!el) return null;
 
-    // Use bounds captured at beginTextEdit() time. The live DOM is not reliable here
-    // because fit-content elements collapse to 0×0 once Angular removes their
-    // .canvas-text-wrapper in the first editing-mode CD cycle.
     const bounds =
       this.textEditorCapturedBounds ??
       this.element.getAbsoluteBounds(el, this.editorState.elements());
     const draft = this.editingTextDraft();
     if (!draft || draft === (el.text ?? '')) {
-      // For a brand-new empty fit-content element the DOM was collapsed when bounds were
-      // captured (no text → near-zero size). Measure with a space to get at least one
-      // line-height worth of dimensions so the editor overlay doesn't appear as a tiny box.
       if (!draft && this.canAutoSizeTextAxis(el, 'width')) {
         const widthConstraint = this.canAutoSizeTextAxis(el, 'width') ? undefined : bounds.width;
         const size = this.measureTextSize({ ...el, text: ' ' }, widthConstraint);
@@ -1746,16 +1694,12 @@ export class CanvasGestureService {
     return this.getTextEditorDisplayBounds()?.height ?? 0;
   }
 
-  // ── Text editing ──────────────────────────────────────────
+  // Text editing
 
   beginTextEdit(elementId: string): void {
     const el = this.element.findElementById(elementId, this.editorState.elements());
     if (el?.type !== 'text') return;
 
-    // Capture live bounds NOW — before editingTextElementId is set and Angular's CD
-    // removes .canvas-text-wrapper, which causes fit-content elements to collapse to 0.
-    // getLiveElementCanvasBounds reads getBoundingClientRect() while the element still
-    // has its content; fall back to model-based getAbsoluteBounds for off-screen elements.
     this.textEditorCapturedBounds =
       this.getLiveElementCanvasBounds(el) ??
       this.element.getAbsoluteBounds(el, this.editorState.elements());
@@ -1883,7 +1827,6 @@ export class CanvasGestureService {
     );
     const paddingW = this.getElementPaddingAxis(previousElement, 'width');
     const paddingH = this.getElementPaddingAxis(previousElement, 'height');
-    // Text measurement uses content-box; subtract padding from border-box for constraint.
     const widthConstraint = this.canAutoSizeTextAxis(previousElement, 'width')
       ? undefined
       : previousRenderedWidth - paddingW;
@@ -1930,10 +1873,6 @@ export class CanvasGestureService {
     const textForMeasure = (el.text || ' ').replace(/\n+$/, (m) => m + '\u200b');
     mirror.textContent = textForMeasure;
     document.body.appendChild(mirror);
-    // Use getBoundingClientRect().width for subpixel-accurate measurement, then
-    // Math.ceil so the stored pixel value is never smaller than the actual text width.
-    // offsetWidth is an integer (rounded) which can be smaller than the true width,
-    // causing the last character to wrap when the element is rendered at that size.
     const rawW = widthConstraint ?? Math.ceil(mirror.getBoundingClientRect().width);
     const rawH = Math.ceil(mirror.getBoundingClientRect().height);
     document.body.removeChild(mirror);
@@ -1968,7 +1907,7 @@ export class CanvasGestureService {
     );
   }
 
-  // ── Element creation & drop ───────────────────────────────
+  // Element creation & drop
 
   createElementAtCanvasPoint(
     tool: CanvasElementType,
@@ -2035,11 +1974,6 @@ export class CanvasGestureService {
     });
 
     if (newElement.type === 'text') {
-      // Flow-child text elements (position: 'relative' inside a layout container) are
-      // positioned by the parent flex/grid — their stored x/y is irrelevant for rendering.
-      // Defer beginTextEdit with setTimeout(0) so Angular completes its CD pass and updates
-      // the DOM first; getLiveElementCanvasBounds can then read the actual flex position and
-      // the inline editor overlay appears at the right place instead of the cursor position.
       const isFlowChild = newElement.position === 'relative' && !!newElement.parentId;
       if (isFlowChild) {
         setTimeout(() => {
@@ -2227,7 +2161,6 @@ export class CanvasGestureService {
     );
   }
 
-  // ── Helpers needed by component panel handlers (public) ───
 
   syncElementPatchToPrimary(
     elementId: string,
@@ -2405,7 +2338,6 @@ export class CanvasGestureService {
     );
   }
 
-  // ── Layout predicates (public, used by component handlers) ──
 
   isRootFrame(el: CanvasElement | null | undefined): boolean {
     return !!el && el.type === 'frame' && !el.parentId;
@@ -2420,7 +2352,6 @@ export class CanvasGestureService {
     return !pos || pos === 'static' || pos === 'relative' || pos === 'sticky';
   }
 
-  // ── Selection helpers (public, used by clipboard/context menu) ──
 
   getSelectionRootIds(
     ids: string[] = this.editorState.selectedElementIds(),
@@ -2438,7 +2369,6 @@ export class CanvasGestureService {
     });
   }
 
-  // ── Property number gesture (panel interaction) ───────────
 
   beginPropertyNumberGesture(): void {
     if (this.isPropertyNumberGestureActive) return;
@@ -2456,7 +2386,7 @@ export class CanvasGestureService {
     return this.isPropertyNumberGestureActive;
   }
 
-  // ── History helpers ───────────────────────────────────────
+  // History helpers
 
   runWithHistory(action: () => void): void {
     this.history.runWithHistory(() => this.editorState.createHistorySnapshot(), action);
@@ -2470,7 +2400,7 @@ export class CanvasGestureService {
     this.history.commitGestureHistory(() => this.editorState.createHistorySnapshot());
   }
 
-  // ── Primary frame sync ────────────────────────────────────
+  // Primary frame sync
 
   getPrimaryFrameFromElements(elements: CanvasElement[]): CanvasElement | null {
     return this.getPrimaryFrame(elements);
@@ -2533,9 +2463,6 @@ export class CanvasGestureService {
       .filter((el) => el.id !== primaryFrame.id);
     if (otherRootFrames.length === 0) return elements;
 
-    // Root frames are breakpoint-specific containers. Syncing the primary frame's
-    // own layout/style onto other root frames would wipe local breakpoint overrides
-    // such as mobile flex-direction, gap, alignment, etc.
     let nextElements = elements;
     for (const frame of otherRootFrames) {
       const targetFrame = nextElements.find((el) => el.id === frame.id) ?? frame;
@@ -3055,7 +2982,7 @@ export class CanvasGestureService {
     return nextElements;
   }
 
-  // ── Private helpers ───────────────────────────────────────
+  // Private helpers
 
   getActivePageCanvasPoint(event: MouseEvent): Point | null {
     const canvas = this.getCanvasElement();
@@ -3086,8 +3013,6 @@ export class CanvasGestureService {
       };
     }
 
-    // Prefer live DOM bounds for parent — model getAbsoluteBounds is wrong when any ancestor
-    // is a flow child (model x=0,y=0, CSS-positioned). Live bounds are always accurate.
     const parentBounds =
       this.getLiveElementCanvasBounds(parent) ??
       this.element.getAbsoluteBounds(parent, elements, this.editorState.currentPage());
@@ -3152,8 +3077,6 @@ export class CanvasGestureService {
   private setFlowDragPlaceholder(el: CanvasElement, cachedBounds: Bounds | null): void {
     const layout = this.page.activePageLayout();
     if (cachedBounds) {
-      // cachedBounds / liveSceneBounds are scene-relative (include layout.x/y);
-      // floatingBounds must be page-relative so the template can add pgLayout.x/y correctly.
       this.flowDragPlaceholder.set({
         elementId: el.id,
         bounds: {
@@ -3195,8 +3118,6 @@ export class CanvasGestureService {
         return false;
       }
 
-      // Use live (Yoga-computed) bounds so that flow children of layout containers
-      // are hit-tested at their actual rendered position, not their stale stored x/y.
       const bounds =
         this.getLiveElementCanvasBounds(el) ??
         this.element.getAbsoluteBounds(el, elements, this.editorState.currentPage());
@@ -3210,8 +3131,6 @@ export class CanvasGestureService {
     });
 
     if (hoveredContainers.length > 0) {
-      // Prefer the deepest container in the tree (most specific descendant).
-      // This handles fill-sized children where area == parent area.
       return this.getDeepestSmallestContainer(hoveredContainers, elements);
     }
 
@@ -3441,8 +3360,6 @@ export class CanvasGestureService {
     axis: 'width' | 'height',
     renderedSize: number,
   ): number {
-    // element.width stores border-box (same as rendered size); no padding subtraction needed.
-    // Round to integer — sub-pixel width/height has no practical value in a design tool.
     return Math.max(24, Math.round(renderedSize));
   }
 

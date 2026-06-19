@@ -36,7 +36,7 @@ public class UsersControllerTests
     };
   }
 
-  // ── GetMe ────────────────────────────────────────────────
+  // GetMe
 
   [Fact]
   public async Task GetMe_WhenUserFound_ReturnsOk()
@@ -60,7 +60,7 @@ public class UsersControllerTests
     Assert.IsType<NotFoundResult>(result);
   }
 
-  // ── UpdateMe ─────────────────────────────────────────────
+  // UpdateMe
 
   [Fact]
   public async Task UpdateMe_WhenUserNotFound_ReturnsNotFound()
@@ -94,7 +94,7 @@ public class UsersControllerTests
     Assert.Equal(updated, ok.Value);
   }
 
-  // ── Search ───────────────────────────────────────────────
+  // Search
 
   [Fact]
   public async Task Search_WithQueryShorterThanTwo_ReturnsEmptyList()
@@ -132,7 +132,7 @@ public class UsersControllerTests
     _userService.Verify(s => s.SearchAsync("ali"), Times.Once);
   }
 
-  // ── DeleteMe ─────────────────────────────────────────────
+  // DeleteMe
 
   [Fact]
   public async Task DeleteMe_WhenFound_ReturnsNoContent()

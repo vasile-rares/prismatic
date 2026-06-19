@@ -44,21 +44,18 @@ public class AuthServiceTwoFactorTests
   [Fact]
   public async Task Login_WithTwoFactorEnabled_ReturnsPendingChallengeAndSendsCode()
   {
-    // Arrange
     var user = MakeUser();
     user.IsTwoFactorEnabled = true;
 
     _userRepo.Setup(r => r.GetByEmailAsync("test@example.com")).ReturnsAsync(user);
     _userRepo.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
 
-    // Act
     var result = await _sut.LoginAsync(new LoginRequest
     {
       Email = "test@example.com",
       Password = "Password123!",
     });
 
-    // Assert
     Assert.NotNull(result);
     Assert.True(result!.RequiresTwoFactor);
     Assert.True(string.IsNullOrWhiteSpace(result.Token));
@@ -86,7 +83,6 @@ public class AuthServiceTwoFactorTests
   [Fact]
   public async Task VerifyTwoFactorLogin_WithValidCode_ReturnsTokensAndClearsChallenge()
   {
-    // Arrange
     var user = MakeUser();
     user.IsTwoFactorEnabled = true;
 
@@ -105,14 +101,12 @@ public class AuthServiceTwoFactorTests
       Password = "Password123!",
     });
 
-    // Act
     var result = await _sut.VerifyTwoFactorLoginAsync(new TwoFactorLoginVerifyRequest
     {
       Token = challenge!.TwoFactorToken!,
       Code = sentCode!,
     });
 
-    // Assert
     Assert.False(result.RequiresTwoFactor);
     Assert.False(string.IsNullOrWhiteSpace(result.Token));
     Assert.False(string.IsNullOrWhiteSpace(result.RefreshToken));
@@ -124,7 +118,6 @@ public class AuthServiceTwoFactorTests
   [Fact]
   public async Task EnableTwoFactor_WithValidCode_EnablesTwoFactorAndClearsChallenge()
   {
-    // Arrange
     var user = MakeUser();
     string? sentCode = null;
 
@@ -137,10 +130,8 @@ public class AuthServiceTwoFactorTests
 
     await _sut.SendEnableTwoFactorCodeAsync(user.Id);
 
-    // Act
     await _sut.EnableTwoFactorAsync(user.Id, new TwoFactorCodeRequest { Code = sentCode! });
 
-    // Assert
     Assert.True(user.IsTwoFactorEnabled);
     Assert.Null(user.TwoFactorCodeHash);
     Assert.Null(user.TwoFactorCodeExpiresAt);
@@ -150,7 +141,6 @@ public class AuthServiceTwoFactorTests
   [Fact]
   public async Task DisableTwoFactor_WithValidCode_DisablesTwoFactorAndClearsChallenge()
   {
-    // Arrange
     var user = MakeUser();
     user.IsTwoFactorEnabled = true;
     string? sentCode = null;
@@ -164,10 +154,8 @@ public class AuthServiceTwoFactorTests
 
     await _sut.SendDisableTwoFactorCodeAsync(user.Id);
 
-    // Act
     await _sut.DisableTwoFactorAsync(user.Id, new TwoFactorCodeRequest { Code = sentCode! });
 
-    // Assert
     Assert.False(user.IsTwoFactorEnabled);
     Assert.Null(user.TwoFactorCodeHash);
     Assert.Null(user.TwoFactorCodeExpiresAt);

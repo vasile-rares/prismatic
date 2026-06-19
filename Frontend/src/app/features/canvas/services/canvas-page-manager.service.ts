@@ -30,7 +30,7 @@ export class CanvasPageManagerService {
   private readonly history = inject(CanvasHistoryService);
   private readonly router = inject(Router);
 
-  // ── Signals (page-management exclusive) ───────────────────
+  // Signals (page-management exclusive)
 
   readonly editingCanvasHeaderPageId = signal<string | null>(null);
   readonly layersFocusedPageId = signal<string | null>(null);
@@ -49,7 +49,7 @@ export class CanvasPageManagerService {
   readonly editingCanvasHeaderPageName = signal('');
   readonly apiError = signal<string | null>(null);
 
-  // ── Computed Signals ──────────────────────────────────────
+  // Computed signals
 
   readonly selectedCanvasPageId = computed<string | null>(
     () => this.layersFocusedPageId() ?? this.selectedPageLayerId(),
@@ -113,7 +113,7 @@ export class CanvasPageManagerService {
     return matchedOption ? matchedOption.label : 'Custom';
   });
 
-  // ── Page CRUD ─────────────────────────────────────────────
+  // Page CRUD
 
   addPage(): void {
     this.runWithHistory(() => {
@@ -290,7 +290,7 @@ export class CanvasPageManagerService {
     });
   }
 
-  // ── Page Selection ────────────────────────────────────────
+  // Page selection
 
   selectPage(pageId: string): void {
     this.applyPageSelection(pageId, true);
@@ -326,7 +326,7 @@ export class CanvasPageManagerService {
     }
   }
 
-  // ── Page Naming ───────────────────────────────────────────
+  // Page naming
 
   onCanvasHeaderPageNameDoubleClick(event: MouseEvent, pageId: string): void {
     event.preventDefault();
@@ -383,7 +383,7 @@ export class CanvasPageManagerService {
     }
   }
 
-  // ── Viewport Menu ─────────────────────────────────────────
+  // Viewport menu
 
   toggleViewportMenu(): void {
     this.isViewportMenuOpen.update((open) => !open);
@@ -451,7 +451,7 @@ export class CanvasPageManagerService {
     this.updateCustomViewportHeight(value);
   }
 
-  // ── Device Frame Menu ─────────────────────────────────────
+  // Device frame menu
 
   openDeviceFrameMenu(event: MouseEvent, pageId?: string): void {
     event.preventDefault();
@@ -544,7 +544,7 @@ export class CanvasPageManagerService {
     });
   }
 
-  // ── Custom Frame Dialog ───────────────────────────────────
+  // Custom frame dialog
 
   openCustomFrameDialog(): void {
     this.customFrameWidth.set(480);
@@ -586,7 +586,7 @@ export class CanvasPageManagerService {
     this.closeCustomFrameDialog();
   }
 
-  // ── Preview ───────────────────────────────────────────────
+  // Preview
 
   openPreview(projectId: string): void {
     const currentPageId = this.editorState.currentPageId();
@@ -601,7 +601,7 @@ export class CanvasPageManagerService {
     });
   }
 
-  // ── Page Queries ──────────────────────────────────────────
+  // Page queries
 
   getPageById(pageId: string): CanvasPageModel | null {
     return this.editorState.pages().find((page) => page.id === pageId) ?? null;
@@ -611,7 +611,7 @@ export class CanvasPageManagerService {
     return this.pageLayouts().find((layout) => layout.pageId === pageId) ?? null;
   }
 
-  // ── Focus ─────────────────────────────────────────────────
+  // Focus
 
   private computePageFocusTarget(
     pageId: string,
@@ -699,7 +699,7 @@ export class CanvasPageManagerService {
     requestAnimationFrame(animate);
   }
 
-  // ── Utility ───────────────────────────────────────────────
+  // Utility
 
   normalizeViewportSize(value: number | undefined, fallback: number): number {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -709,7 +709,7 @@ export class CanvasPageManagerService {
     return Math.max(MIN_CUSTOM_VIEWPORT_SIZE, Math.round(value));
   }
 
-  // ── Private Helpers ───────────────────────────────────────
+  // Private helpers
 
   private runWithHistory(action: () => void): void {
     this.history.runWithHistory(() => this.editorState.createHistorySnapshot(), action);
@@ -1193,9 +1193,6 @@ export class CanvasPageManagerService {
   }
 
   private getCanvasElement(): HTMLElement | null {
-    // The canvas element reference is held by the component.
-    // The service accesses it through focusPageSmooth's parameter.
-    // For internal calls (applyPageSelection), we store it transiently.
     return this._canvasElement;
   }
 

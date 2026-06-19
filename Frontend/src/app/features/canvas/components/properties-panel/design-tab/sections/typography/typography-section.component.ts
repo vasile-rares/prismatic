@@ -113,12 +113,12 @@ export class TypographySectionComponent implements OnInit {
   readonly numberInputGestureStarted = output<void>();
   readonly numberInputGestureCommitted = output<void>();
 
-  // ── Optional props menu state ────────────────────────────────────────────
+  // Optional props menu state
   typographyMenuItems: ContextMenuItem[] = [];
   typographyMenuX = 0;
   typographyMenuY = 0;
 
-  // ── Corner radius ────────────────────────────────────────────────────────
+  // Corner radius
   readonly cornerRadiusFields = CORNER_RADIUS_FIELD_DEFINITIONS;
   readonly cornerRadiusModeOptions: readonly ToggleGroupOption[] = [
     {
@@ -137,7 +137,7 @@ export class TypographySectionComponent implements OnInit {
     },
   ];
 
-  // ── Padding ──────────────────────────────────────────────────────────────
+  // Padding
   readonly paddingModeOptions: readonly ToggleGroupOption[] = [
     {
       label: '',
@@ -165,7 +165,7 @@ export class TypographySectionComponent implements OnInit {
     { key: 'left', label: 'L', ariaLabel: 'Left padding' },
   ];
 
-  // ── Text transform ───────────────────────────────────────────────────────
+  // Text transform
   readonly textTransformOptions: DropdownSelectOption[] = [
     { label: 'Inherit', value: 'inherit' },
     { label: 'Capitalize', value: 'capitalize' },
@@ -173,7 +173,7 @@ export class TypographySectionComponent implements OnInit {
     { label: 'Lowercase', value: 'lowercase' },
   ];
 
-  // ── Balance ──────────────────────────────────────────────────────────────
+  // Balance
   readonly balanceOptions: readonly ToggleGroupOption[] = [
     { label: 'On', value: true },
     { label: 'Off', value: false },
@@ -185,7 +185,6 @@ export class TypographySectionComponent implements OnInit {
   }));
 
   ngOnInit(): void {
-    // Ensure the current element's font is loaded when the panel opens
     this.googleFonts.ensureLoaded(this.element().fontFamily);
   }
   readonly fontWeightOptions: DropdownSelectOption[] = [
@@ -278,7 +277,7 @@ export class TypographySectionComponent implements OnInit {
     this.numberInputGestureCommitted.emit();
   }
 
-  // ── Optional props management ────────────────────────────────────────────
+  // Optional props management
 
   activeOptionals(element: CanvasElement): readonly TypographyOptionalDef[] {
     return TYPOGRAPHY_OPTIONAL_DEFS.filter((def) => def.isAdded(element));
@@ -376,7 +375,7 @@ export class TypographySectionComponent implements OnInit {
     }
   }
 
-  // ── Corner radius ────────────────────────────────────────────────────────
+  // Corner radius
 
   cornerRadiusMode(element: CanvasElement): CornerRadiusMode {
     return hasPerCornerRadius(element) ? 'per-corner' : 'full';
@@ -418,7 +417,7 @@ export class TypographySectionComponent implements OnInit {
     this.elementPatch.emit({ cornerRadii: nextRadii });
   }
 
-  // ── Padding ──────────────────────────────────────────────────────────────
+  // Padding
 
   paddingMode(element: CanvasElement): PaddingMode {
     return element.paddingPerSide === true ? 'per-side' : 'uniform';
@@ -460,7 +459,7 @@ export class TypographySectionComponent implements OnInit {
     });
   }
 
-  // ── Squircle ─────────────────────────────────────────────────────────────
+  // Squircle
 
   squircleValue(element: CanvasElement): number {
     return element.squircle ?? 0;
@@ -471,7 +470,7 @@ export class TypographySectionComponent implements OnInit {
     this.elementPatch.emit({ squircle: Math.max(0, Math.min(100, roundToTwoDecimals(value))) });
   }
 
-  // ── Background color ─────────────────────────────────────────────────────
+  // Background color
 
   backgroundColorValue(element: CanvasElement): string {
     return element.backgroundColor ?? '#e0e0e0';
@@ -485,7 +484,7 @@ export class TypographySectionComponent implements OnInit {
     }
   }
 
-  // ── Text shadow ──────────────────────────────────────────────────────────
+  // Text shadow
 
   textShadowSummary(element: CanvasElement): string {
     if (!hasTextShadow(element.textShadow)) return 'None';
@@ -501,7 +500,7 @@ export class TypographySectionComponent implements OnInit {
     return resolveEditableTextShadow(element.textShadow).color;
   }
 
-  // ── Text transform ───────────────────────────────────────────────────────
+  // Text transform
 
   textTransformValue(element: CanvasElement): string {
     return element.textTransform ?? 'inherit';
@@ -512,13 +511,13 @@ export class TypographySectionComponent implements OnInit {
     this.elementPatch.emit({ textTransform: value as CanvasTextTransform });
   }
 
-  // ── Balance ──────────────────────────────────────────────────────────────
+  // Balance
 
   onTextBalanceChange(value: string | number | boolean | null): void {
     this.elementPatch.emit({ textBalance: value === true });
   }
 
-  // ── Decoration ───────────────────────────────────────────────────────────
+  // Decoration
 
   isDecorationDisabled(element: CanvasElement): boolean {
     return element.fillMode === 'gradient';

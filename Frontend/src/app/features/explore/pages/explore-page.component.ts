@@ -75,8 +75,6 @@ export class ExplorePage implements OnInit {
           this.isRecommendedPersonalized.set(recommended.isPersonalized);
           this.suggestedPeople.set(people);
           this.isLoading.set(false);
-          // afterNextRender garanteaza ca Angular a terminat de randat cardurile in DOM
-          // inainte de a atasa animatiile — fix pentru race condition cu setTimeout(0)
           afterNextRender(
             () => {
               this.initScrollAnimations();
@@ -127,7 +125,6 @@ export class ExplorePage implements OnInit {
 
     request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       error: () => {
-        // Rollback
         this.trendingProjects.update((list) =>
           list.map((p) => (p.projectId === project.projectId ? project : p)),
         );
@@ -198,12 +195,6 @@ export class ExplorePage implements OnInit {
   private initSmoothScroll(): void {
     if (typeof window === 'undefined') return;
     this.zone.runOutsideAngular(() => {
-      // Zone.js patches EventTarget.prototype.addEventListener, making wheel listeners
-      // passive so Lenis can't call preventDefault(). Fix: temporarily shadow
-      // window.addEventListener on the window object itself with the pre-patch native
-      // function. Lenis registers all its listeners synchronously in the constructor,
-      // so they get { passive: false }. After construction we delete the own property
-      // and zone.js's prototype patch takes over again for everything else.
       const nativeAdd = (window as any)['__zone_symbol__addEventListener'] as
         | typeof window.addEventListener
         | undefined;
@@ -234,7 +225,6 @@ export class ExplorePage implements OnInit {
       gsap.ticker.add(this.lenisTickFn);
       gsap.ticker.lagSmoothing(0);
 
-      // Keep ScrollTrigger in sync with Lenis's scroll position
       this.lenis.on('scroll', () => ScrollTrigger.update());
 
       this.destroyRef.onDestroy(() => {
@@ -250,10 +240,6 @@ export class ExplorePage implements OnInit {
       const host = this.el.nativeElement as HTMLElement;
       const cards = host.querySelectorAll<HTMLElement>('.pcard, .ucard');
 
-      // shadowRest  = default: gri vizibil, roz invizibil pe aceeasi pozitie
-      // shadowMid   = crossfade: gri disparut, roz vizibil pe aceeasi pozitie
-      // shadowDrain = roz coboara spre card si dispare (se scurge in border) — mouseenter faza 2
-      // shadowSmoke = roz se extinde in exterior (blur+spread mari, alpha→0) ca un fum — mouseleave faza 2
       const shadowRest =
         'rgba(152,152,152,0.14) 0px -13.49px 19.83px -4.05px, rgba(255,133,208,0.01) 0px -13.49px 19.83px -4.05px';
       const shadowMid =
@@ -276,7 +262,6 @@ export class ExplorePage implements OnInit {
 
         const stats = card.querySelector<HTMLElement>('.pcard-stats');
 
-        // Masoara inaltimea naturala a stats o singura data, fara snap la final de animatie
         let statsH = 0;
         if (stats) {
           gsap.set(stats, {
@@ -332,7 +317,6 @@ export class ExplorePage implements OnInit {
           tl?.kill();
           tl = gsap.timeline();
 
-          // Faza 1: borderul dispare bottom→top + umbra roza reapare la card (0 → 0.16s)
           tl.to(card, { '--pink-reveal': '100%', duration: 0.16, ease: 'power2.in' }, 0)
             .to(card, { boxShadow: mid, duration: 0.16, ease: 'power2.out' }, 0)
             // Faza 2: roz se extinde ca fum si dispare, gri revine simultan, card coboara (0.16 → 0.44s)
@@ -365,9 +349,6 @@ export class ExplorePage implements OnInit {
 
       if (!headers.length && !strips.length) return;
 
-      // Hide ALL elements synchronously before any stagger delay fires.
-      // fromTo applies the `from` state only when each element's delay expires,
-      // leaving staggered elements briefly at opacity:1 — hence the semi-transparent flash.
       gsap.set(headers, { y: 20, opacity: 0, filter: 'blur(10px)' });
       strips.forEach((strip) =>
         gsap.set(strip.querySelectorAll('.pcard, .ucard'), {
@@ -411,11 +392,6 @@ export class ExplorePage implements OnInit {
         });
       });
 
-      // Do NOT call ScrollTrigger.refresh() here — it re-evaluates all triggers
-      // mid-animation causing the freeze. setTimeout(0) in ngOnInit already
-      // guarantees the DOM is fully rendered before this runs.
-      // Instead, defer refresh to the next animation frame so GSAP finishes
-      // its internal setup first — this fires triggers for elements already in view.
       requestAnimationFrame(() => ScrollTrigger.refresh());
     });
   }

@@ -115,7 +115,7 @@ public static class StyleTransformer
     return merged;
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // Helpers
 
   private static void ApplySpacing(Dictionary<string, string> css, string prop, IRSpacing s)
   {
@@ -152,7 +152,6 @@ public static class StyleTransformer
       return;
     }
 
-    // Emit all four sides explicitly so unselected sides are cleared.
     css["border-top"] = BuildBorderSideDeclaration(border.Top, border.TopWidth, border.Width, border.Style, border.Color);
     css["border-right"] = BuildBorderSideDeclaration(border.Right, border.RightWidth, border.Width, border.Style, border.Color);
     css["border-bottom"] = BuildBorderSideDeclaration(border.Bottom, border.BottomWidth, border.Width, border.Style, border.Color);

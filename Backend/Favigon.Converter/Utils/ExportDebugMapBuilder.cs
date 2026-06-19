@@ -7,11 +7,10 @@ public static class ExportDebugMapBuilder
 {
   private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
-  // Lookup table for simple type → tag mappings (types with no conditional logic)
   private static readonly IReadOnlyDictionary<string, string> SimpleTagMap =
     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-      ["Heading"]    = "h2",   // level-specific: handled in ResolveHtmlTag
+      ["Heading"]    = "h2",
       ["Link"]       = "a",
       ["Card"]       = "div",
       ["Icon"]       = "span",
@@ -91,7 +90,6 @@ public static class ExportDebugMapBuilder
 
   private static string ResolveHtmlTag(IRNode node)
   {
-    // Types with conditional logic
     switch (node.Type)
     {
       case "Text":
@@ -123,7 +121,6 @@ public static class ExportDebugMapBuilder
           : IrProps.ResolveTag(node, "div", "div", "section", "article", "aside", "main", "header", "footer", "nav");
     }
 
-    // Simple lookup for all other types
     return SimpleTagMap.TryGetValue(node.Type, out var tag) ? tag : "div";
   }
 }

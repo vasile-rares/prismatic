@@ -51,12 +51,10 @@ public partial class AiDesignService(
   {
     var trimmed = raw.Trim();
 
-    // Strip markdown code fences
     var fenceMatch = CodeFenceRegex().Match(trimmed);
     if (fenceMatch.Success)
       trimmed = fenceMatch.Groups[1].Value.Trim();
 
-    // Find the outermost { ... } if there's extra text
     var firstBrace = trimmed.IndexOf('{');
     var lastBrace = trimmed.LastIndexOf('}');
     if (firstBrace >= 0 && lastBrace > firstBrace)
@@ -86,7 +84,6 @@ public partial class AiDesignService(
 
     AssignSequentialIds(ir);
 
-    // Phase 1: snap AI values to design token scale before validation runs
     DesignTokenNormalizer.Normalize(ir);
 
     var errors = IrValidator.GetValidationErrors(ir);
@@ -101,7 +98,6 @@ public partial class AiDesignService(
 
   public async Task<AiDesignResponse> GenerateDesignAsync(AiDesignRequest request, CancellationToken ct = default)
   {
-    // Cache only when not modifying an existing design
     if (request.ExistingIr is null)
     {
       var key = BuildCacheKey(request);
@@ -127,7 +123,6 @@ public partial class AiDesignService(
 
     var (ir, validationErrors) = TryParseIr(raw, "generate");
 
-    // Auto-repair: if validation failed, retry once with the errors
     if (ir is null && validationErrors is not null && !validationErrors.StartsWith("AI returned"))
     {
       logger.LogInformation("Attempting AI self-repair for validation errors");
@@ -182,7 +177,6 @@ public partial class AiDesignService(
     var raw = buffer.ToString();
     var (ir, validationErrors) = TryParseIr(raw, "streaming");
 
-    // Auto-repair: if validation failed (not a JSON parse error), retry once
     if (ir is null && validationErrors is not null && !validationErrors.StartsWith("AI returned"))
     {
       logger.LogInformation("Attempting AI streaming self-repair for validation errors");
@@ -442,8 +436,6 @@ public partial class AiDesignService(
     {{IrSchemaReference}}
     """;
 
-  // Gracefully handles null / non-object items the AI sometimes generates inside children arrays,
-  // instead of throwing JsonException and losing the entire design.
   private sealed class SafeIRNodeListConverter : JsonConverter<List<IRNode>>
   {
     public override List<IRNode> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
