@@ -21,6 +21,9 @@ export class UserService {
   private readonly _currentUser = signal<UserMe | null | undefined>(undefined);
   readonly currentUser = this._currentUser.asReadonly();
 
+  private readonly _loggedOut = signal(false);
+  readonly loggedOut = this._loggedOut.asReadonly();
+
   loadCurrentUser(): Observable<UserMe | null> {
     const cached = this._currentUser();
     if (cached !== undefined) return of(cached);
@@ -36,10 +39,16 @@ export class UserService {
 
   setCurrentUser(user: UserMe): void {
     this._currentUser.set(user);
+    this._loggedOut.set(false);
   }
 
   invalidateCurrentUser(): void {
     this._currentUser.set(undefined);
+  }
+
+  markLoggedOut(): void {
+    this._currentUser.set(null);
+    this._loggedOut.set(true);
   }
 
   // HTTP

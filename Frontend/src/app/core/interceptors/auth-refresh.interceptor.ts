@@ -3,9 +3,15 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
 import { environment } from '../../../environments/environment';
 
-const SKIP_REFRESH_PATHS = ['/account/refresh', '/account/login', '/account/oauth2'] as const;
+const SKIP_REFRESH_PATHS = [
+  '/account/refresh',
+  '/account/login',
+  '/account/logout',
+  '/account/oauth2',
+] as const;
 
 export const authRefreshInterceptor: HttpInterceptorFn = (request, next) => {
   if (SKIP_REFRESH_PATHS.some((path) => request.url.includes(path))) {
@@ -17,6 +23,7 @@ export const authRefreshInterceptor: HttpInterceptorFn = (request, next) => {
   }
 
   const authService = inject(AuthService);
+  const userService = inject(UserService);
   const router = inject(Router);
 
   return next(request).pipe(
@@ -25,9 +32,15 @@ export const authRefreshInterceptor: HttpInterceptorFn = (request, next) => {
         return throwError(() => error);
       }
 
+      if (userService.loggedOut()) {
+        return throwError(() => error);
+      }
+
       return authService.refresh().pipe(
         switchMap(() => next(request)),
         catchError((refreshError) => {
+          userService.markLoggedOut();
+
           const currentPath = router.url.split('?')[0];
           const isPublicAuthPath = currentPath === '/login' || currentPath === '/reset-password';
 

@@ -195,7 +195,7 @@ export class HeaderBarComponent implements OnInit {
   onLogout() {
     this.isUserMenuOpen = false;
     this.closeMobileMenu(true);
-    this.currentUser.invalidateCurrentUser();
+    this.currentUser.markLoggedOut();
     this.authService.logout().subscribe();
     void this.router.navigate(['/login'], { replaceUrl: true });
   }
