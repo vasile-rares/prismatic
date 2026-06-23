@@ -64,7 +64,12 @@ public class ProjectService : IProjectService
   {
     var project = await _projectRepository.GetBySlugAsync(slug, userId)
                   ?? await _projectRepository.GetPublicBySlugAsync(slug);
-    return project == null ? null : MapProjectResponse(project);
+    if (project == null) return null;
+
+    var response = MapProjectResponse(project);
+    response.IsStarredByCurrentUser = await _projectRepository.IsBookmarkedAsync(userId, project.Id);
+    response.IsLikedByCurrentUser = await _projectRepository.IsLikedAsync(userId, project.Id);
+    return response;
   }
 
   public Task RecordViewAsync(int projectId)
