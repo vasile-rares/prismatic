@@ -119,9 +119,6 @@ public class ProjectRepository : IProjectRepository
     await _context.SaveChangesAsync();
   }
 
-  public Task<int> GetLikeCountForProjectAsync(int projectId)
-    => _context.ProjectLikes.CountAsync(l => l.ProjectId == projectId);
-
   public Task<bool> IsLikedAsync(int userId, int projectId)
     => _context.ProjectLikes.AnyAsync(l => l.UserId == userId && l.ProjectId == projectId);
 
@@ -151,9 +148,6 @@ public class ProjectRepository : IProjectRepository
     _context.ProjectBookmarks.Remove(bookmark);
     await _context.SaveChangesAsync();
   }
-
-  public Task<int> GetBookmarkCountForProjectAsync(int projectId)
-    => _context.ProjectBookmarks.CountAsync(b => b.ProjectId == projectId);
 
   public Task<bool> IsBookmarkedAsync(int userId, int projectId)
     => _context.ProjectBookmarks.AnyAsync(b => b.UserId == userId && b.ProjectId == projectId);

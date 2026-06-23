@@ -22,7 +22,6 @@ public interface IProjectRepository
   Task<ProjectLike?> GetLikeAsync(int userId, int projectId);
   Task AddLikeAsync(ProjectLike like);
   Task DeleteLikeAsync(ProjectLike like);
-  Task<int> GetLikeCountForProjectAsync(int projectId);
   Task<bool> IsLikedAsync(int userId, int projectId);
   Task<HashSet<int>> GetLikedProjectIdsAsync(int userId, IEnumerable<int> projectIds);
 
@@ -30,7 +29,6 @@ public interface IProjectRepository
   Task<ProjectBookmark?> GetBookmarkAsync(int userId, int projectId);
   Task AddBookmarkAsync(ProjectBookmark bookmark);
   Task DeleteBookmarkAsync(ProjectBookmark bookmark);
-  Task<int> GetBookmarkCountForProjectAsync(int projectId);
   Task<bool> IsBookmarkedAsync(int userId, int projectId);
   Task<HashSet<int>> GetStarredProjectIdsAsync(int userId, IEnumerable<int> projectIds);
   Task<IReadOnlyList<Project>> GetBookmarkedProjectsAsync(int userId);

@@ -6,7 +6,6 @@ using Favigon.Converter.Generators.Angular;
 using Favigon.Converter.Generators.Html;
 using Favigon.Converter.Generators.React;
 using Favigon.Converter.Models;
-using Favigon.Converter.Parsers.Canvas;
 using Favigon.Converter.Transformers;
 using Favigon.Converter.Utils;
 using Favigon.Converter.Validation;
@@ -22,8 +21,6 @@ public sealed class ConverterEngine : IConverterEngine
     IReadOnlyDictionary<string, NodeCssClasses> CssClassMap,
     StyleBuilder Styles);
 
-  private static readonly CanvasParser CanvasParser = new();
-
   private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, IComponentMapper>> FrameworkMappers =
     new Dictionary<string, IReadOnlyDictionary<string, IComponentMapper>>(StringComparer.OrdinalIgnoreCase)
     {
@@ -31,12 +28,6 @@ public sealed class ConverterEngine : IConverterEngine
       ["react"] = CreateMap(ReactMapperCatalog.Create()),
       ["angular"] = CreateMap(AngularMapperCatalog.Create())
     };
-
-  public (string Html, string Css) GenerateFromCanvas(string canvasJson, string framework)
-  {
-    var root = ParseCanvas(canvasJson);
-    return GenerateSinglePage(root, framework);
-  }
 
   public (string Html, string Css) GenerateSinglePage(IRNode root, string framework)
   {
@@ -748,20 +739,6 @@ public sealed class ConverterEngine : IConverterEngine
       map[mapper.Type] = mapper;
 
     return map;
-  }
-  public IRNode ParseCanvas(string canvasJson) => CanvasParser.Parse(canvasJson);
-
-  public string GenerateDiffCss(IRNode primary, IRNode breakpoint, string framework, int maxWidth, string label)
-  {
-    var primaryArtifacts = GeneratePageArtifacts(primary, framework);
-    var breakpointExportRoot = NormalizeExportRoot(breakpoint);
-    var breakpointCssClassMap = BuildResponsiveCssClassMap(primaryArtifacts.CssClassMap, breakpointExportRoot);
-    var breakpointArtifacts = GeneratePageArtifactsFromExportRoot(
-      breakpointExportRoot,
-      framework,
-      breakpointCssClassMap);
-    var orderDiffs = BuildNodeOrderDiffs(primaryArtifacts.ExportRoot, breakpointArtifacts.ExportRoot, primaryArtifacts.CssClassMap);
-    return BuildBreakpointDiffCss(primaryArtifacts.Styles, breakpointArtifacts.Styles, orderDiffs, maxWidth, label);
   }
 
   public (string Html, string Css) GenerateResponsiveOutput(

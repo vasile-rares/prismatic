@@ -7,7 +7,6 @@ public interface IAuditLogger
   void LoginFailed(string email);
   void LoginRequiresTwoFactor(string email);
   void TwoFactorVerified(int userId);
-  void TwoFactorFailed(int userId);
   void PasswordChanged(int userId);
   void PasswordReset(string email);
   void TwoFactorEnabled(int userId);

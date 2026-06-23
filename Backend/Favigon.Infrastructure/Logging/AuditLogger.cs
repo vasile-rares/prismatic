@@ -27,9 +27,6 @@ public class AuditLogger : IAuditLogger
   public void TwoFactorVerified(int userId) =>
     _logger.LogInformation("[AUDIT] 2FA_VERIFIED userId={UserId}", userId);
 
-  public void TwoFactorFailed(int userId) =>
-    _logger.LogWarning("[AUDIT] 2FA_FAILED userId={UserId}", userId);
-
   public void PasswordChanged(int userId) =>
     _logger.LogInformation("[AUDIT] PASSWORD_CHANGED userId={UserId}", userId);
 
